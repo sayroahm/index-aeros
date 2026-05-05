@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Cortlin</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: monospace; font-size: 14px; background: #fff; color: #000; padding: 40px; }
+h1 { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+p { font-size: 13px; color: #444; margin-bottom: 20px; }
+hr { border: none; border-top: 1px solid #000; margin-bottom: 20px; }
+label { display: block; font-size: 12px; margin-bottom: 2px; }
+input { display: block; width: 280px; font-family: monospace; font-size: 13px; border: 1px solid #999; padding: 4px 6px; margin-bottom: 12px; }
+button { font-family: monospace; font-size: 13px; background: none; border: 1px solid #000; padding: 5px 16px; cursor: pointer; }
+button:hover { background: #eee; }
+#msg { margin-top: 12px; font-size: 13px; color: #c00; }
+a { color: #00e; text-decoration: underline; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Cortlin — Staff Login</h1>
+<p>Authorized personnel only.</p>
+<hr>
+<label>Username</label>
+<input id="uname" type="text">
+<label>Password</label>
+<input id="pass" type="password">
+<button onclick="doLogin()">Login</button>
+<div id="msg"></div>
+<br>
+<a onclick="window.location='index.html'">← back</a>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAfb1PKVSPEuVPzdb3BE9fbMtT8Yade-hY",
+  authDomain: "cortlin.firebaseapp.com",
+  projectId: "cortlin",
+  storageBucket: "cortlin.firebasestorage.app",
+  messagingSenderId: "439783582358",
+  appId: "1:439783582358:web:ef40a524daaa6d0a77f0b7",
+  measurementId: "G-LC1C1X95G6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.doLogin = async () => {
+  const username = document.getElementById("uname").value.trim();
+  const password = document.getElementById("pass").value;
+  const msg = document.getElementById("msg");
+  msg.textContent = "checking...";
+  msg.style.color = "#444";
+  try {
+    const snap = await getDocs(query(collection(db, "users"), where("user", "==", username), where("password", "==", password)));
+    if (snap.empty) { msg.textContent = "invalid username or password."; msg.style.color = "#c00"; return; }
+    sessionStorage.setItem("cortlin_user", JSON.stringify({ id: snap.docs[0].id, ...snap.docs[0].data() }));
+    window.location = "index.html";
+  } catch (err) {
+    msg.textContent = err.message;
+    msg.style.color = "#c00";
+  }
+};
+
+document.getElementById("pass").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+</script>
+</body>
+</html>
