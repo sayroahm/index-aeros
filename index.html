@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Index of / — Cortlin</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: monospace; font-size: 14px; background: #fff; color: #000; padding: 20px 40px; }
+h1 { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+hr { border: none; border-top: 1px solid #000; margin-bottom: 10px; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 2px 12px 2px 0; font-weight: normal; text-decoration: underline; cursor: pointer; }
+td { padding: 2px 12px 2px 0; white-space: nowrap; vertical-align: top; }
+td.name { min-width: 250px; }
+td.name a { color: #00e; text-decoration: underline; cursor: pointer; }
+td.name a:visited { color: #551a8b; }
+td.size { text-align: right; min-width: 60px; }
+#status-bar { position: fixed; top: 0; right: 0; padding: 4px 10px; font-size: 12px; background: #fff; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; }
+#status-bar a { color: #00e; text-decoration: underline; cursor: pointer; }
+#admin-bar { margin-bottom: 12px; display: none; }
+#admin-bar button { font-family: monospace; font-size: 13px; background: none; border: 1px solid #999; padding: 2px 8px; cursor: pointer; margin-right: 6px; }
+#admin-bar button:hover { background: #eee; }
+.locked-icon { font-size: 11px; color: #888; }
+#modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 10; }
+#modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; border: 1px solid #000; padding: 20px; z-index: 11; min-width: 320px; font-family: monospace; }
+#modal h2 { font-size: 14px; margin-bottom: 12px; font-weight: bold; }
+#modal input { font-family: monospace; font-size: 13px; width: 100%; border: 1px solid #999; padding: 3px 6px; margin-bottom: 8px; display: block; }
+#modal label { font-size: 12px; display: block; margin-bottom: 2px; }
+#modal .row { display: flex; gap: 8px; }
+#modal .row button { flex: 1; }
+#modal button { font-family: monospace; font-size: 13px; background: none; border: 1px solid #999; padding: 4px 10px; cursor: pointer; width: 100%; margin-top: 4px; }
+#modal button:hover { background: #eee; }
+#modal button.primary { border-color: #000; font-weight: bold; }
+#breadcrumb { margin-bottom: 6px; font-size: 13px; }
+#breadcrumb a { color: #00e; text-decoration: underline; cursor: pointer; }
+#footer { margin-top: 12px; font-size: 12px; color: #444; }
+</style>
+</head>
+<body>
+
+<div id="status-bar">
+  <span id="auth-status">not logged in — <a onclick="window.location='login.html'">login</a></span>
+</div>
+
+<div id="breadcrumb"></div>
+<h1 id="page-title">Index of /</h1>
+<hr>
+
+<div id="admin-bar">
+  <button onclick="openModal('folder')">+ New Folder</button>
+  <button onclick="openModal('file')">+ New File</button>
+  <button onclick="openModal('upload')">+ Upload File</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th onclick="sortBy('name')">Name</th>
+      <th onclick="sortBy('modified')">Last Modified</th>
+      <th class="size" onclick="sortBy('size')">Size</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody id="tree-body"></tbody>
+</table>
+
+<div id="footer"></div>
+
+<div id="modal-overlay" onclick="closeModal()"></div>
+<div id="modal">
+  <h2 id="modal-title"></h2>
+  <div id="modal-body"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
+import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAfb1PKVSPEuVPzdb3BE9fbMtT8Yade-hY",
+  authDomain: "cortlin.firebaseapp.com",
+  projectId: "cortlin",
+  storageBucket: "cortlin.firebasestorage.app",
+  messagingSenderId: "439783582358",
+  appId: "1:439783582358:web:ef40a524daaa6d0a77f0b7",
+  measurementId: "G-LC1C1X95G6"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const auth = getAuth(app);
+
+let currentUser = null;
+let currentPathId = null;
+let currentPath = "/";
+let allItems = [];
+let sortKey = "name";
+let sortDir = 1;
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  const bar = document.getElementById("auth-status");
+  if (user) {
+    bar.innerHTML = `logged in as <strong>${user.email}</strong> — <a onclick="doSignOut()">logout</a> | <a onclick="window.location='admin.html'">admin</a>`;
+    document.getElementById("admin-bar").style.display = "block";
+  } else {
+    bar.innerHTML = `not logged in — <a onclick="window.location='login.html'">login</a>`;
+    document.getElementById("admin-bar").style.display = "none";
+  }
+  loadTree(currentPathId);
+});
+
+window.doSignOut = async () => { await auth.signOut(); };
+
+async function loadTree(parentId) {
+  const tbody = document.getElementById("tree-body");
+  tbody.innerHTML = "<tr><td colspan='4'>loading...</td></tr>";
+  const q = query(collection(db, "tree"), where("parentId", "==", parentId ?? null));
+  const snap = await getDocs(q);
+  allItems = [];
+  snap.forEach(d => allItems.push({ id: d.id, ...d.data() }));
+  renderTree();
+}
+
+function renderTree() {
+  const tbody = document.getElementById("tree-body");
+  tbody.innerHTML = "";
+
+  const sorted = [...allItems].sort((a, b) => {
+    if (a.type === "folder" && b.type !== "folder") return -1;
+    if (a.type !== "folder" && b.type === "folder") return 1;
+    let av = a[sortKey] ?? "";
+    let bv = b[sortKey] ?? "";
+    if (av < bv) return -sortDir;
+    if (av > bv) return sortDir;
+    return 0;
+  });
+
+  if (currentPathId !== null) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="name">↩ <a onclick="goUp()">Parent Directory</a></td><td></td><td class="size">-</td><td></td>`;
+    tbody.appendChild(tr);
+  }
+
+  let visible = 0;
+  for (const item of sorted) {
+    if (item.locked && !currentUser) continue;
+    visible++;
+    const tr = document.createElement("tr");
+    const lockedBadge = item.locked ? ` <span class="locked-icon">[locked]</span>` : "";
+    const mod = item.modified ? new Date(item.modified.seconds * 1000).toISOString().slice(0, 16).replace("T", " ") : "-";
+    const size = item.size ? formatSize(item.size) : "-";
+    const desc = item.description || "";
+    const actions = currentUser
+      ? ` <a onclick="deleteItem('${item.id}','${escHtml(item.name)}')">[del]</a>${item.type !== "folder" ? ` <a onclick="toggleLock('${item.id}',${!!item.locked})">[${item.locked ? "unlock" : "lock"}]</a>` : ""}`
+      : "";
+
+    if (item.type === "folder") {
+      tr.innerHTML = `<td class="name">📁 <a onclick="navInto('${item.id}','${escHtml(item.name)}')">${escHtml(item.name)}/</a>${lockedBadge}</td><td>${mod}</td><td class="size">-</td><td>${escHtml(desc)}${actions}</td>`;
+    } else if (item.url) {
+      tr.innerHTML = `<td class="name">📄 <a href="${item.url}" target="_blank">${escHtml(item.name)}</a>${lockedBadge}</td><td>${mod}</td><td class="size">${size}</td><td>${escHtml(desc)}${actions}</td>`;
+    } else {
+      tr.innerHTML = `<td class="name">📄 <a onclick="window.location='view.html?id=${item.id}'">${escHtml(item.name)}</a>${lockedBadge}</td><td>${mod}</td><td class="size">${size}</td><td>${escHtml(desc)}${actions}</td>`;
+    }
+    tbody.appendChild(tr);
+  }
+
+  if (visible === 0 && currentPathId === null) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4" style="color:#888;padding-top:8px;">no items</td>`;
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById("footer").textContent = `Cortlin Internal File Index — ${visible} item(s)`;
+}
+
+function navInto(id, name) {
+  currentPathId = id;
+  currentPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
+  document.getElementById("page-title").textContent = `Index of ${currentPath}`;
+  updateBreadcrumb();
+  loadTree(id);
+}
+
+window.goUp = async () => {
+  const parts = currentPath.split("/").filter(Boolean);
+  parts.pop();
+  currentPath = parts.length === 0 ? "/" : "/" + parts.join("/");
+  if (parts.length === 0) {
+    currentPathId = null;
+  } else {
+    const snap = await getDocs(query(collection(db, "tree"), where("name", "==", parts[parts.length - 1]), where("type", "==", "folder")));
+    currentPathId = snap.empty ? null : snap.docs[0].id;
+  }
+  document.getElementById("page-title").textContent = `Index of ${currentPath}`;
+  updateBreadcrumb();
+  loadTree(currentPathId);
+};
+
+function updateBreadcrumb() {
+  const parts = currentPath.split("/").filter(Boolean);
+  let html = `<a onclick="goRoot()">/</a>`;
+  for (const p of parts) html += ` / ${escHtml(p)}`;
+  document.getElementById("breadcrumb").innerHTML = html;
+}
+
+window.goRoot = () => {
+  currentPath = "/";
+  currentPathId = null;
+  document.getElementById("page-title").textContent = `Index of /`;
+  document.getElementById("breadcrumb").innerHTML = "";
+  loadTree(null);
+};
+
+window.sortBy = (key) => {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = 1; }
+  renderTree();
+};
+
+window.openModal = (type) => {
+  document.getElementById("modal-overlay").style.display = "block";
+  document.getElementById("modal").style.display = "block";
+  const title = document.getElementById("modal-title");
+  const body = document.getElementById("modal-body");
+
+  if (type === "folder") {
+    title.textContent = "New Folder";
+    body.innerHTML = `
+      <label>Name</label><input id="m-name" type="text" placeholder="folder-name">
+      <label>Description</label><input id="m-desc" type="text" placeholder="optional">
+      <label><input type="checkbox" id="m-lock"> Staff only</label><br><br>
+      <div class="row"><button class="primary" onclick="submitFolder()">Create</button><button onclick="closeModal()">Cancel</button></div>`;
+  } else if (type === "file") {
+    title.textContent = "New Text Entry";
+    body.innerHTML = `
+      <label>Name</label><input id="m-name" type="text" placeholder="readme.txt">
+      <label>URL (optional)</label><input id="m-url" type="text" placeholder="https://...">
+      <label>Description</label><input id="m-desc" type="text" placeholder="optional">
+      <label><input type="checkbox" id="m-lock"> Staff only</label><br><br>
+      <div class="row"><button class="primary" onclick="submitFile()">Create</button><button onclick="closeModal()">Cancel</button></div>`;
+  } else if (type === "upload") {
+    title.textContent = "Upload File";
+    body.innerHTML = `
+      <label>File</label><input id="m-file" type="file">
+      <label>Description</label><input id="m-desc" type="text" placeholder="optional">
+      <label><input type="checkbox" id="m-lock"> Staff only</label><br><br>
+      <div class="row"><button class="primary" onclick="submitUpload()">Upload</button><button onclick="closeModal()">Cancel</button></div>`;
+  }
+};
+
+window.closeModal = () => {
+  document.getElementById("modal-overlay").style.display = "none";
+  document.getElementById("modal").style.display = "none";
+};
+
+window.submitFolder = async () => {
+  const name = document.getElementById("m-name").value.trim();
+  if (!name) return;
+  await addDoc(collection(db, "tree"), {
+    name, type: "folder",
+    description: document.getElementById("m-desc").value.trim(),
+    locked: document.getElementById("m-lock").checked,
+    parentId: currentPathId ?? null,
+    modified: serverTimestamp()
+  });
+  closeModal();
+  loadTree(currentPathId);
+};
+
+window.submitFile = async () => {
+  const name = document.getElementById("m-name").value.trim();
+  if (!name) return;
+  await addDoc(collection(db, "tree"), {
+    name, type: "file",
+    url: document.getElementById("m-url").value.trim() || null,
+    description: document.getElementById("m-desc").value.trim(),
+    locked: document.getElementById("m-lock").checked,
+    parentId: currentPathId ?? null,
+    modified: serverTimestamp()
+  });
+  closeModal();
+  loadTree(currentPathId);
+};
+
+window.submitUpload = async () => {
+  const fileInput = document.getElementById("m-file");
+  const file = fileInput.files[0];
+  if (!file) return;
+  document.getElementById("modal-body").innerHTML = "uploading...";
+  const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+  await addDoc(collection(db, "tree"), {
+    name: file.name, type: "file", url,
+    description: "",
+    locked: false,
+    size: file.size,
+    parentId: currentPathId ?? null,
+    modified: serverTimestamp()
+  });
+  closeModal();
+  loadTree(currentPathId);
+};
+
+window.deleteItem = async (id, name) => {
+  if (!confirm(`Delete "${name}"?`)) return;
+  await deleteDoc(doc(db, "tree", id));
+  loadTree(currentPathId);
+};
+
+window.toggleLock = async (id, currentLocked) => {
+  await updateDoc(doc(db, "tree", id), { locked: !currentLocked });
+  loadTree(currentPathId);
+};
+
+function formatSize(bytes) {
+  if (bytes < 1024) return `${bytes}`;
+  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)}K`;
+  return `${(bytes / 1048576).toFixed(1)}M`;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+</script>
+</body>
+</html>
