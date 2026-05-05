@@ -105,10 +105,15 @@ window.doSignOut = () => { sessionStorage.removeItem("cortlin_user"); location.r
 
 async function loadTree(parentId) {
   document.getElementById("tree-body").innerHTML = "<tr><td colspan='3'>loading...</td></tr>";
-  const snap = await getDocs(query(collection(db, "tree"), where("parentId", "==", parentId ?? null)));
-  allItems = [];
-  snap.forEach(d => allItems.push({ id: d.id, ...d.data() }));
-  renderTree();
+  try {
+    const snap = await getDocs(query(collection(db, "tree"), where("parentId", "==", parentId ?? null)));
+    allItems = [];
+    snap.forEach(d => allItems.push({ id: d.id, ...d.data() }));
+    renderTree();
+  } catch (err) {
+    document.getElementById("tree-body").innerHTML = `<tr><td colspan='3' style='color:red;'>error loading: ${err.message}</td></tr>`;
+    console.error("loadTree error:", err);
+  }
 }
 
 function renderTree() {
@@ -124,7 +129,8 @@ function renderTree() {
 
   if (currentPathId !== null) {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td class="name">↩ <a onclick="goUp()">Parent Directory</a></td><td></td><td></td>`;
+    tr.innerHTML = `<td class="name">↩ <a class="go-up-link" style="cursor:pointer;">Parent Directory</a></td><td></td><td></td>`;
+    tr.querySelector(".go-up-link").addEventListener("click", goUp);
     tbody.appendChild(tr);
   }
 
@@ -136,28 +142,59 @@ function renderTree() {
     const badge = item.locked ? ` <span class="locked-icon">[locked]</span>` : "";
     const mod = item.modified ? new Date(item.modified.seconds * 1000).toISOString().slice(0, 16).replace("T", " ") : "-";
     const desc = item.description || "";
-    const actions = currentUser
-      ? ` — <a onclick="deleteItem('${item.id}','${esc(item.name)}')">[del]</a> <a onclick="toggleLock('${item.id}',${!!item.locked})">[${item.locked ? "unlock" : "lock"}]</a>`
+
+    // Build admin action cells as text, wired up after appendChild
+    const adminHtml = currentUser
+      ? ` — <a class="del-btn" style="cursor:pointer;">[del]</a> <a class="lock-btn" style="cursor:pointer;">[${item.locked ? "unlock" : "lock"}]</a>`
       : "";
 
     if (item.type === "folder") {
-      tr.innerHTML = `<td class="name">📁 <a onclick="navInto('${item.id}','${esc(item.name)}')">${esc(item.name)}/</a>${badge}</td><td>${mod}</td><td>${esc(desc)}${actions}</td>`;
+      tr.innerHTML = `
+        <td class="name">📁 <a class="folder-link" style="cursor:pointer;">${esc(item.name)}/</a>${badge}</td>
+        <td>${mod}</td>
+        <td>${esc(desc)}${adminHtml}</td>`;
+
+      // ✅ Safe event listener — no inline onclick with dynamic data
+      tr.querySelector(".folder-link").addEventListener("click", () => navInto(item.id, item.name));
+
     } else if (item.url) {
-      tr.innerHTML = `<td class="name">📄 <a href="${item.url}" target="_blank">${esc(item.name)}</a>${badge}</td><td>${mod}</td><td>${esc(desc)}${actions}</td>`;
+      // External URL — safe to use href directly
+      tr.innerHTML = `
+        <td class="name">📄 <a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.name)}</a>${badge}</td>
+        <td>${mod}</td>
+        <td>${esc(desc)}${adminHtml}</td>`;
+
     } else {
-      tr.innerHTML = `<td class="name">📄 <a onclick="window.location='view.html?id=${item.id}'">${esc(item.name)}</a>${badge}</td><td>${mod}</td><td>${esc(desc)}${actions}</td>`;
+      // ✅ THE FIX: data-id attribute + addEventListener instead of inline onclick with dynamic ID
+      tr.innerHTML = `
+        <td class="name">📄 <a class="file-link" style="cursor:pointer;">${esc(item.name)}</a>${badge}</td>
+        <td>${mod}</td>
+        <td>${esc(desc)}${adminHtml}</td>`;
+
+      tr.querySelector(".file-link").addEventListener("click", () => {
+        window.location.href = `view.html?id=${encodeURIComponent(item.id)}`;
+      });
     }
+
+    // Wire up admin buttons safely
+    if (currentUser) {
+      tr.querySelector(".del-btn")?.addEventListener("click", () => deleteItem(item.id, item.name));
+      tr.querySelector(".lock-btn")?.addEventListener("click", () => toggleLock(item.id, !!item.locked));
+    }
+
     tbody.appendChild(tr);
   }
 
   if (visible === 0) {
-    tbody.innerHTML += `<tr><td colspan="3" style="color:#888;padding-top:8px;">no items</td></tr>`;
+    const empty = document.createElement("tr");
+    empty.innerHTML = `<td colspan="3" style="color:#888;padding-top:8px;">no items</td>`;
+    tbody.appendChild(empty);
   }
 
   document.getElementById("footer").textContent = `Cortlin — ${visible} item(s)`;
 }
 
-window.navInto = function(id, name) {
+function navInto(id, name) {
   currentPathId = id;
   currentPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
   document.getElementById("page-title").textContent = `Index of ${currentPath}`;
@@ -165,24 +202,29 @@ window.navInto = function(id, name) {
   loadTree(id);
 }
 
-window.goUp = async () => {
+async function goUp() {
   const parts = currentPath.split("/").filter(Boolean);
   parts.pop();
   currentPath = parts.length === 0 ? "/" : "/" + parts.join("/");
   if (parts.length === 0) {
     currentPathId = null;
   } else {
-    const snap = await getDocs(query(collection(db, "tree"), where("name", "==", parts[parts.length - 1]), where("type", "==", "folder")));
-    currentPathId = snap.empty ? null : snap.docs[0].id;
+    try {
+      const snap = await getDocs(query(collection(db, "tree"), where("name", "==", parts[parts.length - 1]), where("type", "==", "folder")));
+      currentPathId = snap.empty ? null : snap.docs[0].id;
+    } catch (err) {
+      console.error("goUp error:", err);
+      currentPathId = null;
+    }
   }
   document.getElementById("page-title").textContent = `Index of ${currentPath}`;
   updateBreadcrumb();
   loadTree(currentPathId);
-};
+}
 
 function updateBreadcrumb() {
   const parts = currentPath.split("/").filter(Boolean);
-  let html = `<a onclick="goRoot()">/</a>`;
+  let html = `<a onclick="goRoot()" style="cursor:pointer;">/</a>`;
   for (const p of parts) html += ` / ${esc(p)}`;
   document.getElementById("breadcrumb").innerHTML = html;
 }
@@ -218,6 +260,7 @@ window.openModal = (type) => {
       <label>Name</label><input id="m-name" type="text">
       <label>URL (leave blank for text content)</label><input id="m-url" type="text" placeholder="https://...">
       <label>Description</label><input id="m-desc" type="text">
+      <label>Content (for text entries)</label><textarea id="m-content" placeholder="Enter content here..."></textarea>
       <label><input type="checkbox" id="m-lock"> Staff only</label>
       <div class="row"><button class="primary" onclick="submitFile()">Create</button><button onclick="closeModal()">Cancel</button></div>`;
   }
@@ -230,31 +273,76 @@ window.closeModal = () => {
 
 window.submitFolder = async () => {
   const name = document.getElementById("m-name").value.trim();
-  if (!name) return;
-  await addDoc(collection(db, "tree"), { name, type: "folder", description: document.getElementById("m-desc").value.trim(), locked: document.getElementById("m-lock").checked, parentId: currentPathId ?? null, modified: serverTimestamp() });
-  closeModal(); loadTree(currentPathId);
+  if (!name) return alert("Name is required.");
+  try {
+    await addDoc(collection(db, "tree"), {
+      name,
+      type: "folder",
+      description: document.getElementById("m-desc").value.trim(),
+      locked: document.getElementById("m-lock").checked,
+      parentId: currentPathId ?? null,
+      modified: serverTimestamp()
+    });
+    closeModal();
+    loadTree(currentPathId);
+  } catch (err) {
+    alert("Error creating folder: " + err.message);
+    console.error(err);
+  }
 };
 
 window.submitFile = async () => {
   const name = document.getElementById("m-name").value.trim();
-  if (!name) return;
-  await addDoc(collection(db, "tree"), { name, type: "file", url: document.getElementById("m-url").value.trim() || null, description: document.getElementById("m-desc").value.trim(), locked: document.getElementById("m-lock").checked, parentId: currentPathId ?? null, modified: serverTimestamp() });
-  closeModal(); loadTree(currentPathId);
+  if (!name) return alert("Name is required.");
+  const url = document.getElementById("m-url").value.trim() || null;
+  const body = document.getElementById("m-content")?.value.trim() || null;
+  try {
+    await addDoc(collection(db, "tree"), {
+      name,
+      type: "file",
+      url,
+      body: url ? null : body,   // only store body if it's a text entry
+      description: document.getElementById("m-desc").value.trim(),
+      locked: document.getElementById("m-lock").checked,
+      parentId: currentPathId ?? null,
+      modified: serverTimestamp()
+    });
+    closeModal();
+    loadTree(currentPathId);
+  } catch (err) {
+    alert("Error creating entry: " + err.message);
+    console.error(err);
+  }
 };
 
-window.deleteItem = async (id, name) => {
+async function deleteItem(id, name) {
   if (!confirm(`Delete "${name}"?`)) return;
-  await deleteDoc(doc(db, "tree", id));
-  loadTree(currentPathId);
-};
+  try {
+    await deleteDoc(doc(db, "tree", id));
+    loadTree(currentPathId);
+  } catch (err) {
+    alert("Error deleting: " + err.message);
+    console.error(err);
+  }
+}
 
-window.toggleLock = async (id, locked) => {
-  await updateDoc(doc(db, "tree", id), { locked: !locked });
-  loadTree(currentPathId);
-};
+async function toggleLock(id, locked) {
+  try {
+    await updateDoc(doc(db, "tree", id), { locked: !locked });
+    loadTree(currentPathId);
+  } catch (err) {
+    alert("Error toggling lock: " + err.message);
+    console.error(err);
+  }
+}
 
 function esc(str) {
-  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+  return String(str ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
 }
 
 loadTree(null);
