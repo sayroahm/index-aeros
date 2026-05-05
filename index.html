@@ -165,15 +165,11 @@ function renderTree() {
         <td>${esc(desc)}${adminHtml}</td>`;
 
     } else {
-      // ✅ THE FIX: data-id attribute + addEventListener instead of inline onclick with dynamic ID
+      // ✅ REAL FIX: Plain <a href> — browser trusts native anchor navigation, no popup block
       tr.innerHTML = `
-        <td class="name">📄 <a class="file-link" style="cursor:pointer;">${esc(item.name)}</a>${badge}</td>
+        <td class="name">📄 <a class="file-link" href="view.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a>${badge}</td>
         <td>${mod}</td>
         <td>${esc(desc)}${adminHtml}</td>`;
-
-      tr.querySelector(".file-link").addEventListener("click", () => {
-        window.location.href = `view.html?id=${encodeURIComponent(item.id)}`;
-      });
     }
 
     // Wire up admin buttons safely
@@ -224,9 +220,16 @@ async function goUp() {
 
 function updateBreadcrumb() {
   const parts = currentPath.split("/").filter(Boolean);
-  let html = `<a onclick="goRoot()" style="cursor:pointer;">/</a>`;
-  for (const p of parts) html += ` / ${esc(p)}`;
-  document.getElementById("breadcrumb").innerHTML = html;
+  const bc = document.getElementById("breadcrumb");
+  bc.innerHTML = "";
+  const rootLink = document.createElement("a");
+  rootLink.textContent = "/";
+  rootLink.style.cursor = "pointer";
+  rootLink.addEventListener("click", window.goRoot);
+  bc.appendChild(rootLink);
+  for (const p of parts) {
+    bc.appendChild(document.createTextNode(` / ${p}`));
+  }
 }
 
 window.goRoot = () => {
