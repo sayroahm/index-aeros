@@ -158,9 +158,11 @@ function renderTree() {
       tr.querySelector(".folder-link").addEventListener("click", () => navInto(item.id, item.name));
 
     } else if (item.url) {
-      // External URL — safe to use href directly
+      // ✅ FIX: No target="_blank" — same tab navigation is trusted by browser and avoids popup block.
+      // Also force https:// so GitHub Pages doesn't redirect http:// causing a flash.
+      const safeUrl = esc(item.url.replace(/^http:\/\//i, "https://"));
       tr.innerHTML = `
-        <td class="name">📄 <a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.name)}</a>${badge}</td>
+        <td class="name">📄 <a href="${safeUrl}">${esc(item.name)}</a>${badge}</td>
         <td>${mod}</td>
         <td>${esc(desc)}${adminHtml}</td>`;
 
