@@ -157,7 +157,7 @@ function renderTree() {
   document.getElementById("footer").textContent = `Cortlin — ${visible} item(s)`;
 }
 
-function navInto(id, name) {
+window.navInto = function(id, name) {
   currentPathId = id;
   currentPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
   document.getElementById("page-title").textContent = `Index of ${currentPath}`;
