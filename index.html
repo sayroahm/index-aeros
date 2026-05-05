@@ -165,8 +165,8 @@ function renderTree() {
       tr.innerHTML = `<td class="name">📁 <a onclick="navInto('${item.id}','${escHtml(item.name)}')">${escHtml(item.name)}/</a>${lockedBadge}</td><td>${mod}</td><td class="size">-</td><td>${escHtml(desc)}${actions}</td>`;
     } else if (item.url) {
       tr.innerHTML = `<td class="name">📄 <a href="${item.url}" target="_blank">${escHtml(item.name)}</a>${lockedBadge}</td><td>${mod}</td><td class="size">${size}</td><td>${escHtml(desc)}${actions}</td>`;
-    } else {
-      tr.innerHTML = `<td class="name">📄 <a onclick="window.location='view.html?id=${item.id}'">${escHtml(item.name)}</a>${lockedBadge}</td><td>${mod}</td><td class="size">${size}</td><td>${escHtml(desc)}${actions}</td>`;
+    } else if (item.data) {
+      tr.innerHTML = `<td class="name">📄 <a href="${item.data}" target="_blank">${escHtml(item.name)}</a>${lockedBadge}</td>
     }
     tbody.appendChild(tr);
   }
@@ -293,20 +293,49 @@ window.submitUpload = async () => {
   const fileInput = document.getElementById("m-file");
   const file = fileInput.files[0];
   if (!file) return;
-  document.getElementById("modal-body").innerHTML = "uploading...";
-  const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-  await addDoc(collection(db, "tree"), {
-    name: file.name, type: "file", url,
-    description: "",
-    locked: false,
-    size: file.size,
-    parentId: currentPathId ?? null,
-    modified: serverTimestamp()
-  });
-  closeModal();
-  loadTree(currentPathId);
+
+  const body = document.getElementById("modal-body");
+
+  const MAX_SIZE = 700 * 1024;
+  if (file.size > MAX_SIZE) {
+    body.innerHTML = "File too large (max ~700KB)";
+    return;
+  }
+
+  body.innerHTML = "processing...";
+
+  try {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = async () => {
+      const base64 = reader.result;
+
+      body.innerHTML = "saving...";
+
+      await addDoc(collection(db, "tree"), {
+        name: file.name,
+        type: "file",
+        data: base64,
+        description: "",
+        locked: false,
+        size: file.size,
+        parentId: currentPathId ?? null,
+        modified: serverTimestamp()
+      });
+
+      closeModal();
+      loadTree(currentPathId);
+    };
+
+    reader.onerror = () => {
+      body.innerHTML = "Failed to read file";
+    };
+
+  } catch (e) {
+    console.error(e);
+    body.innerHTML = "Upload failed: " + e.message;
+  }
 };
 
 window.deleteItem = async (id, name) => {
