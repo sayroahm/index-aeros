@@ -4,1118 +4,545 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AerOS Change Tracker — Cortlin</title>
-<link href="https://fonts.googleapis.com/css2?family=Calibri:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ── Reset ── */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
-/* Excel crosshair cursor everywhere */
 * { cursor: cell !important; }
-input, select, button, textarea { cursor: cell !important; }
+input, select, button, textarea, a { cursor: cell !important; }
 
 body {
-  font-family: 'Calibri', 'Segoe UI', Tahoma, Geneva, sans-serif;
-  font-size: 13px;
-  background: #f0f0f0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
+  background: #4a6741;
   color: #000;
-  overflow-x: auto;
   min-height: 100vh;
-  user-select: none;
+  overflow-x: hidden;
 }
 
-/* ── TOP RIBBON ── */
-#ribbon {
-  background: #1e6d40; /* Excel green */
-  padding: 0;
-  display: flex;
-  flex-direction: column;
+#app-window {
+  margin: 10px auto;
+  max-width: 1380px;
+  border: 1px solid #6a8f9f;
+  box-shadow: 0 0 0 1px #b8d4e8, 0 4px 24px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.7);
+  border-radius: 8px 8px 4px 4px;
+  overflow: hidden;
+  background: #f0f0f0;
 }
-#ribbon-top {
-  display: flex;
-  align-items: center;
-  padding: 4px 10px;
-  gap: 10px;
-  background: #185231;
-}
-#ribbon-logo {
-  height: 28px;
-  width: 28px;
-  object-fit: contain;
-}
-#ribbon-title {
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .3px;
-  flex: 1;
-}
-#ribbon-title span {
-  color: #a8d8a8;
-  font-weight: 400;
-  font-size: 11px;
-  margin-left: 8px;
-}
-#auth-area {
+
+/* VISTA TITLE BAR */
+#titlebar {
+  background: linear-gradient(180deg, #c8dff0 0%, #a8c8e8 30%, #78aad0 60%, #5890c0 80%, #6aa0d0 100%);
+  border-bottom: 1px solid #4878a8;
+  padding: 6px 10px 4px;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  color: #cce8cc;
+  min-height: 38px;
+  border-radius: 7px 7px 0 0;
 }
-#auth-user {
-  font-weight: 700;
-  color: #fff;
-}
-.ribbon-btn {
-  background: rgba(255,255,255,.15);
-  border: 1px solid rgba(255,255,255,.25);
-  color: #fff;
-  font-family: inherit;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 2px;
-  cursor: cell !important;
-  transition: background .15s;
-}
-.ribbon-btn:hover { background: rgba(255,255,255,.28); }
-.ribbon-btn.logout { background: rgba(255,80,80,.25); border-color: rgba(255,100,100,.35); }
-.ribbon-btn.logout:hover { background: rgba(255,80,80,.4); }
+#titlebar img { height: 22px; width: 22px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+#titlebar-text { font-size: 12px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,60,.6); flex: 1; }
+#titlebar-text span { font-weight: 400; opacity: .85; margin-left: 6px; }
+#win-btns { display: flex; gap: 2px; }
+.win-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(0,0,0,.35); font-size: 10px; display: flex; align-items: center; justify-content: center; color: #333; font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,.6); }
+.win-btn.close { background: linear-gradient(180deg, #f88 0%, #d44 50%, #b00 100%); color: #fff; }
+.win-btn.min   { background: linear-gradient(180deg, #ee8 0%, #aa6 50%, #886 100%); }
+.win-btn.max   { background: linear-gradient(180deg, #8e8 0%, #5a5 50%, #373 100%); }
+#auth-corner { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,60,.5); margin-right: 8px; }
+#auth-corner strong { color: #d0f0ff; }
 
-/* Ribbon tabs */
-#ribbon-tabs {
-  display: flex;
-  padding: 0 6px;
-  gap: 0;
-}
-.rtab {
-  padding: 5px 14px;
-  color: rgba(255,255,255,.8);
-  font-size: 12px;
-  border-radius: 3px 3px 0 0;
-  cursor: cell !important;
-  transition: all .15s;
-}
-.rtab:hover { background: rgba(255,255,255,.15); color: #fff; }
-.rtab.active { background: #f0f0f0; color: #000; font-weight: 700; }
-
-/* Ribbon commands */
-#ribbon-commands {
-  background: #f0f0f0;
+/* MENU BAR */
+#menubar {
+  background: linear-gradient(180deg, #f8f8f8 0%, #e8e8e8 100%);
   border-bottom: 1px solid #b0b0b0;
-  display: flex;
-  align-items: center;
-  padding: 4px 8px;
-  gap: 2px;
-  flex-wrap: wrap;
+  display: flex; align-items: center; padding: 2px 6px; height: 26px;
 }
-.rcmd {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 4px 10px;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  font-size: 10px;
-  color: #222;
-  cursor: cell !important;
-  transition: all .1s;
-  min-width: 48px;
-  gap: 2px;
-}
-.rcmd:hover { background: #e0e8f0; border-color: #b8d0e8; }
-.rcmd:active { background: #c8d8f0; }
-.rcmd-icon { font-size: 18px; line-height: 1; }
-.rcmd-img { width: 22px; height: 22px; object-fit: contain; }
-.rcmd-sep { width: 1px; background: #ccc; align-self: stretch; margin: 2px 4px; }
-.rcmd.disabled { opacity: .4; pointer-events: none; }
+.menu-item { padding: 3px 10px; font-size: 12px; color: #000; border: 1px solid transparent; border-radius: 3px; }
+.menu-item:hover { background: linear-gradient(180deg, #e8f0fc 0%, #c8d8f8 100%); border-color: #7090d0; }
 
-/* ── Formula bar ── */
-#formula-bar {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border-bottom: 1px solid #b0b0b0;
-  padding: 2px 0;
-  height: 26px;
+/* TOOLBAR */
+#toolbar {
+  background: linear-gradient(180deg, #f0f4fc 0%, #d8e4f4 50%, #c8d8f0 100%);
+  border-bottom: 1px solid #a8b8d8;
+  display: flex; align-items: center; padding: 3px 6px; gap: 2px; min-height: 52px; flex-wrap: wrap;
 }
-#cell-ref {
-  width: 80px;
-  border-right: 1px solid #b0b0b0;
-  padding: 0 6px;
-  font-family: 'Calibri', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: #000;
-  text-align: center;
-  flex-shrink: 0;
-}
-#formula-icon {
-  padding: 0 8px;
-  color: #0066cc;
-  font-style: italic;
-  font-size: 13px;
-  font-weight: 700;
-  border-right: 1px solid #b0b0b0;
-  flex-shrink: 0;
-}
-#formula-content {
-  padding: 0 8px;
-  font-family: 'Calibri', sans-serif;
-  font-size: 12px;
-  color: #333;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.tb-group { display: flex; flex-direction: column; align-items: center; border-right: 1px solid #b8c8e0; padding: 2px 8px; gap: 2px; }
+.tb-group:last-child { border-right: none; }
+.tb-group-label { font-size: 9px; color: #556; text-transform: uppercase; letter-spacing: .5px; }
+.tb-row { display: flex; gap: 2px; align-items: center; }
+.tb-btn { display: flex; flex-direction: column; align-items: center; padding: 3px 6px; border: 1px solid transparent; border-radius: 3px; font-size: 9px; color: #333; gap: 1px; min-width: 40px; background: none; }
+.tb-btn:hover { background: linear-gradient(180deg, #e8f0ff 0%, #b8d0f8 100%); border-color: #6888d0; }
+.tb-btn:active { background: linear-gradient(180deg, #b0c8f0 0%, #d0e0ff 100%); border-color: #4060b0; }
+.tb-btn.disabled { opacity: .4; pointer-events: none; }
+.tb-icon { font-size: 20px; line-height: 1; }
+.tb-img  { width: 22px; height: 22px; object-fit: contain; }
 
-/* ── Sheet area ── */
-#sheet-area {
-  display: flex;
-  height: calc(100vh - 165px);
-  overflow: hidden;
-}
+/* FORMULA BAR */
+#formula-bar { background: #fff; border-bottom: 1px solid #b0b0b0; display: flex; align-items: center; height: 24px; }
+#cell-ref { width: 72px; padding: 0 6px; font-size: 12px; font-weight: 700; border-right: 1px solid #b0b0b0; text-align: center; flex-shrink: 0; }
+#formula-icon { padding: 0 8px; font-style: italic; font-weight: 700; color: #0055cc; border-right: 1px solid #b0b0b0; flex-shrink: 0; font-size: 13px; }
+#formula-content { padding: 0 8px; font-size: 11px; font-family: 'Consolas', monospace; color: #333; flex: 1; overflow: hidden; white-space: nowrap; }
 
-/* Row numbers gutter */
-#row-numbers {
-  width: 46px;
-  flex-shrink: 0;
-  background: #f0f0f0;
-  border-right: 1px solid #b0b0b0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.rn-corner {
-  height: 22px;
-  min-height: 22px;
-  background: #f0f0f0;
-  border-bottom: 1px solid #b0b0b0;
-}
-#row-num-list {
-  overflow: hidden;
-  flex: 1;
-}
+/* SHEET AREA */
+#sheet-area { overflow: auto; height: calc(100vh - 228px); background: #fff; }
 
-/* Main scroll container */
-#scroll-container {
-  flex: 1;
-  overflow: auto;
-  position: relative;
-}
+/* TABLE */
+table { border-collapse: collapse; table-layout: fixed; min-width: max-content; }
 
-/* ── Excel Table ── */
-#excel-table-wrap {
-  min-width: max-content;
+.ch-row th {
+  background: linear-gradient(180deg, #f8f8f0 0%, #e8e8d8 100%);
+  border: 1px solid #b8b8a8; height: 20px;
+  font-size: 11px; font-weight: 400; text-align: center; color: #333; padding: 0 2px;
+  position: sticky; top: 0; z-index: 20; white-space: nowrap; user-select: none;
 }
+.ch-row th:first-child { width: 46px; min-width: 46px; position: sticky; left: 0; z-index: 30; background: linear-gradient(180deg, #f0f0e8 0%, #deded0 100%); }
 
-table {
-  border-collapse: collapse;
-  table-layout: fixed;
-}
+.logo-row td { background: #000818 !important; border: 1px solid #0a0a2a; height: 52px; padding: 0; position: sticky; top: 20px; z-index: 18; }
+.logo-row td:first-child { background: linear-gradient(180deg, #f0f0e8 0%, #deded0 100%) !important; position: sticky; left: 0; z-index: 25; border-color: #b8b8a8; }
 
-/* Column header row */
-.col-header-row th {
-  height: 22px;
-  min-width: 22px;
-  background: #f0f0f0;
-  border: 1px solid #b0b0b0;
-  font-size: 11px;
-  font-weight: 400;
-  text-align: center;
-  vertical-align: middle;
-  color: #444;
-  padding: 0 4px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  white-space: nowrap;
-  overflow: hidden;
-  user-select: none;
-}
-.col-header-row th.selected-col {
-  background: #217346;
-  color: #fff;
-  font-weight: 700;
-}
-.col-header-row th:first-child {
-  width: 46px;
-  min-width: 46px;
-  background: #f0f0f0;
-  border-color: #b0b0b0;
-  position: sticky;
-  left: 0;
-  z-index: 20;
-}
+.fh-row td { background: linear-gradient(180deg, #ddeedd 0%, #b8d8b8 100%) !important; border: 1px solid #88b888; border-bottom: 2px solid #217346; height: 22px; padding: 0; font-weight: 700; font-size: 11px; position: sticky; top: 72px; z-index: 18; white-space: nowrap; }
+.fh-row td:first-child { background: linear-gradient(180deg, #f0f0e8 0%, #deded0 100%) !important; position: sticky; left: 0; z-index: 25; border-color: #b8b8a8; }
 
-/* Data rows */
-.data-row td {
-  border-right: 1px solid #d0d0d0;
-  border-bottom: 1px solid #d0d0d0;
-  padding: 0;
-  vertical-align: middle;
-  height: 22px;
-  position: relative;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.data-row td:first-child {
-  background: #f0f0f0;
-  border-right: 1px solid #b0b0b0;
-  text-align: center;
-  font-size: 11px;
-  color: #444;
-  position: sticky;
-  left: 0;
-  z-index: 5;
-  width: 46px;
-  min-width: 46px;
-  padding: 0;
-}
+.dr td { border-right: 1px solid #d8d8d8; border-bottom: 1px solid #d8d8d8; height: 20px; padding: 0; vertical-align: middle; white-space: nowrap; overflow: hidden; }
+.dr:nth-child(odd)  td:not(:first-child) { background: #fff; }
+.dr:nth-child(even) td:not(:first-child) { background: #f5f5ff; }
+.dr:hover           td:not(:first-child) { background: #ddeeff !important; }
+.dr.xl-sel          td:not(:first-child) { background: #b8d4f8 !important; }
+.dr td:first-child { background: linear-gradient(180deg, #f0f0e8 0%, #deded0 100%); border-right: 1px solid #b8b8a8; text-align: center; font-size: 10px; color: #555; position: sticky; left: 0; z-index: 5; width: 46px; min-width: 46px; }
+.dr.xl-sel td:first-child { background: linear-gradient(180deg, #3870c0 0%, #2050a0 100%); color: #fff; font-weight: 700; border-color: #2050a0; }
 
-/* Alternating row background */
-.data-row:nth-child(even) td:not(:first-child) { background: #f8f8f8; }
-.data-row:nth-child(odd)  td:not(:first-child) { background: #fff; }
-.data-row:hover td:not(:first-child) { background: #e8f0fe !important; }
-.data-row.selected-row td:not(:first-child) { background: #cce0ff !important; }
-.data-row.selected-row td:first-child { background: #217346; color: #fff; font-weight: 700; }
+.ci { padding: 1px 5px; font-family: 'Segoe UI', sans-serif; font-size: 11px; display: flex; align-items: center; height: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ci.ctr { justify-content: center; }
+.ci.rgt { justify-content: flex-end; }
 
-/* Filter/header row */
-.header-row td {
-  background: #d0e8d8 !important;
-  border-right: 1px solid #b0b0b0;
-  border-bottom: 2px solid #217346;
-  font-weight: 700;
-  font-size: 12px;
-  color: #000;
-  height: 24px;
-  padding: 0 4px;
-  white-space: nowrap;
-  overflow: visible;
-  position: sticky;
-  top: 22px;
-  z-index: 9;
-}
-.header-row td:first-child {
-  background: #f0f0f0 !important;
-  position: sticky;
-  left: 0;
-  z-index: 15;
-}
+.ddc { position: relative; height: 100%; }
+.ddc select { width: 100%; height: 100%; border: none; background: transparent; font-family: 'Segoe UI', sans-serif; font-size: 11px; font-weight: 700; padding: 0 14px 0 4px; outline: none; appearance: none; -webkit-appearance: none; cursor: cell !important; color: #000; }
+.ddc::after { content: '▾'; position: absolute; right: 3px; top: 50%; transform: translateY(-50%); font-size: 8px; color: #444; pointer-events: none; }
 
-/* Logo header row */
-.logo-row td {
-  background: #0a0a14 !important;
-  border-right: 1px solid #1e1e3a;
-  border-bottom: 1px solid #1e1e3a;
-  height: 48px;
-  padding: 0;
-  position: sticky;
-  top: 22px;
-  z-index: 9;
-}
-.logo-row td:first-child {
-  background: #f0f0f0 !important;
-  position: sticky;
-  left: 0;
-  z-index: 15;
-}
+/* BADGES */
+.badge { display: inline-block; padding: 0 7px; border-radius: 3px; font-size: 10px; font-weight: 700; border: 1px solid; white-space: nowrap; }
+.bt-Feature      { background:#ddeeff; color:#003388; border-color:#99bbee; }
+.bt-Bug\.Fix     { background:#ffdddd; color:#880000; border-color:#ee9999; }
+.bt-Refactor     { background:#eeddff; color:#550088; border-color:#bb99ee; }
+.bt-Security     { background:#ffeedd; color:#884400; border-color:#eebb88; }
+.bt-UI\.Update   { background:#ddfff0; color:#005533; border-color:#88ddb8; }
+.bt-Docs         { background:#eeeeee; color:#444;    border-color:#bbb; }
+.bt-Hotfix       { background:#ffcccc; color:#660000; border-color:#ee8888; }
+.bt-Kernel       { background:#dde8ff; color:#002277; border-color:#88aaee; }
+.bt-Backend      { background:#ddffd8; color:#004400; border-color:#88cc88; }
+.bt-Website      { background:#fffacc; color:#665500; border-color:#ddcc66; }
+.bt-Database     { background:#f0ddff; color:#550077; border-color:#cc99ee; }
+.bt-Frontend     { background:#cceeff; color:#003366; border-color:#77aadd; }
+.bt-Copyright    { background:#ffeedd; color:#664400; border-color:#ddaa77; }
+.bt-App\.Control { background:#ccffee; color:#004433; border-color:#66ccaa; }
+.bt-Image\.Design{ background:#ffd8ee; color:#660044; border-color:#dd88aa; }
+.bt-N\/A         { background:#f0f0f0; color:#666;    border-color:#ccc; }
+.bt-System       { background:#e0e8ff; color:#223366; border-color:#99aade; }
+.bt-Network      { background:#e0f0ff; color:#002255; border-color:#88aacc; }
+.bt-Performance  { background:#fff0e0; color:#663300; border-color:#ddaa77; }
+.bt-Testing      { background:#eeffee; color:#224422; border-color:#88bb88; }
+.bt-Deployment   { background:#e8ffe0; color:#1a4400; border-color:#88bb66; }
+.bt-Documentation{ background:#f8f8f8; color:#333;    border-color:#ccc; }
+.bt-API          { background:#ddeeff; color:#003388; border-color:#88aaee; }
+.bt-CLI          { background:#1a1a2a; color:#00ff88; border-color:#005533; }
+.bt-Config       { background:#f5f5e8; color:#444400; border-color:#cccc88; }
+.bt-Build        { background:#e0ffe0; color:#004400; border-color:#88cc88; }
+.bt-Package      { background:#fff0cc; color:#664400; border-color:#ddbb66; }
+.bt-Driver       { background:#e8e8ff; color:#222277; border-color:#8888dd; }
+.bt-Firmware     { background:#ffe8cc; color:#774400; border-color:#ddaa66; }
+.bt-Scheduler    { background:#e8f8ff; color:#003355; border-color:#77bbdd; }
+.bt-Memory       { background:#ffeeff; color:#550055; border-color:#dd99dd; }
+.bt-Storage      { background:#eefff0; color:#004411; border-color:#77cc88; }
+.bt-Display      { background:#fff8ee; color:#553300; border-color:#ddbb88; }
+.bt-Audio        { background:#f8eeff; color:#440055; border-color:#cc88dd; }
+.bt-Input        { background:#eeffff; color:#004455; border-color:#77cccc; }
+.bt-Power        { background:#fffee0; color:#554400; border-color:#ddcc66; }
+.bt-Localization { background:#eef0ff; color:#223388; border-color:#9999dd; }
+.bt-Accessibility{ background:#e8fff8; color:#004433; border-color:#77ccbb; }
+.bt-Bug\.Tracker { background:#ffeeee; color:#770000; border-color:#ee9999; }
+.bt-Bug\.Patch   { background:#ffd8d8; color:#660000; border-color:#ee7777; }
+.bt-Bug\.Reported{ background:#fff0f0; color:#880000; border-color:#eecccc; }
+.bt-UI           { background:#ddfff0; color:#005533; border-color:#88ddb8; }
+.bp-Critical { background:#ffcccc; color:#880000; border-color:#ee8888; font-weight:900; }
+.bp-High     { background:#ffe8cc; color:#774400; border-color:#eeaa66; }
+.bp-Medium   { background:#fffacc; color:#665500; border-color:#ddcc55; }
+.bp-Low      { background:#ccffdd; color:#004422; border-color:#77dd99; }
+.bs-Complete        { background:#ccffdd; color:#004422; border-color:#77dd99; }
+.bs-Merged          { background:#c8f0e0; color:#003322; border-color:#66ccaa; }
+.bs-In\.Progress    { background:#fffacc; color:#665500; border-color:#ddcc55; }
+.bs-Pending\.Review { background:#ddeeff; color:#003388; border-color:#88aaee; }
+.bs-Reverted        { background:#ffcccc; color:#660000; border-color:#ee8888; }
+.bs-Planned         { background:#eeeeff; color:#333388; border-color:#9999dd; }
+.bs-Open            { background:#fff8cc; color:#664400; border-color:#ddcc66; }
+.bs-Closed          { background:#eeffee; color:#004400; border-color:#77cc77; }
+.bs-On\.Hold        { background:#f0f0f0; color:#555;    border-color:#bbb; }
+.bs-Testing         { background:#ddeeff; color:#003388; border-color:#88aaee; }
+.bs-Deployed        { background:#ccffee; color:#003322; border-color:#66ccaa; }
+.bs-Cancelled       { background:#ffdddd; color:#770000; border-color:#ee9999; }
 
-/* Cell inner content */
-.cell-inner {
-  padding: 2px 6px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  font-family: 'Calibri', sans-serif;
-  font-size: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.cell-inner.right { justify-content: flex-end; }
-.cell-inner.center { justify-content: center; }
+.act { background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%); border: 1px solid #aaa; font-size: 10px; padding: 1px 6px; border-radius: 2px; color: #333; font-family: 'Segoe UI', sans-serif; box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
+.act:hover { background: linear-gradient(180deg, #eef4ff 0%, #c8d8f8 100%); border-color: #5577cc; }
+.act.del:hover { background: linear-gradient(180deg, #ffeeee 0%, #f0cccc 100%); border-color: #cc4444; color: #990000; }
 
-/* Dropdown cell */
-.dd-cell {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-.dd-cell select {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: transparent;
-  font-family: 'Calibri', sans-serif;
-  font-size: 12px;
-  padding: 0 2px 0 6px;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: cell !important;
-  color: #000;
-}
-.dd-cell::after {
-  content: '▾';
-  position: absolute;
-  right: 3px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 9px;
-  color: #555;
-  pointer-events: none;
-}
+/* SHEET TABS */
+#sheet-tabs { background: linear-gradient(180deg, #e0e8f0 0%, #c8d8e8 100%); border-top: 1px solid #a0b8cc; display: flex; align-items: flex-end; padding: 0 4px; height: 24px; gap: 2px; }
+.stab { display: inline-flex; align-items: center; gap: 5px; padding: 3px 12px 4px; border: 1px solid #90a8c0; border-bottom: none; border-radius: 4px 4px 0 0; font-size: 11px; background: linear-gradient(180deg, #d8e8f0 0%, #c0d0e0 100%); color: #334; margin-top: 4px; box-shadow: inset 0 1px 0 rgba(255,255,255,.5); }
+.stab img { width: 13px; height: 13px; object-fit: contain; }
+.stab:hover { background: linear-gradient(180deg, #e8f0f8 0%, #ccdcec 100%); }
+.stab.active { background: linear-gradient(180deg, #ffffff 0%, #f0f4f8 100%); color: #000; font-weight: 700; border-top: 2px solid #2060c0; margin-top: 0; padding-top: 5px; }
 
-/* Text cell input */
-.text-cell input {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: transparent;
-  font-family: 'Calibri', sans-serif;
-  font-size: 12px;
-  padding: 0 6px;
-  outline: none;
-  color: #000;
-  cursor: cell !important;
-}
-.text-cell input:focus {
-  background: #fff;
-  outline: 2px solid #217346;
-  outline-offset: -2px;
-  z-index: 50;
-  position: relative;
-}
+/* STATUS BAR */
+#statusbar { background: linear-gradient(180deg, #3060a8 0%, #204888 100%); color: #fff; display: flex; align-items: center; padding: 2px 10px; height: 22px; font-size: 11px; gap: 14px; border-top: 1px solid #1a3870; }
+#statusbar .sv { font-weight: 700; color: #c0e0ff; }
+#sb-right { margin-left: auto; display: flex; gap: 8px; font-size: 10px; color: #a0c8ff; }
 
-/* Selected cell highlight */
-td.xl-selected {
-  outline: 2px solid #217346 !important;
-  outline-offset: -2px;
-  z-index: 6;
-}
-
-/* ── Colored badges inside cells ── */
-.badge {
-  display: inline-block;
-  padding: 1px 7px;
-  border-radius: 2px;
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-/* Type */
-.t-Feature    { background:#cce0ff; color:#0050cc; }
-.t-Bug\.Fix, .t-Bug-Fix   { background:#ffe0e0; color:#cc0000; }
-.t-Refactor   { background:#efe0ff; color:#6600cc; }
-.t-Security   { background:#ffeacc; color:#cc6600; }
-.t-UI\.Update,.t-UI-Update{ background:#ccf0e8; color:#006644; }
-.t-Docs       { background:#e8e8e8; color:#444; }
-.t-Hotfix     { background:#ffd0d0; color:#990000; }
-.t-Kernel     { background:#d0e0ff; color:#003399; }
-.t-Backend    { background:#d0f0d0; color:#005500; }
-.t-Website    { background:#fff0cc; color:#886600; }
-.t-Database   { background:#f0d0ff; color:#660088; }
-.t-Frontend   { background:#cce8ff; color:#004488; }
-.t-Copyright  { background:#f8e0d0; color:#884400; }
-.t-App\.Control,.t-App-Control { background:#d0f8f0; color:#006655; }
-.t-Image\.Design,.t-Image-Design { background:#ffd8f0; color:#880055; }
-.t-NA, .t-N\/A { background:#f0f0f0; color:#888; }
-/* Priority */
-.p-Critical   { background:#ffcccc; color:#cc0000; font-weight:700; }
-.p-High       { background:#ffe8cc; color:#cc5500; }
-.p-Medium     { background:#fffacc; color:#887700; }
-.p-Low        { background:#ccffdd; color:#006622; }
-/* Status */
-.s-Complete        { background:#ccffdd; color:#006622; }
-.s-Merged          { background:#c8f0e0; color:#004d33; }
-.s-In\.Progress,.s-In-Progress    { background:#fff3cc; color:#886600; }
-.s-Pending\.Review,.s-Pending-Review { background:#d0e8ff; color:#0044aa; }
-.s-Reverted        { background:#ffcccc; color:#880000; }
-.s-Planned         { background:#e8e0ff; color:#440088; }
-.s-Open            { background:#fff0cc; color:#775500; }
-.s-Closed          { background:#e8ffe8; color:#004400; }
-.s-On\.Hold,.s-On-Hold        { background:#f0f0f0; color:#555; }
-.s-Testing         { background:#cce8ff; color:#003388; }
-.s-Deployed        { background:#d0ffd0; color:#005500; }
-.s-Cancelled       { background:#f8d0d0; color:#660000; }
-
-/* ── Sheet tabs ── */
-#sheet-tabs {
-  display: flex;
-  align-items: flex-end;
-  background: #f0f0f0;
-  border-top: 1px solid #b0b0b0;
-  padding: 0 0 0 4px;
-  height: 26px;
-  gap: 0;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-.stab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 14px 5px;
-  border: 1px solid #b0b0b0;
-  border-bottom: none;
-  border-radius: 3px 3px 0 0;
-  font-size: 12px;
-  background: #d8d8d8;
-  color: #333;
-  margin-right: 2px;
-  cursor: cell !important;
-  transition: background .1s;
-  margin-top: 4px;
-}
-.stab img { width: 14px; height: 14px; object-fit: contain; }
-.stab:hover { background: #e8e8e8; }
-.stab.active {
-  background: #fff;
-  color: #000;
-  font-weight: 700;
-  border-bottom: 2px solid #fff;
-  margin-top: 0;
-  padding-top: 8px;
-}
-.stab.active.green-tab { border-top: 3px solid #217346; }
-.stab.active.blue-tab  { border-top: 3px solid #1155cc; }
-.stab.active.purple-tab{ border-top: 3px solid #6600cc; }
-
-/* ── Status bar ── */
-#status-bar {
-  display: flex;
-  align-items: center;
-  background: #217346;
-  color: #fff;
-  padding: 0 12px;
-  height: 22px;
-  font-size: 11px;
-  gap: 16px;
-}
-#status-bar span { opacity: .85; }
-#status-bar .sb-val { opacity: 1; font-weight: 700; }
-#status-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
-.zoom-btn { background: none; border: 1px solid rgba(255,255,255,.3); color:#fff; padding: 1px 6px; font-size: 11px; border-radius: 1px; cursor: cell !important; }
-.zoom-btn:hover { background: rgba(255,255,255,.2); }
-
-/* ── LOGIN MODAL ── */
-#login-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.55);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-}
+/* LOGIN MODAL */
+#login-overlay { display: none; position: fixed; inset: 0; background: rgba(0,20,60,.5); z-index: 500; align-items: center; justify-content: center; }
 #login-overlay.show { display: flex; }
-#login-box {
-  background: #fff;
-  border: 1px solid #aaa;
-  box-shadow: 4px 4px 12px rgba(0,0,0,.25);
-  padding: 0;
-  width: 320px;
-  font-family: 'Calibri', sans-serif;
-}
-#login-titlebar {
-  background: #217346;
-  color: #fff;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+#login-dialog { background: linear-gradient(180deg, #e8f0f8 0%, #d0dce8 100%); border: 1px solid #6888c0; border-radius: 8px; box-shadow: 0 0 0 1px rgba(180,200,240,.6), 0 8px 32px rgba(0,0,60,.5), inset 0 1px 0 rgba(255,255,255,.8); width: 340px; overflow: hidden; }
+#login-titlebar { background: linear-gradient(180deg, #c0d8f0 0%, #90b8e0 30%, #6090c8 60%, #4878b0 80%, #5888c0 100%); padding: 7px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #4070a8; }
 #login-titlebar img { width: 18px; height: 18px; object-fit: contain; }
-#login-body { padding: 20px; }
-.lbl { font-size: 12px; color: #333; margin-bottom: 3px; }
-.lin {
-  width: 100%;
-  border: 1px solid #aaa;
-  padding: 5px 8px;
-  font-family: 'Calibri', sans-serif;
-  font-size: 13px;
-  margin-bottom: 12px;
-  outline: none;
-  cursor: cell !important;
-}
-.lin:focus { border-color: #217346; }
-#login-err { color: #cc0000; font-size: 11px; margin-bottom: 8px; display: none; }
+#login-titlebar span { color: #fff; font-weight: 700; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,60,.5); flex: 1; }
+#login-body { padding: 18px 20px; }
+.lf-label { font-size: 11px; color: #222; margin-bottom: 3px; font-weight: 600; }
+.lf-input { width: 100%; border: 1px solid #8899bb; border-radius: 3px; padding: 5px 8px; font-family: 'Segoe UI', sans-serif; font-size: 12px; margin-bottom: 12px; background: linear-gradient(180deg, #f0f4ff 0%, #fff 30%); box-shadow: inset 0 2px 4px rgba(0,0,60,.12); outline: none; cursor: cell !important; }
+.lf-input:focus { border-color: #4478cc; }
+#login-err { color: #cc0000; font-size: 11px; margin-bottom: 10px; display: none; padding: 4px 8px; background: #ffeeee; border: 1px solid #ee9999; border-radius: 3px; }
 #login-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.lbtn {
-  font-family: 'Calibri', sans-serif;
-  font-size: 12px;
-  padding: 5px 18px;
-  border: 1px solid #aaa;
-  background: #f0f0f0;
-  cursor: cell !important;
-  border-radius: 2px;
-}
-.lbtn:hover { background: #e0e0e0; }
-.lbtn.primary { background: #217346; color: #fff; border-color: #1a5c38; }
-.lbtn.primary:hover { background: #1a5c38; }
+.vbtn { font-family: 'Segoe UI', sans-serif; font-size: 12px; padding: 5px 18px; border-radius: 4px; border: 1px solid #8899bb; background: linear-gradient(180deg, #f0f4ff 0%, #d8e4f8 50%, #c8d4f0 100%); color: #000; box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 1px 2px rgba(0,0,60,.2); cursor: cell !important; }
+.vbtn:hover { background: linear-gradient(180deg, #e0eaff 0%, #c0d0f0 50%, #b0c4e8 100%); border-color: #5577cc; }
+.vbtn.primary { background: linear-gradient(180deg, #6090e0 0%, #3868c0 50%, #2858b0 100%); color: #fff; border-color: #2050a0; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 2px rgba(0,0,60,.3); }
+.vbtn.primary:hover { background: linear-gradient(180deg, #70a0f0 0%, #4878d0 50%, #3868c0 100%); }
 
-/* ── ADD ROW MODAL ── */
-#add-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.45);
-  z-index: 200;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 60px;
-}
+/* ADD MODAL */
+#add-overlay { display: none; position: fixed; inset: 0; background: rgba(0,20,60,.45); z-index: 500; align-items: flex-start; justify-content: center; padding-top: 50px; }
 #add-overlay.show { display: flex; }
-#add-box {
-  background: #fff;
-  border: 1px solid #aaa;
-  box-shadow: 4px 4px 16px rgba(0,0,0,.2);
-  width: 700px;
-  max-width: 98vw;
-  max-height: 85vh;
-  display: flex;
-  flex-direction: column;
-}
-#add-titlebar {
-  background: #217346;
-  color: #fff;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: space-between;
-}
-#add-body {
-  padding: 16px;
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 20px;
-}
-.field-group { display: flex; flex-direction: column; gap: 3px; }
-.field-group.full { grid-column: 1 / -1; }
-.field-label { font-size: 11px; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: .5px; }
-.field-input, .field-select {
-  border: 1px solid #b0b0b0;
-  padding: 5px 8px;
-  font-family: 'Calibri', sans-serif;
-  font-size: 13px;
-  outline: none;
-  cursor: cell !important;
-  width: 100%;
-}
-.field-input:focus, .field-select:focus { border-color: #217346; }
-#add-footer {
-  padding: 10px 16px;
-  border-top: 1px solid #e0e0e0;
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  background: #f8f8f8;
-}
+#add-dialog { background: linear-gradient(180deg, #e8f0f8 0%, #d8e4f0 100%); border: 1px solid #6888c0; border-radius: 8px; box-shadow: 0 0 0 1px rgba(180,200,240,.6), 0 8px 32px rgba(0,0,60,.45), inset 0 1px 0 rgba(255,255,255,.7); width: 720px; max-width: 97vw; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
+#add-titlebar { background: linear-gradient(180deg, #c0d8f0 0%, #90b8e0 30%, #6090c8 60%, #4878b0 80%, #5888c0 100%); padding: 7px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #4070a8; flex-shrink: 0; }
+#add-titlebar span { color: #fff; font-weight: 700; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,60,.5); }
+#add-titlebar button { background: none; border: none; color: #fff; font-size: 14px; padding: 0 4px; cursor: cell !important; }
+#add-body { padding: 14px 16px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; flex: 1; }
+#add-body .fg { display: flex; flex-direction: column; gap: 2px; }
+#add-body .fg.full { grid-column: 1/-1; }
+.fg label { font-size: 10px; font-weight: 700; color: #334; text-transform: uppercase; letter-spacing: .5px; }
+.fg input, .fg select { border: 1px solid #8899bb; border-radius: 3px; padding: 4px 7px; font-family: 'Segoe UI', sans-serif; font-size: 12px; background: linear-gradient(180deg, #f0f4ff 0%, #fff 30%); box-shadow: inset 0 1px 3px rgba(0,0,60,.1); outline: none; cursor: cell !important; width: 100%; }
+.fg input:focus, .fg select:focus { border-color: #4478cc; }
+#add-footer { padding: 10px 16px; border-top: 1px solid #b8c8e0; display: flex; gap: 8px; justify-content: flex-end; background: linear-gradient(180deg, #d8e8f8 0%, #c8d8ec 100%); flex-shrink: 0; }
 
-/* ── Loading ── */
-#loading {
-  position: fixed; inset: 0;
-  background: rgba(240,240,240,.9);
-  z-index: 300;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-#loading img { width: 60px; height: 60px; object-fit: contain; animation: pulse 1.5s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(.92)} }
-#loading-text { font-size: 13px; color: #333; font-family: 'Calibri', sans-serif; }
+.logo-banner { display: flex; align-items: center; gap: 10px; height: 52px; padding: 5px 10px; background: #000818; }
+.logo-banner img { height: 38px; width: 38px; object-fit: contain; }
+.logo-banner-t { color: #fff; font-size: 17px; font-weight: 700; letter-spacing: .5px; }
+.logo-banner-s { color: #7db820; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; }
 
-/* Column widths */
-.col-row { width:46px; }
-.col-id  { width:50px; }
-.col-date{ width:100px; }
-.col-time{ width:75px; }
-.col-dev { width:140px; }
-.col-module { width:130px; }
-.col-desc{ width:340px; }
-.col-type{ width:110px; }
-.col-ver { width:75px; }
-.col-prio{ width:90px; }
-.col-stat{ width:120px; }
-.col-mode{ width:120px; }
-.col-notes{ width:200px; }
-.col-by  { width:110px; }
-.col-del { width:60px; }
-
-/* Logo banner cell */
-.logo-banner {
-  display: flex;
-  align-items: center;
-  padding: 4px 10px;
-  gap: 10px;
-  height: 48px;
-  background: #08080f;
-}
-.logo-banner img { height: 40px; width: 40px; object-fit: contain; }
-.logo-banner-text { color: #fff; }
-.logo-banner-title { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
-.logo-banner-sub { font-size: 10px; color: #7db820; letter-spacing: 2px; }
+.cw-rn { width:46px; min-width:46px; }
+.cw-id { width:48px; } .cw-dt { width:92px; } .cw-tm { width:68px; }
+.cw-dv { width:130px; } .cw-mo { width:120px; } .cw-ds { width:320px; }
+.cw-tp { width:100px; } .cw-vr { width:66px; } .cw-pr { width:82px; }
+.cw-st { width:110px; } .cw-md { width:110px; } .cw-nt { width:180px; }
+.cw-by { width:95px; } .cw-dl { width:54px; }
 </style>
 </head>
 <body>
+<div id="app-window">
 
-<!-- LOADING -->
-<div id="loading">
-  <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
-  <div id="loading-text">Loading AerOS Tracker...</div>
+  <div id="titlebar">
+    <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+    <div id="titlebar-text">AerOS Change Tracker <span>— Cortlin Development</span></div>
+    <div id="auth-corner">
+      <strong id="auth-name" style="display:none;"></strong>
+      <button class="vbtn" id="btn-login" onclick="openLogin()" style="font-size:11px;padding:3px 12px;">Sign In</button>
+      <button class="vbtn" id="btn-logout" onclick="doLogout()" style="font-size:11px;padding:3px 12px;display:none;">Sign Out</button>
+    </div>
+    <div id="win-btns">
+      <div class="win-btn min">—</div>
+      <div class="win-btn max">□</div>
+      <div class="win-btn close">✕</div>
+    </div>
+  </div>
+
+  <div id="menubar">
+    <div class="menu-item">File</div><div class="menu-item">Edit</div>
+    <div class="menu-item">View</div><div class="menu-item">Insert</div>
+    <div class="menu-item">Format</div><div class="menu-item">Data</div>
+    <div class="menu-item">Tools</div><div class="menu-item">Help</div>
+  </div>
+
+  <div id="toolbar">
+    <div class="tb-group">
+      <div class="tb-row">
+        <button class="tb-btn disabled" id="btn-new" onclick="openAdd()"><span class="tb-icon">➕</span>New Entry</button>
+        <button class="tb-btn" onclick="reloadData()"><span class="tb-icon">↻</span>Refresh</button>
+        <button class="tb-btn" onclick="exportCSV()"><span class="tb-icon">💾</span>Export</button>
+      </div>
+      <div class="tb-group-label">Clipboard</div>
+    </div>
+    <div class="tb-group">
+      <div class="tb-row">
+        <button class="tb-btn"><img class="tb-img" src="https://i.imgur.com/6atwQbZ.png">Build Log</button>
+        <button class="tb-btn"><img class="tb-img" src="https://i.imgur.com/Fx4z56n.png">Overview</button>
+      </div>
+      <div class="tb-group-label">Views</div>
+    </div>
+  </div>
+
+  <div id="formula-bar">
+    <div id="cell-ref">A1</div>
+    <div id="formula-icon">fx</div>
+    <div id="formula-content">=AEROS_CHANGELOG()</div>
+  </div>
+
+  <div id="sheet-area">
+    <table id="main-table">
+      <colgroup>
+        <col class="cw-rn"><col class="cw-id"><col class="cw-dt"><col class="cw-tm">
+        <col class="cw-dv"><col class="cw-mo"><col class="cw-ds"><col class="cw-tp">
+        <col class="cw-vr"><col class="cw-pr"><col class="cw-st"><col class="cw-md">
+        <col class="cw-nt"><col class="cw-by"><col class="cw-dl">
+      </colgroup>
+      <thead>
+        <tr class="ch-row">
+          <th></th>
+          <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
+          <th>G</th><th>H</th><th>I</th><th>J</th><th>K</th><th>L</th><th>M</th><th>N</th>
+        </tr>
+        <tr class="logo-row">
+          <td></td>
+          <td colspan="14">
+            <div class="logo-banner">
+              <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+              <div>
+                <div class="logo-banner-t">AerOS Change Tracking Log</div>
+                <div class="logo-banner-s">Cortlin Development Division · Internal Build Record</div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr class="fh-row">
+          <td></td>
+          <td><div class="ci" style="font-weight:700;">#</div></td>
+          <td><div class="ci" style="font-weight:700;">Date</div></td>
+          <td><div class="ci" style="font-weight:700;">Time</div></td>
+          <td><div class="ddc"><select id="f-dev" onchange="applyFilters()"><option value="">Developer ▾</option><option>Evan Sakers</option><option>Maxwell Mays</option><option>Dominic Costas</option><option>Jaxon Lake</option></select></div></td>
+          <td><div class="ci" style="font-weight:700;">Module</div></td>
+          <td><div class="ci" style="font-weight:700;">Description</div></td>
+          <td><div class="ddc"><select id="f-type" onchange="applyFilters()"><option value="">Type ▾</option><option>Feature</option><option>Bug Fix</option><option>Refactor</option><option>Hotfix</option><option>Security</option><option>UI Update</option><option>Docs</option><option>Kernel</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Copyright</option><option>App Control</option><option>Image Design</option><option>N/A</option></select></div></td>
+          <td><div class="ci" style="font-weight:700;">Ver</div></td>
+          <td><div class="ddc"><select id="f-prio" onchange="applyFilters()"><option value="">Priority ▾</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div></td>
+          <td><div class="ddc"><select id="f-stat" onchange="applyFilters()"><option value="">Status ▾</option><option>Complete</option><option>Merged</option><option>In Progress</option><option>Pending Review</option><option>Testing</option><option>Deployed</option><option>Planned</option><option>On Hold</option><option>Open</option><option>Closed</option><option>Cancelled</option><option>Reverted</option></select></div></td>
+          <td><div class="ddc"><select id="f-mode" onchange="applyFilters()"><option value="">Mode ▾</option><option>Kernel</option><option>UI</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Bug Tracker</option><option>Bug Patch</option><option>Bug Fix</option><option>Bug Reported</option><option>Copyright</option><option>N/A</option><option>App Control</option><option>Image Design</option><option>System</option><option>Network</option><option>Security</option><option>Performance</option><option>Testing</option><option>Deployment</option><option>Documentation</option><option>API</option><option>CLI</option><option>Config</option><option>Build</option><option>Package</option><option>Driver</option><option>Firmware</option><option>Scheduler</option><option>Memory</option><option>Storage</option><option>Display</option><option>Audio</option><option>Input</option><option>Power</option><option>Localization</option><option>Accessibility</option></select></div></td>
+          <td><div class="ci" style="font-weight:700;">Notes</div></td>
+          <td><div class="ci" style="font-weight:700;">Added By</div></td>
+          <td><div class="ci ctr" style="font-weight:700;">Del</div></td>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div id="sheet-tabs">
+    <div class="stab active"><img src="https://i.imgur.com/6atwQbZ.png"> Change Log</div>
+    <div class="stab"><img src="https://i.imgur.com/Fx4z56n.png"> Team Overview</div>
+    <div class="stab">🗂 Version Timeline</div>
+  </div>
+
+  <div id="statusbar">
+    <span>Ready</span>
+    <span>Rows: <span class="sv" id="sb-count">–</span></span>
+    <span>Total: <span class="sv" id="sb-total">–</span></span>
+    <div id="sb-right">
+      <span id="sb-user">Not signed in</span>
+      <span>AerOS Tracker v1.0</span>
+    </div>
+  </div>
 </div>
 
-<!-- LOGIN MODAL -->
+<!-- LOGIN -->
 <div id="login-overlay">
-  <div id="login-box">
+  <div id="login-dialog">
     <div id="login-titlebar">
       <img src="https://i.imgur.com/bqOOpyN.png" alt="">
-      Sign in — AerOS Tracker
+      <span>Sign in — AerOS Tracker</span>
     </div>
     <div id="login-body">
-      <div class="lbl">Username</div>
-      <input class="lin" id="l-user" type="text" placeholder="Enter username" autocomplete="off">
-      <div class="lbl">Password</div>
-      <input class="lin" id="l-pass" type="password" placeholder="Enter password">
+      <div class="lf-label">Username</div>
+      <input class="lf-input" id="l-user" type="text" placeholder="Enter your username" autocomplete="off">
+      <div class="lf-label">Password</div>
+      <input class="lf-input" id="l-pass" type="password" placeholder="Enter your password">
       <div id="login-err">Incorrect username or password.</div>
       <div id="login-actions">
-        <button class="lbtn" onclick="closeLogin()">Cancel</button>
-        <button class="lbtn primary" onclick="doLogin()">Sign In</button>
+        <button class="vbtn" onclick="closeLogin()">Cancel</button>
+        <button class="vbtn primary" onclick="doLogin()">Sign In</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ADD ROW MODAL -->
+<!-- ADD ENTRY -->
 <div id="add-overlay">
-  <div id="add-box">
+  <div id="add-dialog">
     <div id="add-titlebar">
-      <span id="add-modal-title">➕ New Change Entry</span>
-      <button onclick="closeAdd()" style="background:none;border:none;color:#fff;font-size:16px;cursor:cell;">✕</button>
+      <span>➕ New Change Entry</span>
+      <button onclick="closeAdd()">✕</button>
     </div>
     <div id="add-body">
-      <div class="field-group">
-        <div class="field-label">Date</div>
-        <input class="field-input" id="f-date" type="date">
-      </div>
-      <div class="field-group">
-        <div class="field-label">Time</div>
-        <input class="field-input" id="f-time" type="time">
-      </div>
-      <div class="field-group">
-        <div class="field-label">Developer</div>
-        <select class="field-select" id="f-dev">
-          <option>Evan Sakers</option>
-          <option>Maxwell Mays</option>
-          <option>Dominic Costas</option>
-          <option>Jaxon Lake</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Module / Component</div>
-        <input class="field-input" id="f-module" type="text" placeholder="e.g. Kernel Core">
-      </div>
-      <div class="field-group full">
-        <div class="field-label">Description</div>
-        <input class="field-input" id="f-desc" type="text" placeholder="Describe the change...">
-      </div>
-      <div class="field-group">
-        <div class="field-label">Change Type</div>
-        <select class="field-select" id="f-type">
-          <option>Feature</option><option>Bug Fix</option><option>Refactor</option>
-          <option>Hotfix</option><option>Security</option><option>UI Update</option>
-          <option>Docs</option><option>Kernel</option><option>Backend</option>
-          <option>Website</option><option>Database</option><option>Frontend</option>
-          <option>Copyright</option><option>App Control</option><option>Image Design</option>
-          <option>N/A</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Version</div>
-        <input class="field-input" id="f-ver" type="text" placeholder="e.g. 0.9.5">
-      </div>
-      <div class="field-group">
-        <div class="field-label">Priority</div>
-        <select class="field-select" id="f-prio">
-          <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Status</div>
-        <select class="field-select" id="f-stat">
-          <option>Complete</option><option>Merged</option><option>In Progress</option>
-          <option>Pending Review</option><option>Testing</option><option>Deployed</option>
-          <option>Planned</option><option>On Hold</option><option>Open</option>
-          <option>Closed</option><option>Cancelled</option><option>Reverted</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Mode</div>
-        <select class="field-select" id="f-mode">
-          <option>Kernel</option><option>UI</option><option>Backend</option>
-          <option>Website</option><option>Database</option><option>Frontend</option>
-          <option>Bug Tracker</option><option>Bug Patch</option><option>Bug Fix</option>
-          <option>Bug Reported</option><option>Copyright</option><option>N/A</option>
-          <option>App Control</option><option>Image Design</option>
-          <option>System</option><option>Network</option><option>Security</option>
-          <option>Performance</option><option>Testing</option><option>Deployment</option>
-          <option>Documentation</option><option>API</option><option>CLI</option>
-          <option>Config</option><option>Build</option><option>Package</option>
-          <option>Driver</option><option>Firmware</option><option>Scheduler</option>
-          <option>Memory</option><option>Storage</option><option>Display</option>
-          <option>Audio</option><option>Input</option><option>Power</option>
-          <option>Localization</option><option>Accessibility</option>
-        </select>
-      </div>
-      <div class="field-group full">
-        <div class="field-label">Notes</div>
-        <input class="field-input" id="f-notes" type="text" placeholder="Optional notes...">
-      </div>
+      <div class="fg"><label>Date</label><input id="f-date" type="date"></div>
+      <div class="fg"><label>Time</label><input id="f-time" type="time"></div>
+      <div class="fg"><label>Developer</label><select id="f-edev"><option>Evan Sakers</option><option>Maxwell Mays</option><option>Dominic Costas</option><option>Jaxon Lake</option></select></div>
+      <div class="fg"><label>Module / Component</label><input id="f-module" type="text" placeholder="e.g. Kernel Core"></div>
+      <div class="fg full"><label>Description</label><input id="f-desc" type="text" placeholder="Describe the change..."></div>
+      <div class="fg"><label>Change Type</label><select id="f-etype"><option>Feature</option><option>Bug Fix</option><option>Refactor</option><option>Hotfix</option><option>Security</option><option>UI Update</option><option>Docs</option><option>Kernel</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Copyright</option><option>App Control</option><option>Image Design</option><option>N/A</option></select></div>
+      <div class="fg"><label>Version</label><input id="f-ver" type="text" placeholder="e.g. 0.9.5"></div>
+      <div class="fg"><label>Priority</label><select id="f-eprio"><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <div class="fg"><label>Status</label><select id="f-estat"><option>Complete</option><option>Merged</option><option>In Progress</option><option>Pending Review</option><option>Testing</option><option>Deployed</option><option>Planned</option><option>On Hold</option><option>Open</option><option>Closed</option><option>Cancelled</option><option>Reverted</option></select></div>
+      <div class="fg"><label>Mode</label><select id="f-emode"><option>Kernel</option><option>UI</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Bug Tracker</option><option>Bug Patch</option><option>Bug Fix</option><option>Bug Reported</option><option>Copyright</option><option>N/A</option><option>App Control</option><option>Image Design</option><option>System</option><option>Network</option><option>Security</option><option>Performance</option><option>Testing</option><option>Deployment</option><option>Documentation</option><option>API</option><option>CLI</option><option>Config</option><option>Build</option><option>Package</option><option>Driver</option><option>Firmware</option><option>Scheduler</option><option>Memory</option><option>Storage</option><option>Display</option><option>Audio</option><option>Input</option><option>Power</option><option>Localization</option><option>Accessibility</option></select></div>
+      <div class="fg full"><label>Notes</label><input id="f-notes" type="text" placeholder="Optional notes..."></div>
     </div>
     <div id="add-footer">
-      <button class="lbtn" onclick="closeAdd()">Cancel</button>
-      <button class="lbtn primary" id="save-btn" onclick="saveRow()">Save Entry</button>
+      <button class="vbtn" onclick="closeAdd()">Cancel</button>
+      <button class="vbtn primary" onclick="saveEntry()">Save Entry</button>
     </div>
-  </div>
-</div>
-
-<!-- RIBBON -->
-<div id="ribbon">
-  <div id="ribbon-top">
-    <img id="ribbon-logo" src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
-    <div id="ribbon-title">AerOS Change Tracker <span>— Cortlin Development</span></div>
-    <div id="auth-area">
-      <span id="auth-user"></span>
-      <button class="ribbon-btn" id="login-btn" onclick="openLogin()">Sign In</button>
-      <button class="ribbon-btn logout" id="logout-btn" onclick="doLogout()" style="display:none;">Sign Out</button>
-    </div>
-  </div>
-  <div id="ribbon-tabs">
-    <div class="rtab active">Home</div>
-    <div class="rtab">Insert</div>
-    <div class="rtab">Data</div>
-    <div class="rtab">View</div>
-  </div>
-  <div id="ribbon-commands">
-    <button class="rcmd" id="btn-add-row" onclick="openAdd()" title="New Entry">
-      <span class="rcmd-icon">➕</span>New Entry
-    </button>
-    <div class="rcmd-sep"></div>
-    <button class="rcmd" onclick="reloadData()" title="Refresh">
-      <span class="rcmd-icon">↻</span>Refresh
-    </button>
-    <button class="rcmd" onclick="exportCSV()" title="Export CSV">
-      <span class="rcmd-icon">⬇</span>Export
-    </button>
-    <div class="rcmd-sep"></div>
-    <button class="rcmd" title="3D View">
-      <img class="rcmd-img" src="https://i.imgur.com/6atwQbZ.png" alt="3D">Build Log
-    </button>
-    <button class="rcmd" title="Overview">
-      <img class="rcmd-img" src="https://i.imgur.com/Fx4z56n.png" alt="2D">Overview
-    </button>
-  </div>
-</div>
-
-<!-- FORMULA BAR -->
-<div id="formula-bar">
-  <div id="cell-ref">A1</div>
-  <div id="formula-icon">fx</div>
-  <div id="formula-content">=AEROS_CHANGES()</div>
-</div>
-
-<!-- SHEET AREA -->
-<div id="sheet-area">
-  <div id="scroll-container">
-    <div id="excel-table-wrap">
-      <table id="main-table">
-        <colgroup>
-          <col class="col-row">
-          <col class="col-id">
-          <col class="col-date">
-          <col class="col-time">
-          <col class="col-dev">
-          <col class="col-module">
-          <col class="col-desc">
-          <col class="col-type">
-          <col class="col-ver">
-          <col class="col-prio">
-          <col class="col-stat">
-          <col class="col-mode">
-          <col class="col-notes">
-          <col class="col-by">
-          <col class="col-del">
-        </colgroup>
-        <thead>
-          <!-- Col letter header -->
-          <tr class="col-header-row" id="col-header-row">
-            <th></th>
-            <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th>
-            <th>F</th><th>G</th><th>H</th><th>I</th><th>J</th>
-            <th>K</th><th>L</th><th>M</th><th>N</th>
-          </tr>
-          <!-- Logo row -->
-          <tr class="logo-row">
-            <td><div style="background:#f0f0f0;height:48px;width:46px;"></div></td>
-            <td colspan="14">
-              <div class="logo-banner">
-                <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
-                <div class="logo-banner-text">
-                  <div class="logo-banner-title">AerOS Change Tracking Log</div>
-                  <div class="logo-banner-sub">CORTLIN DEVELOPMENT DIVISION · INTERNAL BUILD RECORD</div>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <!-- Column headers with dropdowns -->
-          <tr class="header-row" id="filter-row">
-            <td></td>
-            <td><div class="cell-inner" style="font-weight:700;">#</div></td>
-            <td><div class="cell-inner" style="font-weight:700;">Date ▾</div></td>
-            <td><div class="cell-inner" style="font-weight:700;">Time</div></td>
-            <td>
-              <div class="dd-cell">
-                <select onchange="filterTable()" id="flt-dev" style="font-weight:700;background:#d0e8d8;">
-                  <option value="">Developer ▾</option>
-                  <option>Evan Sakers</option><option>Maxwell Mays</option>
-                  <option>Dominic Costas</option><option>Jaxon Lake</option>
-                </select>
-              </div>
-            </td>
-            <td><div class="cell-inner" style="font-weight:700;">Module</div></td>
-            <td><div class="cell-inner" style="font-weight:700;">Description</div></td>
-            <td>
-              <div class="dd-cell">
-                <select onchange="filterTable()" id="flt-type" style="font-weight:700;background:#d0e8d8;">
-                  <option value="">Type ▾</option>
-                  <option>Feature</option><option>Bug Fix</option><option>Refactor</option>
-                  <option>Hotfix</option><option>Security</option><option>UI Update</option>
-                  <option>Docs</option><option>Kernel</option><option>Backend</option>
-                  <option>Website</option><option>Database</option><option>Frontend</option>
-                  <option>Copyright</option><option>App Control</option><option>Image Design</option>
-                  <option>N/A</option>
-                </select>
-              </div>
-            </td>
-            <td><div class="cell-inner" style="font-weight:700;">Ver</div></td>
-            <td>
-              <div class="dd-cell">
-                <select onchange="filterTable()" id="flt-prio" style="font-weight:700;background:#d0e8d8;">
-                  <option value="">Priority ▾</option>
-                  <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
-                </select>
-              </div>
-            </td>
-            <td>
-              <div class="dd-cell">
-                <select onchange="filterTable()" id="flt-stat" style="font-weight:700;background:#d0e8d8;">
-                  <option value="">Status ▾</option>
-                  <option>Complete</option><option>Merged</option><option>In Progress</option>
-                  <option>Pending Review</option><option>Testing</option><option>Deployed</option>
-                  <option>Planned</option><option>On Hold</option><option>Open</option>
-                  <option>Closed</option><option>Cancelled</option><option>Reverted</option>
-                </select>
-              </div>
-            </td>
-            <td>
-              <div class="dd-cell">
-                <select onchange="filterTable()" id="flt-mode" style="font-weight:700;background:#d0e8d8;">
-                  <option value="">Mode ▾</option>
-                  <option>Kernel</option><option>UI</option><option>Backend</option>
-                  <option>Website</option><option>Database</option><option>Frontend</option>
-                  <option>Bug Tracker</option><option>Bug Patch</option><option>Bug Fix</option>
-                  <option>Bug Reported</option><option>Copyright</option><option>N/A</option>
-                  <option>App Control</option><option>Image Design</option><option>System</option>
-                  <option>Network</option><option>Security</option><option>Performance</option>
-                  <option>Testing</option><option>Deployment</option><option>Documentation</option>
-                  <option>API</option><option>CLI</option><option>Config</option>
-                  <option>Build</option><option>Package</option><option>Driver</option>
-                  <option>Firmware</option><option>Scheduler</option><option>Memory</option>
-                  <option>Storage</option><option>Display</option><option>Audio</option>
-                  <option>Input</option><option>Power</option><option>Localization</option>
-                  <option>Accessibility</option>
-                </select>
-              </div>
-            </td>
-            <td><div class="cell-inner" style="font-weight:700;">Notes</div></td>
-            <td><div class="cell-inner" style="font-weight:700;">Added By</div></td>
-            <td><div class="cell-inner center" style="font-weight:700;">Del</div></td>
-          </tr>
-        </thead>
-        <tbody id="data-body">
-          <tr class="data-row">
-            <td></td>
-            <td colspan="14"><div class="cell-inner" style="color:#888;font-style:italic;">Loading data...</div></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- SHEET TABS -->
-<div id="sheet-tabs">
-  <div class="stab active green-tab">
-    <img src="https://i.imgur.com/6atwQbZ.png" alt=""> Change Log
-  </div>
-  <div class="stab blue-tab">
-    <img src="https://i.imgur.com/Fx4z56n.png" alt=""> Team Overview
-  </div>
-  <div class="stab purple-tab">🗂 Version Timeline</div>
-  <div style="padding:4px 8px; font-size:18px; color:#888; margin-top:2px; cursor:cell;">⊕</div>
-</div>
-
-<!-- STATUS BAR -->
-<div id="status-bar">
-  <span>Ready</span>
-  <span>Count: <span class="sb-val" id="sb-count">0</span></span>
-  <span>Entries: <span class="sb-val" id="sb-entries">0</span></span>
-  <div id="status-right">
-    <span id="sb-user-info">Not signed in</span>
-    <button class="zoom-btn">100%</button>
-    <button class="zoom-btn">🔍</button>
   </div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp }
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc,
+         query, where, orderBy, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-const FB = {
-  apiKey: "AIzaSyAfb1PKVSPEuVPzdb3BE9fbMtT8Yade-hY",
-  authDomain: "cortlin.firebaseapp.com",
-  projectId: "cortlin",
-  storageBucket: "cortlin.firebasestorage.app",
+const app = initializeApp({
+  apiKey:            "AIzaSyAfb1PKVSPEuVPzdb3BE9fbMtT8Yade-hY",
+  authDomain:        "cortlin.firebaseapp.com",
+  projectId:         "cortlin",
+  storageBucket:     "cortlin.firebasestorage.app",
   messagingSenderId: "439783582358",
-  appId: "1:439783582358:web:ef40a524daaa6d0a77f0b7"
-};
+  appId:             "1:439783582358:web:ef40a524daaa6d0a77f0b7"
+});
+const db = getFirestore(app);
 
-const app = initializeApp(FB);
-const db  = getFirestore(app);
-
-// ── Simple user store (sessionStorage) ──
-const USERS = {
-  "Evan":    "cortlin2024",
-  "Maxwell": "cortlin2024",
-  "Dominic": "cortlin2024",
-  "Jaxon":   "cortlin2024",
-  "admin":   "admin123"
-};
-
-let currentUser = JSON.parse(sessionStorage.getItem("aeros_user") || "null");
+/* Session — same key your index.html uses */
+let currentUser = JSON.parse(sessionStorage.getItem("cortlin_user") || "null");
 let allRows = [];
-let editingId = null;
 
-// ── Auth UI ──
-function updateAuthUI() {
-  const ub = document.getElementById("auth-user");
-  const lb = document.getElementById("login-btn");
-  const lo = document.getElementById("logout-btn");
-  const sb = document.getElementById("sb-user-info");
-  const addBtn = document.getElementById("btn-add-row");
+function refreshAuthUI() {
+  const nameEl = document.getElementById("auth-name");
+  const btnIn  = document.getElementById("btn-login");
+  const btnOut = document.getElementById("btn-logout");
+  const btnNew = document.getElementById("btn-new");
+  const sbUser = document.getElementById("sb-user");
   if (currentUser) {
-    ub.textContent = currentUser.username;
-    lb.style.display = "none";
-    lo.style.display = "";
-    sb.textContent = `Signed in as ${currentUser.username}`;
-    addBtn.classList.remove("disabled");
+    nameEl.textContent = currentUser.user;
+    nameEl.style.display = "";
+    btnIn.style.display  = "none";
+    btnOut.style.display = "";
+    btnNew.classList.remove("disabled");
+    sbUser.textContent = "Signed in as " + currentUser.user;
   } else {
-    ub.textContent = "";
-    lb.style.display = "";
-    lo.style.display = "none";
-    sb.textContent = "Not signed in — read only";
-    addBtn.classList.add("disabled");
+    nameEl.style.display = "none";
+    btnIn.style.display  = "";
+    btnOut.style.display = "none";
+    btnNew.classList.add("disabled");
+    sbUser.textContent = "Not signed in — read only";
   }
 }
 
-window.openLogin  = () => document.getElementById("login-overlay").classList.add("show");
-window.closeLogin = () => {
-  document.getElementById("login-overlay").classList.remove("show");
+/* LOGIN — queries Firestore "users" collection same as your index.html pattern */
+window.openLogin = () => {
   document.getElementById("login-err").style.display = "none";
+  document.getElementById("l-user").value = "";
+  document.getElementById("l-pass").value = "";
+  document.getElementById("login-overlay").classList.add("show");
 };
-window.doLogin = () => {
+window.closeLogin = () => document.getElementById("login-overlay").classList.remove("show");
+
+window.doLogin = async () => {
   const u = document.getElementById("l-user").value.trim();
   const p = document.getElementById("l-pass").value;
-  if (USERS[u] && USERS[u] === p) {
-    currentUser = { username: u };
-    sessionStorage.setItem("aeros_user", JSON.stringify(currentUser));
-    updateAuthUI();
-    closeLogin();
-    renderRows(allRows);
-  } else {
-    document.getElementById("login-err").style.display = "block";
+  if (!u || !p) { showErr("Enter username and password."); return; }
+  try {
+    const snap = await getDocs(query(
+      collection(db, "users"),
+      where("user", "==", u),
+      where("password", "==", p)
+    ));
+    if (!snap.empty) {
+      const d = snap.docs[0].data();
+      currentUser = { user: d.user, role: d.role || "member" };
+      sessionStorage.setItem("cortlin_user", JSON.stringify(currentUser));
+      closeLogin();
+      refreshAuthUI();
+      renderRows(allRows);
+    } else {
+      showErr("Incorrect username or password.");
+    }
+  } catch(e) {
+    showErr("Error: " + e.message);
+    console.error(e);
   }
 };
+function showErr(m) {
+  const el = document.getElementById("login-err");
+  el.textContent = m; el.style.display = "block";
+}
+document.getElementById("l-pass").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
+
 window.doLogout = () => {
   currentUser = null;
-  sessionStorage.removeItem("aeros_user");
-  updateAuthUI();
+  sessionStorage.removeItem("cortlin_user");
+  refreshAuthUI();
   renderRows(allRows);
 };
 
-// ── Load data ──
+/* LOAD DATA */
 async function loadData() {
   try {
     const snap = await getDocs(query(collection(db, "aeros_changes"), orderBy("created", "asc")));
     allRows = [];
     snap.forEach(d => allRows.push({ id: d.id, ...d.data() }));
-    renderRows(allRows);
   } catch(e) {
-    console.error(e);
-    // fallback sample data
-    allRows = getSampleData();
-    renderRows(allRows);
+    console.error("loadData:", e);
+    allRows = sampleData();
   }
-  document.getElementById("loading").style.display = "none";
+  renderRows(allRows);
+}
+window.reloadData = () => loadData();
+
+/* RENDER */
+function badge(val, pfx) {
+  if (!val) return "";
+  const cls = pfx + "-" + val.replace(/\s+/g, "\\.");
+  return `<span class="badge ${pfx}-${esc(val).replace(/ /g,".")}">${esc(val)}</span>`;
 }
 
-window.reloadData = () => {
-  document.getElementById("loading").style.display = "flex";
-  loadData();
-};
-
-function getSampleData() {
-  return [
-    { id:"s1", num:1, date:"2026-05-01", time:"09:14", dev:"Evan Sakers",    module:"Boot Loader",   desc:"Rewrote stage-2 boot sequence for faster POST handoff",       type:"Refactor",  ver:"0.9.1", prio:"High",     stat:"Complete",       mode:"Kernel",   notes:"Shaved ~200ms",        addedBy:"Evan" },
-    { id:"s2", num:2, date:"2026-05-01", time:"11:30", dev:"Maxwell Mays",   module:"Kernel Core",   desc:"Patched null-pointer dereference in memory allocator",        type:"Bug Fix",   ver:"0.9.1", prio:"Critical", stat:"Merged",         mode:"Kernel",   notes:"CVE boot panic",       addedBy:"Maxwell" },
-    { id:"s3", num:3, date:"2026-05-02", time:"08:55", dev:"Dominic Costas", module:"UI Shell",      desc:"Redesigned taskbar with AerOS accent palette",               type:"UI Update", ver:"0.9.2", prio:"Medium",   stat:"Complete",       mode:"UI",       notes:"",                     addedBy:"Dominic" },
-    { id:"s4", num:4, date:"2026-05-02", time:"14:20", dev:"Jaxon Lake",     module:"Networking",    desc:"Added IPv6 support to network stack driver",                  type:"Feature",   ver:"0.9.2", prio:"High",     stat:"In Progress",    mode:"Network",  notes:"Dev hardware only",    addedBy:"Jaxon" },
-    { id:"s5", num:5, date:"2026-05-03", time:"10:05", dev:"Evan Sakers",    module:"File System",   desc:"Implemented AerFS journaling to prevent corruption on crash", type:"Feature",   ver:"0.9.3", prio:"Critical", stat:"Pending Review", mode:"Storage",  notes:"",                     addedBy:"Evan" },
-    { id:"s6", num:6, date:"2026-05-03", time:"13:45", dev:"Maxwell Mays",   module:"Security",      desc:"Hardened syscall table against privilege escalation vectors",  type:"Security",  ver:"0.9.3", prio:"Critical", stat:"Complete",       mode:"Security", notes:"CVE-2026-0017",        addedBy:"Maxwell" },
-    { id:"s7", num:7, date:"2026-05-04", time:"09:00", dev:"Dominic Costas", module:"Docs",          desc:"Updated internal API documentation for module loaders",        type:"Docs",      ver:"0.9.3", prio:"Low",      stat:"Complete",       mode:"Documentation", notes:"",               addedBy:"Dominic" },
-    { id:"s8", num:8, date:"2026-05-05", time:"15:30", dev:"Jaxon Lake",     module:"Display Driver","desc":"Fixed screen tearing on 144Hz panels in windowed mode",       type:"Bug Fix",   ver:"0.9.4", prio:"High",     stat:"Merged",         mode:"Display",  notes:"",                     addedBy:"Jaxon" },
-    { id:"s9", num:9, date:"2026-05-06", time:"11:10", dev:"Evan Sakers",    module:"Package Mgr",   desc:"Added dependency resolution engine to AerPkg",                type:"Feature",   ver:"0.9.4", prio:"Medium",   stat:"In Progress",    mode:"Package",  notes:"",                     addedBy:"Evan" },
-    { id:"s10",num:10,date:"2026-05-07", time:"08:30", dev:"Maxwell Mays",   module:"Kernel Core",   desc:"Optimized scheduler for multi-core task distribution",         type:"Refactor",  ver:"0.9.5", prio:"High",     stat:"Pending Review", mode:"Scheduler", notes:"~18% gain",           addedBy:"Maxwell" },
-  ];
+let selTr = null;
+function selRow(tr, r, n) {
+  if (selTr) selTr.classList.remove("xl-sel");
+  selTr = tr; tr.classList.add("xl-sel");
+  document.getElementById("cell-ref").textContent = "A" + n;
+  document.getElementById("formula-content").textContent = `"${r.dev}" → ${r.desc}`;
 }
 
-// ── Render ──
-function badge(val, prefix) {
-  const cls = (prefix + "-" + val).replace(/\s+/g, ".");
-  return `<div class="cell-inner"><span class="badge ${cls}">${val}</span></div>`;
-}
+window.applyFilters = () => renderRows(allRows);
 
 function renderRows(rows) {
-  const tbody = document.getElementById("data-body");
+  const tbody = document.getElementById("tbody");
   tbody.innerHTML = "";
 
-  // Apply filters
-  const fDev  = document.getElementById("flt-dev")?.value  || "";
-  const fType = document.getElementById("flt-type")?.value || "";
-  const fPrio = document.getElementById("flt-prio")?.value || "";
-  const fStat = document.getElementById("flt-stat")?.value || "";
-  const fMode = document.getElementById("flt-mode")?.value || "";
+  if (!currentUser) {
+    tbody.innerHTML = `<tr class="dr"><td></td><td colspan="14" style="padding:14px 16px;">
+      <span style="color:#555;">🔒 Sign in to view the change log.</span>
+      <button class="vbtn primary" onclick="openLogin()" style="margin-left:14px;font-size:11px;padding:3px 14px;">Sign In</button>
+    </td></tr>`;
+    document.getElementById("sb-count").textContent = "–";
+    document.getElementById("sb-total").textContent = rows.length;
+    return;
+  }
 
-  const filtered = rows.filter(r =>
+  const fDev  = document.getElementById("f-dev").value;
+  const fType = document.getElementById("f-type").value;
+  const fPrio = document.getElementById("f-prio").value;
+  const fStat = document.getElementById("f-stat").value;
+  const fMode = document.getElementById("f-mode").value;
+  const vis   = rows.filter(r =>
     (!fDev  || r.dev  === fDev)  &&
     (!fType || r.type === fType) &&
     (!fPrio || r.prio === fPrio) &&
@@ -1123,174 +550,124 @@ function renderRows(rows) {
     (!fMode || r.mode === fMode)
   );
 
-  document.getElementById("sb-count").textContent   = filtered.length;
-  document.getElementById("sb-entries").textContent = rows.length;
+  document.getElementById("sb-count").textContent = vis.length;
+  document.getElementById("sb-total").textContent = rows.length;
 
-  if (!currentUser) {
-    // Not logged in — show gate message
-    const tr = document.createElement("tr");
-    tr.className = "data-row";
-    tr.innerHTML = `<td></td><td colspan="14">
-      <div class="cell-inner" style="color:#888;gap:8px;padding:10px 16px;">
-        🔒 Sign in to view the change log.
-        <button class="lbtn primary" onclick="openLogin()" style="margin-left:12px;padding:4px 16px;font-size:12px;">Sign In</button>
-      </div></td>`;
-    tbody.appendChild(tr);
+  if (vis.length === 0) {
+    tbody.innerHTML = `<tr class="dr"><td></td><td colspan="14"><div class="ci" style="color:#888;font-style:italic;padding:8px;">No entries match filters.</div></td></tr>`;
     return;
   }
 
-  if (filtered.length === 0) {
+  vis.forEach((r, i) => {
+    const n = i + 4;
+    const canDel = currentUser.user === "Evan" || currentUser.user === r.addedBy;
     const tr = document.createElement("tr");
-    tr.className = "data-row";
-    tr.innerHTML = `<td></td><td colspan="14"><div class="cell-inner" style="color:#888;font-style:italic;padding:8px;">No entries match filters.</div></td>`;
-    tbody.appendChild(tr);
-    return;
-  }
-
-  filtered.forEach((r, i) => {
-    const rowNum = i + 4; // offset for logo + header rows
-    const canDel = currentUser.username === "Evan" || currentUser.username === r.addedBy;
-
-    const tr = document.createElement("tr");
-    tr.className = "data-row";
-    tr.dataset.id = r.id;
-    tr.setAttribute("data-row-num", rowNum);
-    tr.addEventListener("click", () => selectRow(tr, r, rowNum));
-
+    tr.className = "dr";
+    tr.addEventListener("click", () => selRow(tr, r, n));
     tr.innerHTML = `
-      <td>${rowNum}</td>
-      <td><div class="cell-inner right" style="color:#555;font-size:11px;">${r.num || i+1}</div></td>
-      <td><div class="cell-inner td-date">${r.date || ""}</div></td>
-      <td><div class="cell-inner td-date">${r.time || ""}</div></td>
-      <td><div class="cell-inner" style="font-weight:600;">${r.dev || ""}</div></td>
-      <td><div class="cell-inner" style="color:#0050cc;font-size:11px;">${r.module || ""}</div></td>
-      <td><div class="cell-inner" style="max-width:340px;overflow:hidden;text-overflow:ellipsis;" title="${esc(r.desc||"")}">${esc(r.desc || "")}</div></td>
-      <td>${badge(r.type || "N/A", "t")}</td>
-      <td><div class="cell-inner" style="font-family:monospace;font-size:11px;color:#006622;">${r.ver || ""}</div></td>
-      <td>${badge(r.prio || "Low", "p")}</td>
-      <td>${badge(r.stat || "Open", "s")}</td>
-      <td>${badge(r.mode || "N/A", "t")}</td>
-      <td><div class="cell-inner" style="color:#555;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;">${esc(r.notes || "")}</div></td>
-      <td><div class="cell-inner" style="font-size:11px;color:#888;">${r.addedBy || ""}</div></td>
-      <td><div class="cell-inner center">
-        ${canDel ? `<button class="act-btn del" onclick="deleteRow(event,'${r.id}','${esc(r.desc||"")}')">✕</button>` : ""}
-      </div></td>`;
-
+      <td>${n}</td>
+      <td><div class="ci rgt" style="color:#555;font-size:10px;">${r.num||i+1}</div></td>
+      <td><div class="ci" style="font-size:10px;font-family:Consolas,monospace;">${esc(r.date||"")}</div></td>
+      <td><div class="ci" style="font-size:10px;font-family:Consolas,monospace;">${esc(r.time||"")}</div></td>
+      <td><div class="ci" style="font-weight:600;">${esc(r.dev||"")}</div></td>
+      <td><div class="ci" style="color:#003388;font-size:10px;">${esc(r.module||"")}</div></td>
+      <td><div class="ci" title="${esc(r.desc||"")}" style="max-width:320px;">${esc(r.desc||"")}</div></td>
+      <td><div class="ci"><span class="badge bt-${(r.type||"").replace(/ /g,".")}">${esc(r.type||"")}</span></div></td>
+      <td><div class="ci" style="font-family:Consolas,monospace;font-size:10px;color:#004422;">${esc(r.ver||"")}</div></td>
+      <td><div class="ci"><span class="badge bp-${(r.prio||"").replace(/ /g,".")}">${esc(r.prio||"")}</span></div></td>
+      <td><div class="ci"><span class="badge bs-${(r.stat||"").replace(/ /g,".")}">${esc(r.stat||"")}</span></div></td>
+      <td><div class="ci"><span class="badge bt-${(r.mode||"").replace(/ /g,".")}">${esc(r.mode||"")}</span></div></td>
+      <td><div class="ci" style="font-size:10px;color:#555;max-width:180px;">${esc(r.notes||"")}</div></td>
+      <td><div class="ci" style="font-size:10px;color:#666;">${esc(r.addedBy||"")}</div></td>
+      <td><div class="ci ctr">${canDel?`<button class="act del" onclick="delRow(event,'${r.id}')">✕</button>`:""}</div></td>`;
     tbody.appendChild(tr);
   });
 }
 
-// ── Select row ──
-let selectedRow = null;
-function selectRow(tr, r, rowNum) {
-  if (selectedRow) selectedRow.classList.remove("selected-row");
-  selectedRow = tr;
-  tr.classList.add("selected-row");
-  document.getElementById("cell-ref").textContent = `A${rowNum}`;
-  document.getElementById("formula-content").textContent = `="${r.dev || ""}" → ${r.desc || ""}`;
-}
+/* DELETE */
+window.delRow = async (e, id) => {
+  e.stopPropagation();
+  if (!confirm("Delete this entry?")) return;
+  try { await deleteDoc(doc(db, "aeros_changes", id)); } catch(e) { console.error(e); }
+  allRows = allRows.filter(r => r.id !== id);
+  renderRows(allRows);
+};
 
-// ── Filter ──
-window.filterTable = () => renderRows(allRows);
-
-// ── Add / Edit ──
+/* ADD */
 window.openAdd = () => {
   if (!currentUser) { openLogin(); return; }
-  editingId = null;
-  document.getElementById("add-modal-title").textContent = "➕ New Change Entry";
-  document.getElementById("save-btn").textContent = "Save Entry";
-  // defaults
   const today = new Date().toISOString().slice(0,10);
   const now   = new Date().toTimeString().slice(0,5);
   document.getElementById("f-date").value = today;
   document.getElementById("f-time").value = now;
-  document.getElementById("f-dev").value  = currentUser.username === "Evan" ? "Evan Sakers" :
-    currentUser.username === "Maxwell" ? "Maxwell Mays" :
-    currentUser.username === "Dominic" ? "Dominic Costas" :
-    currentUser.username === "Jaxon" ? "Jaxon Lake" : "Evan Sakers";
-  document.getElementById("f-module").value = "";
-  document.getElementById("f-desc").value   = "";
-  document.getElementById("f-notes").value  = "";
-  document.getElementById("f-ver").value    = "0.9.5";
+  document.getElementById("f-ver").value = document.getElementById("f-module").value = document.getElementById("f-desc").value = document.getElementById("f-notes").value = "";
+  const devMap = {Evan:"Evan Sakers",Maxwell:"Maxwell Mays",Dominic:"Dominic Costas",Jaxon:"Jaxon Lake"};
+  const s = document.getElementById("f-edev");
+  s.value = devMap[currentUser.user] || s.options[0].value;
   document.getElementById("add-overlay").classList.add("show");
 };
 window.closeAdd = () => document.getElementById("add-overlay").classList.remove("show");
 
-window.saveRow = async () => {
+window.saveEntry = async () => {
+  const desc = document.getElementById("f-desc").value.trim();
+  if (!desc) { alert("Description is required."); return; }
   const entry = {
-    num:      allRows.length + 1,
-    date:     document.getElementById("f-date").value,
-    time:     document.getElementById("f-time").value,
-    dev:      document.getElementById("f-dev").value,
-    module:   document.getElementById("f-module").value.trim(),
-    desc:     document.getElementById("f-desc").value.trim(),
-    type:     document.getElementById("f-type").value,
-    ver:      document.getElementById("f-ver").value.trim(),
-    prio:     document.getElementById("f-prio").value,
-    stat:     document.getElementById("f-stat").value,
-    mode:     document.getElementById("f-mode").value,
-    notes:    document.getElementById("f-notes").value.trim(),
-    addedBy:  currentUser.username,
-    created:  serverTimestamp()
+    num: allRows.length + 1,
+    date: document.getElementById("f-date").value,
+    time: document.getElementById("f-time").value,
+    dev:  document.getElementById("f-edev").value,
+    module: document.getElementById("f-module").value.trim(),
+    desc,
+    type: document.getElementById("f-etype").value,
+    ver:  document.getElementById("f-ver").value.trim(),
+    prio: document.getElementById("f-eprio").value,
+    stat: document.getElementById("f-estat").value,
+    mode: document.getElementById("f-emode").value,
+    notes: document.getElementById("f-notes").value.trim(),
+    addedBy: currentUser.user,
+    created: serverTimestamp()
   };
-  if (!entry.desc) { alert("Description is required."); return; }
   try {
-    if (editingId) {
-      await updateDoc(doc(db, "aeros_changes", editingId), entry);
-      const idx = allRows.findIndex(r => r.id === editingId);
-      if (idx !== -1) allRows[idx] = { ...allRows[idx], ...entry };
-    } else {
-      const ref = await addDoc(collection(db, "aeros_changes"), entry);
-      allRows.push({ id: ref.id, ...entry });
-    }
-    closeAdd();
-    renderRows(allRows);
+    const ref = await addDoc(collection(db, "aeros_changes"), entry);
+    allRows.push({ id: ref.id, ...entry });
   } catch(e) {
     console.error(e);
-    // Offline fallback — add to local only
-    const fakeId = "local_" + Date.now();
-    allRows.push({ id: fakeId, ...entry, num: allRows.length + 1 });
-    closeAdd();
-    renderRows(allRows);
+    allRows.push({ id: "local_" + Date.now(), ...entry });
   }
+  closeAdd();
+  renderRows(allRows);
 };
 
-// ── Delete ──
-window.deleteRow = async (evt, id, desc) => {
-  evt.stopPropagation();
-  if (!confirm(`Delete entry: "${desc}"?`)) return;
-  try {
-    if (!id.startsWith("local_")) await deleteDoc(doc(db, "aeros_changes", id));
-    allRows = allRows.filter(r => r.id !== id);
-    renderRows(allRows);
-  } catch(e) {
-    console.error(e);
-    allRows = allRows.filter(r => r.id !== id);
-    renderRows(allRows);
-  }
-};
-
-// ── Export CSV ──
+/* EXPORT */
 window.exportCSV = () => {
   if (!currentUser) { openLogin(); return; }
-  const hdrs = ["#","Date","Time","Developer","Module","Description","Type","Version","Priority","Status","Mode","Notes","Added By"];
-  const rows = allRows.map(r => [r.num,r.date,r.time,r.dev,r.module,`"${(r.desc||"").replace(/"/g,'""')}"`,r.type,r.ver,r.prio,r.stat,r.mode,r.notes,r.addedBy].join(","));
-  const csv = [hdrs.join(","), ...rows].join("\n");
+  const h = ["#","Date","Time","Developer","Module","Description","Type","Version","Priority","Status","Mode","Notes","Added By"];
+  const b = allRows.map(r => [r.num,r.date,r.time,r.dev,r.module,`"${(r.desc||"").replace(/"/g,'""')}"`,r.type,r.ver,r.prio,r.stat,r.mode,r.notes,r.addedBy].join(","));
   const a = document.createElement("a");
-  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-  a.download = "AerOS_ChangeLog.csv";
-  a.click();
+  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent([h.join(","),...b].join("\n"));
+  a.download = "AerOS_ChangeLog.csv"; a.click();
 };
 
 function esc(s) {
   return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-// ── Enter key on login ──
-document.getElementById("l-pass").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
+function sampleData() {
+  return [
+    {id:"s1", num:1,  date:"2026-05-01",time:"09:14",dev:"Evan Sakers",   module:"Boot Loader",    desc:"Rewrote stage-2 boot sequence for faster POST handoff",       type:"Refactor",  ver:"0.9.1",prio:"High",    stat:"Complete",      mode:"Kernel",       notes:"~200ms faster",  addedBy:"Evan"},
+    {id:"s2", num:2,  date:"2026-05-01",time:"11:30",dev:"Maxwell Mays",  module:"Kernel Core",    desc:"Patched null-pointer dereference in memory allocator",        type:"Bug Fix",   ver:"0.9.1",prio:"Critical",stat:"Merged",        mode:"Kernel",       notes:"Kernel panic",   addedBy:"Maxwell"},
+    {id:"s3", num:3,  date:"2026-05-02",time:"08:55",dev:"Dominic Costas",module:"UI Shell",       desc:"Redesigned taskbar with AerOS accent palette",               type:"UI Update", ver:"0.9.2",prio:"Medium",  stat:"Complete",      mode:"UI",           notes:"",               addedBy:"Dominic"},
+    {id:"s4", num:4,  date:"2026-05-02",time:"14:20",dev:"Jaxon Lake",    module:"Networking",     desc:"Added IPv6 support to network stack driver",                  type:"Feature",   ver:"0.9.2",prio:"High",    stat:"In Progress",   mode:"Network",      notes:"Dev only",       addedBy:"Jaxon"},
+    {id:"s5", num:5,  date:"2026-05-03",time:"10:05",dev:"Evan Sakers",   module:"File System",    desc:"Implemented AerFS journaling to prevent corruption on crash", type:"Feature",   ver:"0.9.3",prio:"Critical",stat:"Pending Review",mode:"Storage",      notes:"",               addedBy:"Evan"},
+    {id:"s6", num:6,  date:"2026-05-03",time:"13:45",dev:"Maxwell Mays",  module:"Security",       desc:"Hardened syscall table against privilege escalation vectors",  type:"Security",  ver:"0.9.3",prio:"Critical",stat:"Complete",      mode:"Security",     notes:"CVE-2026-0017",  addedBy:"Maxwell"},
+    {id:"s7", num:7,  date:"2026-05-04",time:"09:00",dev:"Dominic Costas",module:"Docs",           desc:"Updated internal API documentation for module loaders",        type:"Docs",      ver:"0.9.3",prio:"Low",     stat:"Complete",      mode:"Documentation",notes:"",               addedBy:"Dominic"},
+    {id:"s8", num:8,  date:"2026-05-05",time:"15:30",dev:"Jaxon Lake",    module:"Display Driver", desc:"Fixed screen tearing on 144Hz panels in windowed mode",       type:"Bug Fix",   ver:"0.9.4",prio:"High",    stat:"Merged",        mode:"Display",      notes:"",               addedBy:"Jaxon"},
+    {id:"s9", num:9,  date:"2026-05-06",time:"11:10",dev:"Evan Sakers",   module:"Package Mgr",    desc:"Added dependency resolution engine to AerPkg",                type:"Feature",   ver:"0.9.4",prio:"Medium",  stat:"In Progress",   mode:"Package",      notes:"",               addedBy:"Evan"},
+    {id:"s10",num:10, date:"2026-05-07",time:"08:30",dev:"Maxwell Mays",  module:"Kernel Core",    desc:"Optimized scheduler for multi-core task distribution",         type:"Refactor",  ver:"0.9.5",prio:"High",    stat:"Pending Review",mode:"Scheduler",    notes:"~18% gain",      addedBy:"Maxwell"},
+  ];
+}
 
-// ── Init ──
-updateAuthUI();
+refreshAuthUI();
 loadData();
 </script>
 </body>
