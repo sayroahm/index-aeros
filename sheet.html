@@ -5,240 +5,394 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AerOS Change Tracker — Cortlin</title>
 <style>
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-* { cursor: cell !important; }
-input, select, button, textarea, a { cursor: cell !important; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+*{cursor:cell!important;}
+input,select,button,textarea,a{cursor:cell!important;}
+html,body{width:100%;height:100%;overflow:hidden;background:#4a6741;font-family:'Segoe UI',Tahoma,sans-serif;font-size:12px;}
 
-body {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  font-size: 12px;
-  background: #4a6741;
-  color: #000;
-  min-height: 100vh;
-  overflow-x: hidden;
+#app-window{
+  position:fixed;inset:6px;
+  display:flex;flex-direction:column;
+  border:1px solid #6a8f9f;
+  box-shadow:0 0 0 1px #b8d4e8,0 4px 24px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.7);
+  border-radius:8px 8px 4px 4px;
+  overflow:hidden;
+  background:#f0f0f0;
+  min-width:900px;
+  transition:opacity .15s;
 }
 
-#app-window {
-  margin: 10px auto;
-  max-width: 1380px;
-  border: 1px solid #6a8f9f;
-  box-shadow: 0 0 0 1px #b8d4e8, 0 4px 24px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.7);
-  border-radius: 8px 8px 4px 4px;
-  overflow: hidden;
-  background: #f0f0f0;
+/* TITLEBAR */
+#titlebar{
+  background:linear-gradient(180deg,#c8dff0 0%,#a8c8e8 30%,#78aad0 60%,#5890c0 80%,#6aa0d0 100%);
+  border-bottom:1px solid #4878a8;padding:6px 10px 4px;
+  display:flex;align-items:center;gap:8px;min-height:38px;flex-shrink:0;
+  border-radius:7px 7px 0 0;-webkit-app-region:drag;
 }
+#titlebar img{height:22px;width:22px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
+#titlebar-text{font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,60,.6);flex:1;}
+#titlebar-text span{font-weight:400;opacity:.85;margin-left:6px;}
+#win-btns{display:flex;gap:2px;}
+.win-btn{width:22px;height:22px;border-radius:50%;border:1px solid rgba(0,0,0,.35);font-size:10px;display:flex;align-items:center;justify-content:center;color:#333;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.6);}
+.win-btn.close{background:linear-gradient(180deg,#f88 0%,#d44 50%,#b00 100%);color:#fff;}
+.win-btn.min{background:linear-gradient(180deg,#ee8 0%,#aa6 50%,#886 100%);}
+.win-btn.max{background:linear-gradient(180deg,#8e8 0%,#5a5 50%,#373 100%);}
+#auth-corner{display:flex;align-items:center;gap:6px;font-size:11px;color:#fff;text-shadow:0 1px 2px rgba(0,0,60,.5);margin-right:8px;}
+#auth-corner strong{color:#d0f0ff;}
 
-/* VISTA TITLE BAR */
-#titlebar {
-  background: linear-gradient(180deg, #c8dff0 0%, #a8c8e8 30%, #78aad0 60%, #5890c0 80%, #6aa0d0 100%);
-  border-bottom: 1px solid #4878a8;
-  padding: 6px 10px 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 38px;
-  border-radius: 7px 7px 0 0;
+/* MENUBAR */
+#menubar{
+  background:linear-gradient(180deg,#f8f8f8 0%,#e8e8e8 100%);
+  border-bottom:1px solid #b0b0b0;
+  display:flex;align-items:center;padding:2px 6px;height:26px;flex-shrink:0;
 }
-#titlebar img { height: 22px; width: 22px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
-#titlebar-text { font-size: 12px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,60,.6); flex: 1; }
-#titlebar-text span { font-weight: 400; opacity: .85; margin-left: 6px; }
-#win-btns { display: flex; gap: 2px; }
-.win-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(0,0,0,.35); font-size: 10px; display: flex; align-items: center; justify-content: center; color: #333; font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,.6); }
-.win-btn.close { background: linear-gradient(180deg, #f88 0%, #d44 50%, #b00 100%); color: #fff; }
-.win-btn.min   { background: linear-gradient(180deg, #ee8 0%, #aa6 50%, #886 100%); }
-.win-btn.max   { background: linear-gradient(180deg, #8e8 0%, #5a5 50%, #373 100%); }
-#auth-corner { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,60,.5); margin-right: 8px; }
-#auth-corner strong { color: #d0f0ff; }
-
-/* MENU BAR */
-#menubar {
-  background: linear-gradient(180deg, #f8f8f8 0%, #e8e8e8 100%);
-  border-bottom: 1px solid #b0b0b0;
-  display: flex; align-items: center; padding: 2px 6px; height: 26px;
-}
-.menu-item { padding: 3px 10px; font-size: 12px; color: #000; border: 1px solid transparent; border-radius: 3px; }
-.menu-item:hover { background: linear-gradient(180deg, #e8f0fc 0%, #c8d8f8 100%); border-color: #7090d0; }
+.menu-item{padding:3px 10px;font-size:12px;color:#000;border:1px solid transparent;border-radius:3px;position:relative;}
+.menu-item:hover{background:linear-gradient(180deg,#e8f0fc 0%,#c8d8f8 100%);border-color:#7090d0;}
+.menu-dd{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #7090d0;box-shadow:2px 2px 6px rgba(0,0,0,.3);z-index:200;min-width:160px;margin-top:1px;}
+.menu-dd.open{display:block;}
+.menu-dd-item{padding:5px 16px;font-size:12px;color:#000;display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.menu-dd-item:hover{background:linear-gradient(90deg,#3060c0,#4878d8);color:#fff;}
+.menu-dd-sep{border-top:1px solid #ddd;margin:2px 0;}
+.menu-shortcut{margin-left:auto;font-size:10px;opacity:.6;}
 
 /* TOOLBAR */
-#toolbar {
-  background: linear-gradient(180deg, #f0f4fc 0%, #d8e4f4 50%, #c8d8f0 100%);
-  border-bottom: 1px solid #a8b8d8;
-  display: flex; align-items: center; padding: 3px 6px; gap: 2px; min-height: 52px; flex-wrap: wrap;
+#toolbar{
+  background:linear-gradient(180deg,#f0f4fc 0%,#d8e4f4 50%,#c8d8f0 100%);
+  border-bottom:1px solid #a8b8d8;
+  display:flex;align-items:center;padding:3px 6px;gap:2px;min-height:52px;flex-wrap:wrap;flex-shrink:0;
 }
-.tb-group { display: flex; flex-direction: column; align-items: center; border-right: 1px solid #b8c8e0; padding: 2px 8px; gap: 2px; }
-.tb-group:last-child { border-right: none; }
-.tb-group-label { font-size: 9px; color: #556; text-transform: uppercase; letter-spacing: .5px; }
-.tb-row { display: flex; gap: 2px; align-items: center; }
-.tb-btn { display: flex; flex-direction: column; align-items: center; padding: 3px 6px; border: 1px solid transparent; border-radius: 3px; font-size: 9px; color: #333; gap: 1px; min-width: 40px; background: none; }
-.tb-btn:hover { background: linear-gradient(180deg, #e8f0ff 0%, #b8d0f8 100%); border-color: #6888d0; }
-.tb-btn:active { background: linear-gradient(180deg, #b0c8f0 0%, #d0e0ff 100%); border-color: #4060b0; }
-.tb-btn.disabled { opacity: .4; pointer-events: none; }
-.tb-icon { font-size: 20px; line-height: 1; }
-.tb-img  { width: 22px; height: 22px; object-fit: contain; }
+.tb-group{display:flex;flex-direction:column;align-items:center;border-right:1px solid #b8c8e0;padding:2px 8px;gap:2px;}
+.tb-group:last-child{border-right:none;}
+.tb-group-label{font-size:9px;color:#556;text-transform:uppercase;letter-spacing:.5px;}
+.tb-row{display:flex;gap:2px;align-items:center;}
+.tb-btn{display:flex;flex-direction:column;align-items:center;padding:3px 6px;border:1px solid transparent;border-radius:3px;font-size:9px;color:#333;gap:1px;min-width:40px;background:none;}
+.tb-btn:hover{background:linear-gradient(180deg,#e8f0ff 0%,#b8d0f8 100%);border-color:#6888d0;}
+.tb-btn:active{background:linear-gradient(180deg,#b0c8f0 0%,#d0e0ff 100%);border-color:#4060b0;}
+.tb-btn.disabled{opacity:.4;pointer-events:none;}
+.tb-icon{font-size:20px;line-height:1;}
+.tb-img{width:22px;height:22px;object-fit:contain;}
+
+/* SEARCH BAR */
+#search-bar{
+  background:linear-gradient(180deg,#e8f0f8 0%,#d8e8f4 100%);
+  border-bottom:1px solid #a8b8d8;
+  display:flex;align-items:center;padding:3px 8px;gap:6px;height:28px;flex-shrink:0;
+}
+#search-input{
+  flex:1;max-width:300px;border:1px solid #8899bb;border-radius:3px;
+  padding:2px 8px;font-family:'Segoe UI',sans-serif;font-size:11px;
+  background:linear-gradient(180deg,#f0f4ff 0%,#fff 30%);
+  box-shadow:inset 0 1px 3px rgba(0,0,60,.1);outline:none;
+}
+#search-input:focus{border-color:#4478cc;}
+#search-label{font-size:11px;color:#334;font-weight:600;}
+#search-clear{font-size:11px;color:#888;background:none;border:none;padding:0 4px;}
+#search-clear:hover{color:#cc0000;}
+.search-stat{font-size:10px;color:#556;margin-left:6px;}
+#col-toggle-btn{margin-left:auto;font-size:11px;background:linear-gradient(180deg,#f0f4ff 0%,#d8e4f8 100%);border:1px solid #8899bb;border-radius:3px;padding:2px 8px;color:#334;}
+#col-toggle-btn:hover{border-color:#5577cc;}
 
 /* FORMULA BAR */
-#formula-bar { background: #fff; border-bottom: 1px solid #b0b0b0; display: flex; align-items: center; height: 24px; }
-#cell-ref { width: 72px; padding: 0 6px; font-size: 12px; font-weight: 700; border-right: 1px solid #b0b0b0; text-align: center; flex-shrink: 0; }
-#formula-icon { padding: 0 8px; font-style: italic; font-weight: 700; color: #0055cc; border-right: 1px solid #b0b0b0; flex-shrink: 0; font-size: 13px; }
-#formula-content { padding: 0 8px; font-size: 11px; font-family: 'Consolas', monospace; color: #333; flex: 1; overflow: hidden; white-space: nowrap; }
+#formula-bar{background:#fff;border-bottom:1px solid #b0b0b0;display:flex;align-items:center;height:24px;flex-shrink:0;}
+#cell-ref{width:72px;padding:0 6px;font-size:12px;font-weight:700;border-right:1px solid #b0b0b0;text-align:center;flex-shrink:0;}
+#formula-icon{padding:0 8px;font-style:italic;font-weight:700;color:#0055cc;border-right:1px solid #b0b0b0;flex-shrink:0;font-size:13px;}
+#formula-content{padding:0 8px;font-size:11px;font-family:'Consolas',monospace;color:#333;flex:1;overflow:hidden;white-space:nowrap;}
+
+/* TABS CONTENT */
+#tabs-content{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.tab-panel{display:none;flex:1;overflow:hidden;flex-direction:column;}
+.tab-panel.active{display:flex;}
 
 /* SHEET AREA */
-#sheet-area { overflow: auto; height: calc(100vh - 228px); background: #fff; }
+#sheet-area{overflow:auto;flex:1;background:#fff;}
+#sheet-area::-webkit-scrollbar{width:14px;height:14px;}
+#sheet-area::-webkit-scrollbar-track{background:#e8e8e0;border-left:1px solid #ccc;}
+#sheet-area::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#c8d8e8 0%,#a8b8cc 100%);border:1px solid #8899bb;}
+#sheet-area::-webkit-scrollbar-corner{background:#e8e8e0;}
 
 /* TABLE */
-table { border-collapse: collapse; table-layout: fixed; min-width: max-content; }
-
-.ch-row th {
-  background: linear-gradient(180deg, #f8f8f0 0%, #e8e8d8 100%);
-  border: 1px solid #b8b8a8; height: 20px;
-  font-size: 11px; font-weight: 400; text-align: center; color: #333; padding: 0 2px;
-  position: sticky; top: 0; z-index: 20; white-space: nowrap; user-select: none;
+table{border-collapse:collapse;table-layout:fixed;min-width:max-content;width:100%;}
+.ch-row th{
+  background:linear-gradient(180deg,#f8f8f0 0%,#e8e8d8 100%);
+  border:1px solid #b8b8a8;height:20px;
+  font-size:11px;font-weight:400;text-align:center;color:#333;padding:0 2px;
+  position:sticky;top:0;z-index:20;white-space:nowrap;user-select:none;
 }
-.ch-row th:first-child { width: 46px; min-width: 46px; position: sticky; left: 0; z-index: 30; background: linear-gradient(180deg, #f0f0e8 0%, #deded0 100%); }
-
-.logo-row td { background: #000818 !important; border: 1px solid #0a0a2a; height: 52px; padding: 0; position: sticky; top: 20px; z-index: 18; }
-.logo-row td:first-child { background: linear-gradient(180deg, #f0f0e8 0%, #deded0 100%) !important; position: sticky; left: 0; z-index: 25; border-color: #b8b8a8; }
-
-.fh-row td { background: linear-gradient(180deg, #ddeedd 0%, #b8d8b8 100%) !important; border: 1px solid #88b888; border-bottom: 2px solid #217346; height: 22px; padding: 0; font-weight: 700; font-size: 11px; position: sticky; top: 72px; z-index: 18; white-space: nowrap; }
-.fh-row td:first-child { background: linear-gradient(180deg, #f0f0e8 0%, #deded0 100%) !important; position: sticky; left: 0; z-index: 25; border-color: #b8b8a8; }
-
-.dr td { border-right: 1px solid #d8d8d8; border-bottom: 1px solid #d8d8d8; height: 20px; padding: 0; vertical-align: middle; white-space: nowrap; overflow: hidden; }
-.dr:nth-child(odd)  td:not(:first-child) { background: #fff; }
-.dr:nth-child(even) td:not(:first-child) { background: #f5f5ff; }
-.dr:hover           td:not(:first-child) { background: #ddeeff !important; }
-.dr.xl-sel          td:not(:first-child) { background: #b8d4f8 !important; }
-.dr td:first-child { background: linear-gradient(180deg, #f0f0e8 0%, #deded0 100%); border-right: 1px solid #b8b8a8; text-align: center; font-size: 10px; color: #555; position: sticky; left: 0; z-index: 5; width: 46px; min-width: 46px; }
-.dr.xl-sel td:first-child { background: linear-gradient(180deg, #3870c0 0%, #2050a0 100%); color: #fff; font-weight: 700; border-color: #2050a0; }
-
-.ci { padding: 1px 5px; font-family: 'Segoe UI', sans-serif; font-size: 11px; display: flex; align-items: center; height: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.ci.ctr { justify-content: center; }
-.ci.rgt { justify-content: flex-end; }
-
-.ddc { position: relative; height: 100%; }
-.ddc select { width: 100%; height: 100%; border: none; background: transparent; font-family: 'Segoe UI', sans-serif; font-size: 11px; font-weight: 700; padding: 0 14px 0 4px; outline: none; appearance: none; -webkit-appearance: none; cursor: cell !important; color: #000; }
-.ddc::after { content: '▾'; position: absolute; right: 3px; top: 50%; transform: translateY(-50%); font-size: 8px; color: #444; pointer-events: none; }
+.ch-row th:first-child{width:46px;min-width:46px;position:sticky;left:0;z-index:30;background:linear-gradient(180deg,#f0f0e8 0%,#deded0 100%);}
+.logo-row td{background:#000818!important;border:1px solid #0a0a2a;height:52px;padding:0;position:sticky;top:20px;z-index:18;}
+.logo-row td:first-child{background:linear-gradient(180deg,#f0f0e8 0%,#deded0 100%)!important;position:sticky;left:0;z-index:25;border-color:#b8b8a8;}
+.fh-row td{background:linear-gradient(180deg,#ddeedd 0%,#b8d8b8 100%)!important;border:1px solid #88b888;border-bottom:2px solid #217346;height:22px;padding:0;font-weight:700;font-size:11px;position:sticky;top:72px;z-index:18;white-space:nowrap;}
+.fh-row td:first-child{background:linear-gradient(180deg,#f0f0e8 0%,#deded0 100%)!important;position:sticky;left:0;z-index:25;border-color:#b8b8a8;}
+.dr td{border-right:1px solid #d8d8d8;border-bottom:1px solid #d8d8d8;height:20px;padding:0;vertical-align:middle;white-space:nowrap;overflow:hidden;}
+.dr:nth-child(odd) td:not(:first-child){background:#fff;}
+.dr:nth-child(even) td:not(:first-child){background:#f5f5ff;}
+.dr:hover td:not(:first-child){background:#ddeeff!important;}
+.dr.xl-sel td:not(:first-child){background:#b8d4f8!important;}
+.dr td:first-child{background:linear-gradient(180deg,#f0f0e8 0%,#deded0 100%);border-right:1px solid #b8b8a8;text-align:center;font-size:10px;color:#555;position:sticky;left:0;z-index:5;width:46px;min-width:46px;}
+.dr.xl-sel td:first-child{background:linear-gradient(180deg,#3870c0 0%,#2050a0 100%);color:#fff;font-weight:700;border-color:#2050a0;}
+.ci{padding:1px 5px;font-family:'Segoe UI',sans-serif;font-size:11px;display:flex;align-items:center;height:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.ci.ctr{justify-content:center;}
+.ci.rgt{justify-content:flex-end;}
+.ddc{position:relative;height:100%;}
+.ddc select{width:100%;height:100%;border:none;background:transparent;font-family:'Segoe UI',sans-serif;font-size:11px;font-weight:700;padding:0 14px 0 4px;outline:none;appearance:none;-webkit-appearance:none;cursor:cell!important;color:#000;}
+.ddc::after{content:'▾';position:absolute;right:3px;top:50%;transform:translateY(-50%);font-size:8px;color:#444;pointer-events:none;}
 
 /* BADGES */
-.badge { display: inline-block; padding: 0 7px; border-radius: 3px; font-size: 10px; font-weight: 700; border: 1px solid; white-space: nowrap; }
-.bt-Feature      { background:#ddeeff; color:#003388; border-color:#99bbee; }
-.bt-Bug\.Fix     { background:#ffdddd; color:#880000; border-color:#ee9999; }
-.bt-Refactor     { background:#eeddff; color:#550088; border-color:#bb99ee; }
-.bt-Security     { background:#ffeedd; color:#884400; border-color:#eebb88; }
-.bt-UI\.Update   { background:#ddfff0; color:#005533; border-color:#88ddb8; }
-.bt-Docs         { background:#eeeeee; color:#444;    border-color:#bbb; }
-.bt-Hotfix       { background:#ffcccc; color:#660000; border-color:#ee8888; }
-.bt-Kernel       { background:#dde8ff; color:#002277; border-color:#88aaee; }
-.bt-Backend      { background:#ddffd8; color:#004400; border-color:#88cc88; }
-.bt-Website      { background:#fffacc; color:#665500; border-color:#ddcc66; }
-.bt-Database     { background:#f0ddff; color:#550077; border-color:#cc99ee; }
-.bt-Frontend     { background:#cceeff; color:#003366; border-color:#77aadd; }
-.bt-Copyright    { background:#ffeedd; color:#664400; border-color:#ddaa77; }
-.bt-App\.Control { background:#ccffee; color:#004433; border-color:#66ccaa; }
-.bt-Image\.Design{ background:#ffd8ee; color:#660044; border-color:#dd88aa; }
-.bt-N\/A         { background:#f0f0f0; color:#666;    border-color:#ccc; }
-.bt-System       { background:#e0e8ff; color:#223366; border-color:#99aade; }
-.bt-Network      { background:#e0f0ff; color:#002255; border-color:#88aacc; }
-.bt-Performance  { background:#fff0e0; color:#663300; border-color:#ddaa77; }
-.bt-Testing      { background:#eeffee; color:#224422; border-color:#88bb88; }
-.bt-Deployment   { background:#e8ffe0; color:#1a4400; border-color:#88bb66; }
-.bt-Documentation{ background:#f8f8f8; color:#333;    border-color:#ccc; }
-.bt-API          { background:#ddeeff; color:#003388; border-color:#88aaee; }
-.bt-CLI          { background:#1a1a2a; color:#00ff88; border-color:#005533; }
-.bt-Config       { background:#f5f5e8; color:#444400; border-color:#cccc88; }
-.bt-Build        { background:#e0ffe0; color:#004400; border-color:#88cc88; }
-.bt-Package      { background:#fff0cc; color:#664400; border-color:#ddbb66; }
-.bt-Driver       { background:#e8e8ff; color:#222277; border-color:#8888dd; }
-.bt-Firmware     { background:#ffe8cc; color:#774400; border-color:#ddaa66; }
-.bt-Scheduler    { background:#e8f8ff; color:#003355; border-color:#77bbdd; }
-.bt-Memory       { background:#ffeeff; color:#550055; border-color:#dd99dd; }
-.bt-Storage      { background:#eefff0; color:#004411; border-color:#77cc88; }
-.bt-Display      { background:#fff8ee; color:#553300; border-color:#ddbb88; }
-.bt-Audio        { background:#f8eeff; color:#440055; border-color:#cc88dd; }
-.bt-Input        { background:#eeffff; color:#004455; border-color:#77cccc; }
-.bt-Power        { background:#fffee0; color:#554400; border-color:#ddcc66; }
-.bt-Localization { background:#eef0ff; color:#223388; border-color:#9999dd; }
-.bt-Accessibility{ background:#e8fff8; color:#004433; border-color:#77ccbb; }
-.bt-Bug\.Tracker { background:#ffeeee; color:#770000; border-color:#ee9999; }
-.bt-Bug\.Patch   { background:#ffd8d8; color:#660000; border-color:#ee7777; }
-.bt-Bug\.Reported{ background:#fff0f0; color:#880000; border-color:#eecccc; }
-.bt-UI           { background:#ddfff0; color:#005533; border-color:#88ddb8; }
-.bp-Critical { background:#ffcccc; color:#880000; border-color:#ee8888; font-weight:900; }
-.bp-High     { background:#ffe8cc; color:#774400; border-color:#eeaa66; }
-.bp-Medium   { background:#fffacc; color:#665500; border-color:#ddcc55; }
-.bp-Low      { background:#ccffdd; color:#004422; border-color:#77dd99; }
-.bs-Complete        { background:#ccffdd; color:#004422; border-color:#77dd99; }
-.bs-Merged          { background:#c8f0e0; color:#003322; border-color:#66ccaa; }
-.bs-In\.Progress    { background:#fffacc; color:#665500; border-color:#ddcc55; }
-.bs-Pending\.Review { background:#ddeeff; color:#003388; border-color:#88aaee; }
-.bs-Reverted        { background:#ffcccc; color:#660000; border-color:#ee8888; }
-.bs-Planned         { background:#eeeeff; color:#333388; border-color:#9999dd; }
-.bs-Open            { background:#fff8cc; color:#664400; border-color:#ddcc66; }
-.bs-Closed          { background:#eeffee; color:#004400; border-color:#77cc77; }
-.bs-On\.Hold        { background:#f0f0f0; color:#555;    border-color:#bbb; }
-.bs-Testing         { background:#ddeeff; color:#003388; border-color:#88aaee; }
-.bs-Deployed        { background:#ccffee; color:#003322; border-color:#66ccaa; }
-.bs-Cancelled       { background:#ffdddd; color:#770000; border-color:#ee9999; }
+.badge{display:inline-block;padding:0 7px;border-radius:3px;font-size:10px;font-weight:700;border:1px solid;white-space:nowrap;}
+.bt-Feature{background:#ddeeff;color:#003388;border-color:#99bbee;}
+.bt-Bug\.Fix,.bt-Bug\.Fix{background:#ffdddd;color:#880000;border-color:#ee9999;}
+.bt-Refactor{background:#eeddff;color:#550088;border-color:#bb99ee;}
+.bt-Security{background:#ffeedd;color:#884400;border-color:#eebb88;}
+.bt-UI\.Update{background:#ddfff0;color:#005533;border-color:#88ddb8;}
+.bt-Docs{background:#eeeeee;color:#444;border-color:#bbb;}
+.bt-Hotfix{background:#ffcccc;color:#660000;border-color:#ee8888;}
+.bt-Kernel{background:#dde8ff;color:#002277;border-color:#88aaee;}
+.bt-Backend{background:#ddffd8;color:#004400;border-color:#88cc88;}
+.bt-Website{background:#fffacc;color:#665500;border-color:#ddcc66;}
+.bt-Database{background:#f0ddff;color:#550077;border-color:#cc99ee;}
+.bt-Frontend{background:#cceeff;color:#003366;border-color:#77aadd;}
+.bt-Copyright{background:#ffeedd;color:#664400;border-color:#ddaa77;}
+.bt-App\.Control{background:#ccffee;color:#004433;border-color:#66ccaa;}
+.bt-Image\.Design{background:#ffd8ee;color:#660044;border-color:#dd88aa;}
+.bt-N\/A{background:#f0f0f0;color:#666;border-color:#ccc;}
+.bt-System{background:#e0e8ff;color:#223366;border-color:#99aade;}
+.bt-Network{background:#e0f0ff;color:#002255;border-color:#88aacc;}
+.bt-Performance{background:#fff0e0;color:#663300;border-color:#ddaa77;}
+.bt-Testing{background:#eeffee;color:#224422;border-color:#88bb88;}
+.bt-Deployment{background:#e8ffe0;color:#1a4400;border-color:#88bb66;}
+.bt-Documentation{background:#f8f8f8;color:#333;border-color:#ccc;}
+.bt-API{background:#ddeeff;color:#003388;border-color:#88aaee;}
+.bt-CLI{background:#1a1a2a;color:#00ff88;border-color:#005533;}
+.bt-Config{background:#f5f5e8;color:#444400;border-color:#cccc88;}
+.bt-Build{background:#e0ffe0;color:#004400;border-color:#88cc88;}
+.bt-Package{background:#fff0cc;color:#664400;border-color:#ddbb66;}
+.bt-Driver{background:#e8e8ff;color:#222277;border-color:#8888dd;}
+.bt-Firmware{background:#ffe8cc;color:#774400;border-color:#ddaa66;}
+.bt-Scheduler{background:#e8f8ff;color:#003355;border-color:#77bbdd;}
+.bt-Memory{background:#ffeeff;color:#550055;border-color:#dd99dd;}
+.bt-Storage{background:#eefff0;color:#004411;border-color:#77cc88;}
+.bt-Display{background:#fff8ee;color:#553300;border-color:#ddbb88;}
+.bt-Audio{background:#f8eeff;color:#440055;border-color:#cc88dd;}
+.bt-Input{background:#eeffff;color:#004455;border-color:#77cccc;}
+.bt-Power{background:#fffee0;color:#554400;border-color:#ddcc66;}
+.bt-Localization{background:#eef0ff;color:#223388;border-color:#9999dd;}
+.bt-Accessibility{background:#e8fff8;color:#004433;border-color:#77ccbb;}
+.bt-UI{background:#ddfff0;color:#005533;border-color:#88ddb8;}
+.bt-Bug\.Tracker{background:#ffeeee;color:#770000;border-color:#ee9999;}
+.bt-Bug\.Patch{background:#ffd8d8;color:#660000;border-color:#ee7777;}
+.bt-Bug\.Reported{background:#fff0f0;color:#880000;border-color:#eecccc;}
+.bp-Critical{background:#ffcccc;color:#880000;border-color:#ee8888;font-weight:900;}
+.bp-High{background:#ffe8cc;color:#774400;border-color:#eeaa66;}
+.bp-Medium{background:#fffacc;color:#665500;border-color:#ddcc55;}
+.bp-Low{background:#ccffdd;color:#004422;border-color:#77dd99;}
+.bs-Complete{background:#ccffdd;color:#004422;border-color:#77dd99;}
+.bs-Merged{background:#c8f0e0;color:#003322;border-color:#66ccaa;}
+.bs-In\.Progress{background:#fffacc;color:#665500;border-color:#ddcc55;}
+.bs-Pending\.Review{background:#ddeeff;color:#003388;border-color:#88aaee;}
+.bs-Reverted{background:#ffcccc;color:#660000;border-color:#ee8888;}
+.bs-Planned{background:#eeeeff;color:#333388;border-color:#9999dd;}
+.bs-Open{background:#fff8cc;color:#664400;border-color:#ddcc66;}
+.bs-Closed{background:#eeffee;color:#004400;border-color:#77cc77;}
+.bs-On\.Hold{background:#f0f0f0;color:#555;border-color:#bbb;}
+.bs-Testing{background:#ddeeff;color:#003388;border-color:#88aaee;}
+.bs-Deployed{background:#ccffee;color:#003322;border-color:#66ccaa;}
+.bs-Cancelled{background:#ffdddd;color:#770000;border-color:#ee9999;}
 
-.act { background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%); border: 1px solid #aaa; font-size: 10px; padding: 1px 6px; border-radius: 2px; color: #333; font-family: 'Segoe UI', sans-serif; box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
-.act:hover { background: linear-gradient(180deg, #eef4ff 0%, #c8d8f8 100%); border-color: #5577cc; }
-.act.del:hover { background: linear-gradient(180deg, #ffeeee 0%, #f0cccc 100%); border-color: #cc4444; color: #990000; }
+.act{background:linear-gradient(180deg,#f5f5f5 0%,#e0e0e0 100%);border:1px solid #aaa;font-size:10px;padding:1px 6px;border-radius:2px;color:#333;font-family:'Segoe UI',sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.7);}
+.act:hover{background:linear-gradient(180deg,#eef4ff 0%,#c8d8f8 100%);border-color:#5577cc;}
+.act.del:hover{background:linear-gradient(180deg,#ffeeee 0%,#f0cccc 100%);border-color:#cc4444;color:#990000;}
 
 /* SHEET TABS */
-#sheet-tabs { background: linear-gradient(180deg, #e0e8f0 0%, #c8d8e8 100%); border-top: 1px solid #a0b8cc; display: flex; align-items: flex-end; padding: 0 4px; height: 24px; gap: 2px; }
-.stab { display: inline-flex; align-items: center; gap: 5px; padding: 3px 12px 4px; border: 1px solid #90a8c0; border-bottom: none; border-radius: 4px 4px 0 0; font-size: 11px; background: linear-gradient(180deg, #d8e8f0 0%, #c0d0e0 100%); color: #334; margin-top: 4px; box-shadow: inset 0 1px 0 rgba(255,255,255,.5); }
-.stab img { width: 13px; height: 13px; object-fit: contain; }
-.stab:hover { background: linear-gradient(180deg, #e8f0f8 0%, #ccdcec 100%); }
-.stab.active { background: linear-gradient(180deg, #ffffff 0%, #f0f4f8 100%); color: #000; font-weight: 700; border-top: 2px solid #2060c0; margin-top: 0; padding-top: 5px; }
+#sheet-tabs{background:linear-gradient(180deg,#e0e8f0 0%,#c8d8e8 100%);border-top:1px solid #a0b8cc;display:flex;align-items:flex-end;padding:0 4px;height:24px;gap:2px;flex-shrink:0;}
+.stab{display:inline-flex;align-items:center;gap:5px;padding:3px 12px 4px;border:1px solid #90a8c0;border-bottom:none;border-radius:4px 4px 0 0;font-size:11px;background:linear-gradient(180deg,#d8e8f0 0%,#c0d0e0 100%);color:#334;margin-top:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.5);}
+.stab img{width:13px;height:13px;object-fit:contain;}
+.stab:hover{background:linear-gradient(180deg,#e8f0f8 0%,#ccdcec 100%);}
+.stab.active{background:linear-gradient(180deg,#ffffff 0%,#f0f4f8 100%);color:#000;font-weight:700;border-top:2px solid #2060c0;margin-top:0;padding-top:5px;}
 
-/* STATUS BAR */
-#statusbar { background: linear-gradient(180deg, #3060a8 0%, #204888 100%); color: #fff; display: flex; align-items: center; padding: 2px 10px; height: 22px; font-size: 11px; gap: 14px; border-top: 1px solid #1a3870; }
-#statusbar .sv { font-weight: 700; color: #c0e0ff; }
-#sb-right { margin-left: auto; display: flex; gap: 8px; font-size: 10px; color: #a0c8ff; }
+/* STATUSBAR */
+#statusbar{background:linear-gradient(180deg,#3060a8 0%,#204888 100%);color:#fff;display:flex;align-items:center;padding:2px 10px;height:22px;font-size:11px;gap:14px;border-top:1px solid #1a3870;flex-shrink:0;}
+#statusbar .sv{font-weight:700;color:#c0e0ff;}
+#sb-right{margin-left:auto;display:flex;gap:8px;font-size:10px;color:#a0c8ff;}
+#sb-zoom{display:flex;align-items:center;gap:4px;}
+#sb-zoom input{width:70px;height:10px;accent-color:#88ccff;}
 
-/* LOGIN MODAL */
-#login-overlay { display: none; position: fixed; inset: 0; background: rgba(0,20,60,.5); z-index: 500; align-items: center; justify-content: center; }
-#login-overlay.show { display: flex; }
-#login-dialog { background: linear-gradient(180deg, #e8f0f8 0%, #d0dce8 100%); border: 1px solid #6888c0; border-radius: 8px; box-shadow: 0 0 0 1px rgba(180,200,240,.6), 0 8px 32px rgba(0,0,60,.5), inset 0 1px 0 rgba(255,255,255,.8); width: 340px; overflow: hidden; }
-#login-titlebar { background: linear-gradient(180deg, #c0d8f0 0%, #90b8e0 30%, #6090c8 60%, #4878b0 80%, #5888c0 100%); padding: 7px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #4070a8; }
-#login-titlebar img { width: 18px; height: 18px; object-fit: contain; }
-#login-titlebar span { color: #fff; font-weight: 700; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,60,.5); flex: 1; }
-#login-body { padding: 18px 20px; }
-.lf-label { font-size: 11px; color: #222; margin-bottom: 3px; font-weight: 600; }
-.lf-input { width: 100%; border: 1px solid #8899bb; border-radius: 3px; padding: 5px 8px; font-family: 'Segoe UI', sans-serif; font-size: 12px; margin-bottom: 12px; background: linear-gradient(180deg, #f0f4ff 0%, #fff 30%); box-shadow: inset 0 2px 4px rgba(0,0,60,.12); outline: none; cursor: cell !important; }
-.lf-input:focus { border-color: #4478cc; }
-#login-err { color: #cc0000; font-size: 11px; margin-bottom: 10px; display: none; padding: 4px 8px; background: #ffeeee; border: 1px solid #ee9999; border-radius: 3px; }
-#login-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.vbtn { font-family: 'Segoe UI', sans-serif; font-size: 12px; padding: 5px 18px; border-radius: 4px; border: 1px solid #8899bb; background: linear-gradient(180deg, #f0f4ff 0%, #d8e4f8 50%, #c8d4f0 100%); color: #000; box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 1px 2px rgba(0,0,60,.2); cursor: cell !important; }
-.vbtn:hover { background: linear-gradient(180deg, #e0eaff 0%, #c0d0f0 50%, #b0c4e8 100%); border-color: #5577cc; }
-.vbtn.primary { background: linear-gradient(180deg, #6090e0 0%, #3868c0 50%, #2858b0 100%); color: #fff; border-color: #2050a0; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 2px rgba(0,0,60,.3); }
-.vbtn.primary:hover { background: linear-gradient(180deg, #70a0f0 0%, #4878d0 50%, #3868c0 100%); }
+/* TOAST */
+#toast{
+  position:fixed;bottom:32px;right:16px;z-index:999;
+  display:flex;flex-direction:column;gap:4px;pointer-events:none;
+}
+.toast-msg{
+  background:linear-gradient(180deg,#2858b0 0%,#1a3e88 100%);
+  color:#fff;padding:6px 14px;border-radius:4px;font-size:11px;
+  border:1px solid #4070c8;box-shadow:0 2px 8px rgba(0,0,0,.4);
+  opacity:0;transform:translateX(20px);transition:all .2s;pointer-events:none;
+}
+.toast-msg.show{opacity:1;transform:translateX(0);}
+.toast-msg.success{background:linear-gradient(180deg,#286828 0%,#1a481a 100%);border-color:#50a050;}
+.toast-msg.warn{background:linear-gradient(180deg,#886010 0%,#604408 100%);border-color:#c09030;}
+.toast-msg.error{background:linear-gradient(180deg,#882020 0%,#601010 100%);border-color:#c04040;}
 
-/* ADD MODAL */
-#add-overlay { display: none; position: fixed; inset: 0; background: rgba(0,20,60,.45); z-index: 500; align-items: flex-start; justify-content: center; padding-top: 50px; }
-#add-overlay.show { display: flex; }
-#add-dialog { background: linear-gradient(180deg, #e8f0f8 0%, #d8e4f0 100%); border: 1px solid #6888c0; border-radius: 8px; box-shadow: 0 0 0 1px rgba(180,200,240,.6), 0 8px 32px rgba(0,0,60,.45), inset 0 1px 0 rgba(255,255,255,.7); width: 720px; max-width: 97vw; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
-#add-titlebar { background: linear-gradient(180deg, #c0d8f0 0%, #90b8e0 30%, #6090c8 60%, #4878b0 80%, #5888c0 100%); padding: 7px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #4070a8; flex-shrink: 0; }
-#add-titlebar span { color: #fff; font-weight: 700; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,60,.5); }
-#add-titlebar button { background: none; border: none; color: #fff; font-size: 14px; padding: 0 4px; cursor: cell !important; }
-#add-body { padding: 14px 16px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; flex: 1; }
-#add-body .fg { display: flex; flex-direction: column; gap: 2px; }
-#add-body .fg.full { grid-column: 1/-1; }
-.fg label { font-size: 10px; font-weight: 700; color: #334; text-transform: uppercase; letter-spacing: .5px; }
-.fg input, .fg select { border: 1px solid #8899bb; border-radius: 3px; padding: 4px 7px; font-family: 'Segoe UI', sans-serif; font-size: 12px; background: linear-gradient(180deg, #f0f4ff 0%, #fff 30%); box-shadow: inset 0 1px 3px rgba(0,0,60,.1); outline: none; cursor: cell !important; width: 100%; }
-.fg input:focus, .fg select:focus { border-color: #4478cc; }
-#add-footer { padding: 10px 16px; border-top: 1px solid #b8c8e0; display: flex; gap: 8px; justify-content: flex-end; background: linear-gradient(180deg, #d8e8f8 0%, #c8d8ec 100%); flex-shrink: 0; }
+/* VISTA MODALS base */
+.v-overlay{display:none;position:fixed;inset:0;background:rgba(0,20,60,.5);z-index:500;align-items:center;justify-content:center;}
+.v-overlay.show{display:flex;}
+.v-dialog{background:linear-gradient(180deg,#e8f0f8 0%,#d0dce8 100%);border:1px solid #6888c0;border-radius:8px;box-shadow:0 0 0 1px rgba(180,200,240,.6),0 8px 32px rgba(0,0,60,.5),inset 0 1px 0 rgba(255,255,255,.8);overflow:hidden;}
+.v-titlebar{background:linear-gradient(180deg,#c0d8f0 0%,#90b8e0 30%,#6090c8 60%,#4878b0 80%,#5888c0 100%);padding:7px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #4070a8;}
+.v-titlebar img{width:18px;height:18px;object-fit:contain;}
+.v-titlebar span{color:#fff;font-weight:700;font-size:12px;text-shadow:0 1px 2px rgba(0,0,60,.5);flex:1;}
+.v-titlebar-close{background:none;border:none;color:#fff;font-size:14px;padding:0 4px;}
+.v-body{padding:18px 20px;}
+.vbtn{font-family:'Segoe UI',sans-serif;font-size:12px;padding:5px 18px;border-radius:4px;border:1px solid #8899bb;background:linear-gradient(180deg,#f0f4ff 0%,#d8e4f8 50%,#c8d4f0 100%);color:#000;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 2px rgba(0,0,60,.2);cursor:cell!important;}
+.vbtn:hover{background:linear-gradient(180deg,#e0eaff 0%,#c0d0f0 50%,#b0c4e8 100%);border-color:#5577cc;}
+.vbtn.primary{background:linear-gradient(180deg,#6090e0 0%,#3868c0 50%,#2858b0 100%);color:#fff;border-color:#2050a0;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 2px rgba(0,0,60,.3);}
+.vbtn.primary:hover{background:linear-gradient(180deg,#70a0f0 0%,#4878d0 50%,#3868c0 100%);}
+.vbtn.danger{background:linear-gradient(180deg,#e06060 0%,#c03838 50%,#b02828 100%);color:#fff;border-color:#902020;}
+.vbtn.danger:hover{background:linear-gradient(180deg,#f07070 0%,#d04848 50%,#c03838 100%);}
 
-.logo-banner { display: flex; align-items: center; gap: 10px; height: 52px; padding: 5px 10px; background: #000818; }
-.logo-banner img { height: 38px; width: 38px; object-fit: contain; }
-.logo-banner-t { color: #fff; font-size: 17px; font-weight: 700; letter-spacing: .5px; }
-.logo-banner-s { color: #7db820; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; }
+/* LOGIN */
+#login-dialog{width:340px;}
+.lf-label{font-size:11px;color:#222;margin-bottom:3px;font-weight:600;}
+.lf-input{width:100%;border:1px solid #8899bb;border-radius:3px;padding:5px 8px;font-family:'Segoe UI',sans-serif;font-size:12px;margin-bottom:12px;background:linear-gradient(180deg,#f0f4ff 0%,#fff 30%);box-shadow:inset 0 2px 4px rgba(0,0,60,.12);outline:none;cursor:cell!important;}
+.lf-input:focus{border-color:#4478cc;}
+#login-err{color:#cc0000;font-size:11px;margin-bottom:10px;display:none;padding:4px 8px;background:#ffeeee;border:1px solid #ee9999;border-radius:3px;}
+.v-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
 
-.cw-rn { width:46px; min-width:46px; }
-.cw-id { width:48px; } .cw-dt { width:92px; } .cw-tm { width:68px; }
-.cw-dv { width:130px; } .cw-mo { width:120px; } .cw-ds { width:320px; }
-.cw-tp { width:100px; } .cw-vr { width:66px; } .cw-pr { width:82px; }
-.cw-st { width:110px; } .cw-md { width:110px; } .cw-nt { width:180px; }
-.cw-by { width:95px; } .cw-dl { width:54px; }
+/* ADD MULTI ENTRY */
+#add-dialog{width:760px;max-width:98vw;max-height:90vh;display:flex;flex-direction:column;}
+#add-body{padding:14px 16px;overflow-y:auto;flex:1;}
+.entry-row-block{background:linear-gradient(180deg,#f8faff 0%,#eff4fc 100%);border:1px solid #c8d8f0;border-radius:4px;padding:10px 12px;margin-bottom:8px;position:relative;}
+.entry-row-block .block-num{font-size:10px;font-weight:700;color:#336;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.entry-row-block .block-del{position:absolute;top:6px;right:8px;background:none;border:none;font-size:14px;color:#cc4444;}
+.entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;}
+.entry-grid .fg{display:flex;flex-direction:column;gap:2px;}
+.entry-grid .fg.full{grid-column:1/-1;}
+.fg label{font-size:10px;font-weight:700;color:#334;text-transform:uppercase;letter-spacing:.5px;}
+.fg input,.fg select{border:1px solid #8899bb;border-radius:3px;padding:4px 7px;font-family:'Segoe UI',sans-serif;font-size:12px;background:linear-gradient(180deg,#f0f4ff 0%,#fff 30%);box-shadow:inset 0 1px 3px rgba(0,0,60,.1);outline:none;cursor:cell!important;width:100%;}
+.fg input:focus,.fg select:focus{border-color:#4478cc;}
+#add-footer{padding:10px 16px;border-top:1px solid #b8c8e0;display:flex;gap:8px;justify-content:flex-end;background:linear-gradient(180deg,#d8e8f8 0%,#c8d8ec 100%);flex-shrink:0;}
+#btn-add-row{margin-right:auto;}
+
+/* IMPORT */
+#import-dialog{width:460px;}
+#import-drop{border:2px dashed #8899bb;border-radius:5px;padding:24px;text-align:center;font-size:13px;color:#556;margin-bottom:12px;transition:border-color .2s,background .2s;}
+#import-drop.drag-over{border-color:#4478cc;background:#eef4ff;}
+#import-preview{max-height:200px;overflow-y:auto;font-family:Consolas,monospace;font-size:10px;background:#f8f8ff;border:1px solid #ccd;border-radius:3px;padding:6px;white-space:pre;display:none;}
+#import-status{font-size:11px;color:#336;margin-top:8px;}
+
+/* CONFIRM EXIT */
+#exit-dialog{width:360px;}
+.exit-icon{font-size:48px;text-align:center;margin-bottom:10px;}
+.exit-msg{font-size:13px;color:#222;text-align:center;margin-bottom:16px;line-height:1.5;}
+
+/* SETTINGS */
+#settings-dialog{width:600px;max-height:80vh;display:flex;flex-direction:column;}
+#settings-body{display:flex;flex:1;overflow:hidden;}
+#settings-nav{width:140px;background:linear-gradient(180deg,#e0ecf8 0%,#ccdce8 100%);border-right:1px solid #a8c0d8;flex-shrink:0;padding:4px 0;}
+.s-nav-item{padding:7px 14px;font-size:12px;color:#223;cursor:cell!important;display:flex;align-items:center;gap:6px;}
+.s-nav-item:hover{background:rgba(60,100,180,.12);}
+.s-nav-item.active{background:linear-gradient(90deg,#4070c0,#3060b0);color:#fff;font-weight:700;}
+.s-nav-icon{font-size:14px;}
+#settings-panels{flex:1;overflow-y:auto;padding:14px 18px;}
+.s-panel{display:none;}
+.s-panel.active{display:block;}
+.s-section{margin-bottom:18px;}
+.s-section-title{font-size:11px;font-weight:700;color:#334;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #c8d8e8;padding-bottom:4px;margin-bottom:10px;}
+.s-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:12px;}
+.s-row label{color:#222;flex:1;}
+.s-row select,.s-row input[type=text]{width:160px;border:1px solid #8899bb;border-radius:3px;padding:3px 7px;font-size:12px;background:#f8faff;outline:none;}
+.s-toggle{width:36px;height:18px;border-radius:9px;background:#ccc;border:none;position:relative;transition:background .2s;flex-shrink:0;}
+.s-toggle.on{background:#3870c0;}
+.s-toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:7px;background:#fff;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 2px rgba(0,0,0,.3);}
+.s-toggle.on::after{left:20px;}
+
+/* OVERVIEW TAB */
+#overview-panel{padding:16px;overflow-y:auto;flex:1;}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.ov-card{background:linear-gradient(180deg,#f8faff 0%,#eef4fc 100%);border:1px solid #b8cce8;border-radius:6px;padding:14px 16px;text-align:center;}
+.ov-card-n{font-size:28px;font-weight:700;color:#1a4488;line-height:1;}
+.ov-card-l{font-size:11px;color:#556;margin-top:4px;}
+.ov-table{width:100%;border-collapse:collapse;font-size:11px;}
+.ov-table th{background:linear-gradient(180deg,#ddeedd 0%,#b8d8b8 100%);border:1px solid #88b888;padding:4px 8px;text-align:left;font-weight:700;}
+.ov-table td{border:1px solid #d8d8d8;padding:4px 8px;}
+.ov-table tr:nth-child(even) td{background:#f5f5ff;}
+.ov-section-title{font-size:13px;font-weight:700;color:#1a3488;margin-bottom:8px;border-left:3px solid #3870c0;padding-left:8px;}
+.dev-bar-wrap{margin-bottom:12px;}
+.dev-bar-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;}
+.dev-bar{height:14px;border-radius:3px;background:linear-gradient(90deg,#3870c0,#5898e0);transition:width .4s;}
+.dev-bar-bg{background:#e0e8f0;border-radius:3px;overflow:hidden;}
+
+/* VERSION TIMELINE TAB */
+#timeline-panel{padding:16px;overflow-y:auto;flex:1;}
+.tl-entry{display:flex;gap:16px;margin-bottom:20px;position:relative;}
+.tl-entry::before{content:'';position:absolute;left:11px;top:24px;bottom:-20px;width:2px;background:linear-gradient(180deg,#5080c0,#a0b8e0);}
+.tl-entry:last-child::before{display:none;}
+.tl-dot{width:24px;height:24px;border-radius:50%;background:linear-gradient(180deg,#5080d8,#3060b8);border:2px solid #88aaee;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.tl-content{flex:1;}
+.tl-ver{font-size:14px;font-weight:700;color:#1a3488;}
+.tl-date{font-size:10px;color:#778;margin-left:8px;}
+.tl-changes{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;}
+.tl-change-item{background:#fff;border:1px solid #c8d8ee;border-radius:3px;padding:2px 8px;font-size:10px;color:#334;}
+
+/* CONTEXT MENU */
+#ctx-menu{
+  display:none;position:fixed;z-index:600;
+  background:linear-gradient(180deg,#f8f8f8 0%,#eaeaea 100%);
+  border:1px solid #7090d0;border-radius:3px;
+  box-shadow:2px 2px 8px rgba(0,0,60,.35);
+  min-width:160px;padding:2px 0;font-size:12px;
+}
+#ctx-menu.show{display:block;}
+.ctx-item{padding:5px 18px;display:flex;align-items:center;gap:8px;color:#000;}
+.ctx-item:hover{background:linear-gradient(90deg,#3060c0,#4878d8);color:#fff;}
+.ctx-sep{border-top:1px solid #ddd;margin:2px 0;}
+
+/* COLUMN VISIBILITY PANEL */
+#col-panel{
+  display:none;position:fixed;z-index:600;
+  background:linear-gradient(180deg,#f0f4fc 0%,#e0ecf8 100%);
+  border:1px solid #7090d0;border-radius:4px;
+  box-shadow:2px 4px 12px rgba(0,0,60,.3);
+  padding:10px 12px;min-width:200px;
+}
+#col-panel.show{display:block;}
+#col-panel h4{font-size:11px;font-weight:700;color:#223;margin-bottom:8px;border-bottom:1px solid #b8c8e0;padding-bottom:4px;}
+.col-check{display:flex;align-items:center;gap:6px;font-size:11px;color:#223;margin-bottom:4px;}
+.col-check input{cursor:cell!important;}
+
+/* KEYBOARD SHORTCUTS PANEL */
+#shortcuts-dialog{width:400px;}
+#shortcuts-body{padding:14px 18px;max-height:60vh;overflow-y:auto;}
+.sc-section{margin-bottom:14px;}
+.sc-title{font-size:11px;font-weight:700;color:#334;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.sc-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+.sc-key{background:#f0f0f0;border:1px solid #bbb;border-radius:3px;padding:1px 6px;font-family:Consolas,monospace;font-size:10px;color:#333;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 #999;}
+
+/* LOGO BANNER */
+.logo-banner{display:flex;align-items:center;gap:10px;height:52px;padding:5px 10px;background:#000818;}
+.logo-banner img{height:38px;width:38px;object-fit:contain;}
+.logo-banner-t{color:#fff;font-size:17px;font-weight:700;letter-spacing:.5px;}
+.logo-banner-s{color:#7db820;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;}
+
+/* COL WIDTHS */
+.cw-rn{width:46px;min-width:46px;}
+.cw-id{width:48px;}.cw-dt{width:92px;}.cw-tm{width:68px;}
+.cw-dv{width:130px;}.cw-mo{width:120px;}.cw-ds{width:320px;}
+.cw-tp{width:100px;}.cw-vr{width:66px;}.cw-pr{width:82px;}
+.cw-st{width:110px;}.cw-md{width:110px;}.cw-nt{width:180px;}
+.cw-by{width:95px;}.cw-dl{width:54px;}
+
+/* SETTINGS DENSITY */
+body.density-compact .dr td{height:16px!important;}
+body.density-comfortable .dr td{height:26px!important;}
+
+/* ABOUT DIALOG */
+#about-dialog{width:340px;text-align:center;}
+#about-logo{height:56px;margin-bottom:8px;}
+#about-name{font-size:18px;font-weight:700;color:#1a3488;margin-bottom:4px;}
+#about-sub{font-size:11px;color:#556;margin-bottom:12px;}
+.about-credits{font-size:11px;color:#334;line-height:1.6;}
+
+/* HIGHLIGHT */
+mark{background:#fff07a;color:#000;border-radius:2px;padding:0 1px;}
 </style>
 </head>
 <body>
@@ -253,35 +407,101 @@ table { border-collapse: collapse; table-layout: fixed; min-width: max-content; 
       <button class="vbtn" id="btn-logout" onclick="doLogout()" style="font-size:11px;padding:3px 12px;display:none;">Sign Out</button>
     </div>
     <div id="win-btns">
-      <div class="win-btn min">—</div>
-      <div class="win-btn max">□</div>
-      <div class="win-btn close">✕</div>
+      <div class="win-btn min" onclick="minimizeWin()" title="Minimize">—</div>
+      <div class="win-btn max" onclick="maximizeWin()" title="Maximize">□</div>
+      <div class="win-btn close" onclick="confirmExit()" title="Close">✕</div>
     </div>
   </div>
 
   <div id="menubar">
-    <div class="menu-item">File</div><div class="menu-item">Edit</div>
-    <div class="menu-item">View</div><div class="menu-item">Insert</div>
-    <div class="menu-item">Format</div><div class="menu-item">Data</div>
-    <div class="menu-item">Tools</div><div class="menu-item">Help</div>
+    <div class="menu-item" onmouseenter="openMenu(this,'m-file')" onmouseleave="schedClose()">File
+      <div class="menu-dd" id="m-file">
+        <div class="menu-dd-item" onclick="openAdd()">➕ New Entry<span class="menu-shortcut">Ctrl+N</span></div>
+        <div class="menu-dd-item" onclick="openMultiAdd()">📋 Multi-Row Entry<span class="menu-shortcut">Ctrl+M</span></div>
+        <div class="menu-dd-sep"></div>
+        <div class="menu-dd-item" onclick="openImport()">📥 Import CSV</div>
+        <div class="menu-dd-item" onclick="exportCSV()">💾 Export CSV<span class="menu-shortcut">Ctrl+E</span></div>
+        <div class="menu-dd-item" onclick="exportJSON()">📄 Export JSON</div>
+        <div class="menu-dd-sep"></div>
+        <div class="menu-dd-item" onclick="confirmExit()">✕ Exit<span class="menu-shortcut">Alt+F4</span></div>
+      </div>
+    </div>
+    <div class="menu-item" onmouseenter="openMenu(this,'m-edit')" onmouseleave="schedClose()">Edit
+      <div class="menu-dd" id="m-edit">
+        <div class="menu-dd-item" onclick="copySelected()">📋 Copy Row<span class="menu-shortcut">Ctrl+C</span></div>
+        <div class="menu-dd-item" onclick="deleteSelected()">🗑 Delete Row<span class="menu-shortcut">Del</span></div>
+        <div class="menu-dd-sep"></div>
+        <div class="menu-dd-item" onclick="clearFilters()">🧹 Clear Filters<span class="menu-shortcut">Ctrl+Shift+F</span></div>
+        <div class="menu-dd-item" onclick="document.getElementById('search-input').focus()">🔍 Find<span class="menu-shortcut">Ctrl+F</span></div>
+      </div>
+    </div>
+    <div class="menu-item" onmouseenter="openMenu(this,'m-view')" onmouseleave="schedClose()">View
+      <div class="menu-dd" id="m-view">
+        <div class="menu-dd-item" onclick="switchTab('log')">📋 Change Log</div>
+        <div class="menu-dd-item" onclick="switchTab('overview')">📊 Team Overview</div>
+        <div class="menu-dd-item" onclick="switchTab('timeline')">🗂 Version Timeline</div>
+        <div class="menu-dd-sep"></div>
+        <div class="menu-dd-item" onclick="toggleColPanel()">🔲 Column Visibility</div>
+        <div class="menu-dd-item" onclick="reloadData()">↻ Refresh<span class="menu-shortcut">F5</span></div>
+      </div>
+    </div>
+    <div class="menu-item" onmouseenter="openMenu(this,'m-tools')" onmouseleave="schedClose()">Tools
+      <div class="menu-dd" id="m-tools">
+        <div class="menu-dd-item" onclick="openSettings()">⚙ Settings<span class="menu-shortcut">Ctrl+,</span></div>
+        <div class="menu-dd-item" onclick="openShortcuts()">⌨ Keyboard Shortcuts</div>
+        <div class="menu-dd-sep"></div>
+        <div class="menu-dd-item" onclick="openAbout()">ℹ About AerOS Tracker</div>
+      </div>
+    </div>
+    <div class="menu-item" onmouseenter="openMenu(this,'m-help')" onmouseleave="schedClose()">Help
+      <div class="menu-dd" id="m-help">
+        <div class="menu-dd-item" onclick="openShortcuts()">⌨ Keyboard Shortcuts</div>
+        <div class="menu-dd-item" onclick="openAbout()">ℹ About</div>
+      </div>
+    </div>
   </div>
 
   <div id="toolbar">
     <div class="tb-group">
       <div class="tb-row">
         <button class="tb-btn disabled" id="btn-new" onclick="openAdd()"><span class="tb-icon">➕</span>New Entry</button>
+        <button class="tb-btn disabled" id="btn-multi" onclick="openMultiAdd()"><span class="tb-icon">📋</span>Multi Entry</button>
         <button class="tb-btn" onclick="reloadData()"><span class="tb-icon">↻</span>Refresh</button>
-        <button class="tb-btn" onclick="exportCSV()"><span class="tb-icon">💾</span>Export</button>
+        <button class="tb-btn" onclick="exportCSV()"><span class="tb-icon">💾</span>Export CSV</button>
+        <button class="tb-btn" onclick="openImport()"><span class="tb-icon">📥</span>Import</button>
       </div>
-      <div class="tb-group-label">Clipboard</div>
+      <div class="tb-group-label">File</div>
     </div>
     <div class="tb-group">
       <div class="tb-row">
-        <button class="tb-btn"><img class="tb-img" src="https://i.imgur.com/6atwQbZ.png">Build Log</button>
-        <button class="tb-btn"><img class="tb-img" src="https://i.imgur.com/Fx4z56n.png">Overview</button>
+        <button class="tb-btn" onclick="clearFilters()"><span class="tb-icon">🧹</span>Clear Filters</button>
+        <button class="tb-btn" onclick="deleteSelected()"><span class="tb-icon">🗑</span>Delete Sel</button>
+        <button class="tb-btn" onclick="toggleColPanel()" id="btn-col-vis"><span class="tb-icon">🔲</span>Columns</button>
+      </div>
+      <div class="tb-group-label">Edit</div>
+    </div>
+    <div class="tb-group">
+      <div class="tb-row">
+        <button class="tb-btn" onclick="switchTab('log')"><img class="tb-img" src="https://i.imgur.com/6atwQbZ.png">Change Log</button>
+        <button class="tb-btn" onclick="switchTab('overview')"><img class="tb-img" src="https://i.imgur.com/Fx4z56n.png">Overview</button>
+        <button class="tb-btn" onclick="switchTab('timeline')"><span class="tb-icon">🗂</span>Timeline</button>
       </div>
       <div class="tb-group-label">Views</div>
     </div>
+    <div class="tb-group">
+      <div class="tb-row">
+        <button class="tb-btn" onclick="openSettings()"><span class="tb-icon">⚙</span>Settings</button>
+      </div>
+      <div class="tb-group-label">Tools</div>
+    </div>
+  </div>
+
+  <div id="search-bar">
+    <span id="search-label">🔍</span>
+    <input id="search-input" placeholder="Search all columns… (Ctrl+F)" oninput="onSearch()">
+    <button id="search-clear" onclick="clearSearch()" title="Clear search">✕</button>
+    <span class="search-stat" id="search-stat"></span>
+    <button id="col-toggle-btn" onclick="toggleColPanel()">Column Visibility ▾</button>
   </div>
 
   <div id="formula-bar">
@@ -290,85 +510,159 @@ table { border-collapse: collapse; table-layout: fixed; min-width: max-content; 
     <div id="formula-content">=AEROS_CHANGELOG()</div>
   </div>
 
-  <div id="sheet-area">
-    <table id="main-table">
-      <colgroup>
-        <col class="cw-rn"><col class="cw-id"><col class="cw-dt"><col class="cw-tm">
-        <col class="cw-dv"><col class="cw-mo"><col class="cw-ds"><col class="cw-tp">
-        <col class="cw-vr"><col class="cw-pr"><col class="cw-st"><col class="cw-md">
-        <col class="cw-nt"><col class="cw-by"><col class="cw-dl">
-      </colgroup>
-      <thead>
-        <tr class="ch-row">
-          <th></th>
-          <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
-          <th>G</th><th>H</th><th>I</th><th>J</th><th>K</th><th>L</th><th>M</th><th>N</th>
-        </tr>
-        <tr class="logo-row">
-          <td></td>
-          <td colspan="14">
-            <div class="logo-banner">
-              <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
-              <div>
-                <div class="logo-banner-t">AerOS Change Tracking Log</div>
-                <div class="logo-banner-s">Cortlin Development Division · Internal Build Record</div>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <tr class="fh-row">
-          <td></td>
-          <td><div class="ci" style="font-weight:700;">#</div></td>
-          <td><div class="ci" style="font-weight:700;">Date</div></td>
-          <td><div class="ci" style="font-weight:700;">Time</div></td>
-          <td><div class="ddc"><select id="f-dev" onchange="applyFilters()"><option value="">Developer ▾</option><option>Evan Sakers</option><option>Maxwell Mays</option><option>Dominic Costas</option><option>Jaxon Lake</option></select></div></td>
-          <td><div class="ci" style="font-weight:700;">Module</div></td>
-          <td><div class="ci" style="font-weight:700;">Description</div></td>
-          <td><div class="ddc"><select id="f-type" onchange="applyFilters()"><option value="">Type ▾</option><option>Feature</option><option>Bug Fix</option><option>Refactor</option><option>Hotfix</option><option>Security</option><option>UI Update</option><option>Docs</option><option>Kernel</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Copyright</option><option>App Control</option><option>Image Design</option><option>N/A</option></select></div></td>
-          <td><div class="ci" style="font-weight:700;">Ver</div></td>
-          <td><div class="ddc"><select id="f-prio" onchange="applyFilters()"><option value="">Priority ▾</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div></td>
-          <td><div class="ddc"><select id="f-stat" onchange="applyFilters()"><option value="">Status ▾</option><option>Complete</option><option>Merged</option><option>In Progress</option><option>Pending Review</option><option>Testing</option><option>Deployed</option><option>Planned</option><option>On Hold</option><option>Open</option><option>Closed</option><option>Cancelled</option><option>Reverted</option></select></div></td>
-          <td><div class="ddc"><select id="f-mode" onchange="applyFilters()"><option value="">Mode ▾</option><option>Kernel</option><option>UI</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Bug Tracker</option><option>Bug Patch</option><option>Bug Fix</option><option>Bug Reported</option><option>Copyright</option><option>N/A</option><option>App Control</option><option>Image Design</option><option>System</option><option>Network</option><option>Security</option><option>Performance</option><option>Testing</option><option>Deployment</option><option>Documentation</option><option>API</option><option>CLI</option><option>Config</option><option>Build</option><option>Package</option><option>Driver</option><option>Firmware</option><option>Scheduler</option><option>Memory</option><option>Storage</option><option>Display</option><option>Audio</option><option>Input</option><option>Power</option><option>Localization</option><option>Accessibility</option></select></div></td>
-          <td><div class="ci" style="font-weight:700;">Notes</div></td>
-          <td><div class="ci" style="font-weight:700;">Added By</div></td>
-          <td><div class="ci ctr" style="font-weight:700;">Del</div></td>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
+  <div id="tabs-content">
+    <!-- CHANGE LOG TAB -->
+    <div class="tab-panel active" id="panel-log">
+      <div id="sheet-area">
+        <table id="main-table">
+          <colgroup>
+            <col class="cw-rn" id="col-rn">
+            <col class="cw-id" id="col-id">
+            <col class="cw-dt" id="col-dt">
+            <col class="cw-tm" id="col-tm">
+            <col class="cw-dv" id="col-dv">
+            <col class="cw-mo" id="col-mo">
+            <col class="cw-ds" id="col-ds">
+            <col class="cw-tp" id="col-tp">
+            <col class="cw-vr" id="col-vr">
+            <col class="cw-pr" id="col-pr">
+            <col class="cw-st" id="col-st">
+            <col class="cw-md" id="col-md">
+            <col class="cw-nt" id="col-nt">
+            <col class="cw-by" id="col-by">
+            <col class="cw-dl" id="col-dl">
+          </colgroup>
+          <thead>
+            <tr class="ch-row">
+              <th></th>
+              <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
+              <th>G</th><th>H</th><th>I</th><th>J</th><th>K</th><th>L</th><th>M</th><th>N</th>
+            </tr>
+            <tr class="logo-row">
+              <td></td>
+              <td colspan="14">
+                <div class="logo-banner">
+                  <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+                  <div>
+                    <div class="logo-banner-t">AerOS Change Tracking Log</div>
+                    <div class="logo-banner-s">Cortlin Development Division · Internal Build Record</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="fh-row">
+              <td></td>
+              <td><div class="ci" style="font-weight:700;">#</div></td>
+              <td><div class="ci sortable" onclick="sortBy('date')" style="font-weight:700;cursor:cell;">Date ⇅</div></td>
+              <td><div class="ci" style="font-weight:700;">Time</div></td>
+              <td><div class="ddc"><select id="f-dev" onchange="applyFilters()"><option value="">Developer ▾</option><option>Evan Sakers</option><option>Maxwell Mays</option><option>Dominic Costas</option><option>Jaxon Lake</option></select></div></td>
+              <td><div class="ci sortable" onclick="sortBy('module')" style="font-weight:700;cursor:cell;">Module ⇅</div></td>
+              <td><div class="ci" style="font-weight:700;">Description</div></td>
+              <td><div class="ddc"><select id="f-type" onchange="applyFilters()"><option value="">Type ▾</option><option>Feature</option><option>Bug Fix</option><option>Refactor</option><option>Hotfix</option><option>Security</option><option>UI Update</option><option>Docs</option><option>Kernel</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Copyright</option><option>App Control</option><option>Image Design</option><option>N/A</option></select></div></td>
+              <td><div class="ci sortable" onclick="sortBy('ver')" style="font-weight:700;cursor:cell;">Ver ⇅</div></td>
+              <td><div class="ddc"><select id="f-prio" onchange="applyFilters()"><option value="">Priority ▾</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div></td>
+              <td><div class="ddc"><select id="f-stat" onchange="applyFilters()"><option value="">Status ▾</option><option>Complete</option><option>Merged</option><option>In Progress</option><option>Pending Review</option><option>Testing</option><option>Deployed</option><option>Planned</option><option>On Hold</option><option>Open</option><option>Closed</option><option>Cancelled</option><option>Reverted</option></select></div></td>
+              <td><div class="ddc"><select id="f-mode" onchange="applyFilters()"><option value="">Mode ▾</option><option>Kernel</option><option>UI</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Bug Tracker</option><option>Bug Patch</option><option>Bug Fix</option><option>Bug Reported</option><option>Copyright</option><option>N/A</option><option>App Control</option><option>Image Design</option><option>System</option><option>Network</option><option>Security</option><option>Performance</option><option>Testing</option><option>Deployment</option><option>Documentation</option><option>API</option><option>CLI</option><option>Config</option><option>Build</option><option>Package</option><option>Driver</option><option>Firmware</option><option>Scheduler</option><option>Memory</option><option>Storage</option><option>Display</option><option>Audio</option><option>Input</option><option>Power</option><option>Localization</option><option>Accessibility</option></select></div></td>
+              <td><div class="ci" style="font-weight:700;">Notes</div></td>
+              <td><div class="ci" style="font-weight:700;">Added By</div></td>
+              <td><div class="ci ctr" style="font-weight:700;">Del</div></td>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-panel" id="panel-overview">
+      <div id="overview-panel">
+        <div style="font-size:15px;font-weight:700;color:#1a3488;margin-bottom:14px;">📊 Team Overview</div>
+        <div class="ov-grid" id="ov-stats"></div>
+        <div class="ov-section-title" style="margin-top:20px;">Developer Activity</div>
+        <div id="dev-bars" style="margin-bottom:20px;"></div>
+        <div class="ov-section-title">Recent Changes by Type</div>
+        <table class="ov-table" id="type-table" style="margin-bottom:20px;">
+          <thead><tr><th>Type</th><th>Count</th><th>% of Total</th></tr></thead>
+          <tbody id="type-tbody"></tbody>
+        </table>
+        <div class="ov-section-title">Status Breakdown</div>
+        <table class="ov-table" id="status-table">
+          <thead><tr><th>Status</th><th>Count</th><th>% of Total</th></tr></thead>
+          <tbody id="status-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TIMELINE TAB -->
+    <div class="tab-panel" id="panel-timeline">
+      <div id="timeline-panel">
+        <div style="font-size:15px;font-weight:700;color:#1a3488;margin-bottom:14px;">🗂 Version Timeline</div>
+        <div id="timeline-content"></div>
+      </div>
+    </div>
   </div>
 
   <div id="sheet-tabs">
-    <div class="stab active"><img src="https://i.imgur.com/6atwQbZ.png"> Change Log</div>
-    <div class="stab"><img src="https://i.imgur.com/Fx4z56n.png"> Team Overview</div>
-    <div class="stab">🗂 Version Timeline</div>
+    <div class="stab active" onclick="switchTab('log')" id="stab-log"><img src="https://i.imgur.com/6atwQbZ.png"> Change Log</div>
+    <div class="stab" onclick="switchTab('overview')" id="stab-overview"><img src="https://i.imgur.com/Fx4z56n.png"> Team Overview</div>
+    <div class="stab" onclick="switchTab('timeline')" id="stab-timeline">🗂 Version Timeline</div>
   </div>
 
   <div id="statusbar">
-    <span>Ready</span>
+    <span id="sb-ready">Ready</span>
     <span>Rows: <span class="sv" id="sb-count">–</span></span>
     <span>Total: <span class="sv" id="sb-total">–</span></span>
+    <span>Selected: <span class="sv" id="sb-sel">–</span></span>
     <div id="sb-right">
       <span id="sb-user">Not signed in</span>
-      <span>AerOS Tracker v1.0</span>
+      <div id="sb-zoom">
+        <span>Zoom:</span>
+        <input type="range" min="70" max="150" value="100" id="zoom-slider" oninput="setZoom(this.value)">
+        <span id="zoom-val">100%</span>
+      </div>
+      <span>AerOS Tracker v2.0</span>
     </div>
   </div>
 </div>
 
+<!-- TOAST CONTAINER -->
+<div id="toast"></div>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu">
+  <div class="ctx-item" onclick="ctxEdit()">✏ Edit Row</div>
+  <div class="ctx-item" onclick="copySelected()">📋 Copy Row</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="ctxDuplicate()">🔁 Duplicate Row</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="deleteSelected()">🗑 Delete Row</div>
+</div>
+
+<!-- COLUMN VISIBILITY PANEL -->
+<div id="col-panel">
+  <h4>Column Visibility</h4>
+  <div id="col-checks"></div>
+  <div style="margin-top:8px;display:flex;gap:6px;">
+    <button class="vbtn" onclick="setAllCols(true)" style="font-size:10px;padding:2px 8px;">All</button>
+    <button class="vbtn" onclick="setAllCols(false)" style="font-size:10px;padding:2px 8px;">None</button>
+    <button class="vbtn" onclick="closeColPanel()" style="margin-left:auto;font-size:10px;padding:2px 8px;">Close</button>
+  </div>
+</div>
+
 <!-- LOGIN -->
-<div id="login-overlay">
-  <div id="login-dialog">
-    <div id="login-titlebar">
+<div class="v-overlay" id="login-overlay">
+  <div class="v-dialog" id="login-dialog">
+    <div class="v-titlebar">
       <img src="https://i.imgur.com/bqOOpyN.png" alt="">
       <span>Sign in — AerOS Tracker</span>
     </div>
-    <div id="login-body">
+    <div class="v-body">
       <div class="lf-label">Username</div>
       <input class="lf-input" id="l-user" type="text" placeholder="Enter your username" autocomplete="off">
       <div class="lf-label">Password</div>
       <input class="lf-input" id="l-pass" type="password" placeholder="Enter your password">
       <div id="login-err">Incorrect username or password.</div>
-      <div id="login-actions">
+      <div class="v-actions">
         <button class="vbtn" onclick="closeLogin()">Cancel</button>
         <button class="vbtn primary" onclick="doLogin()">Sign In</button>
       </div>
@@ -376,29 +670,205 @@ table { border-collapse: collapse; table-layout: fixed; min-width: max-content; 
   </div>
 </div>
 
-<!-- ADD ENTRY -->
-<div id="add-overlay">
-  <div id="add-dialog">
-    <div id="add-titlebar">
-      <span>➕ New Change Entry</span>
-      <button onclick="closeAdd()">✕</button>
+<!-- ADD SINGLE ENTRY (reuses multi-row with 1 block) -->
+<div class="v-overlay" id="add-overlay">
+  <div class="v-dialog" id="add-dialog">
+    <div class="v-titlebar">
+      <span id="add-title">➕ New Change Entry</span>
+      <button class="v-titlebar-close" onclick="closeAdd()">✕</button>
     </div>
-    <div id="add-body">
-      <div class="fg"><label>Date</label><input id="f-date" type="date"></div>
-      <div class="fg"><label>Time</label><input id="f-time" type="time"></div>
-      <div class="fg"><label>Developer</label><select id="f-edev"><option>Evan Sakers</option><option>Maxwell Mays</option><option>Dominic Costas</option><option>Jaxon Lake</option></select></div>
-      <div class="fg"><label>Module / Component</label><input id="f-module" type="text" placeholder="e.g. Kernel Core"></div>
-      <div class="fg full"><label>Description</label><input id="f-desc" type="text" placeholder="Describe the change..."></div>
-      <div class="fg"><label>Change Type</label><select id="f-etype"><option>Feature</option><option>Bug Fix</option><option>Refactor</option><option>Hotfix</option><option>Security</option><option>UI Update</option><option>Docs</option><option>Kernel</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Copyright</option><option>App Control</option><option>Image Design</option><option>N/A</option></select></div>
-      <div class="fg"><label>Version</label><input id="f-ver" type="text" placeholder="e.g. 0.9.5"></div>
-      <div class="fg"><label>Priority</label><select id="f-eprio"><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div>
-      <div class="fg"><label>Status</label><select id="f-estat"><option>Complete</option><option>Merged</option><option>In Progress</option><option>Pending Review</option><option>Testing</option><option>Deployed</option><option>Planned</option><option>On Hold</option><option>Open</option><option>Closed</option><option>Cancelled</option><option>Reverted</option></select></div>
-      <div class="fg"><label>Mode</label><select id="f-emode"><option>Kernel</option><option>UI</option><option>Backend</option><option>Website</option><option>Database</option><option>Frontend</option><option>Bug Tracker</option><option>Bug Patch</option><option>Bug Fix</option><option>Bug Reported</option><option>Copyright</option><option>N/A</option><option>App Control</option><option>Image Design</option><option>System</option><option>Network</option><option>Security</option><option>Performance</option><option>Testing</option><option>Deployment</option><option>Documentation</option><option>API</option><option>CLI</option><option>Config</option><option>Build</option><option>Package</option><option>Driver</option><option>Firmware</option><option>Scheduler</option><option>Memory</option><option>Storage</option><option>Display</option><option>Audio</option><option>Input</option><option>Power</option><option>Localization</option><option>Accessibility</option></select></div>
-      <div class="fg full"><label>Notes</label><input id="f-notes" type="text" placeholder="Optional notes..."></div>
-    </div>
+    <div id="add-body"></div>
     <div id="add-footer">
+      <button class="vbtn" id="btn-add-row" onclick="addEntryBlock()">+ Add Another Row</button>
       <button class="vbtn" onclick="closeAdd()">Cancel</button>
-      <button class="vbtn primary" onclick="saveEntry()">Save Entry</button>
+      <button class="vbtn primary" onclick="saveEntries()">Save All</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT -->
+<div class="v-overlay" id="import-overlay">
+  <div class="v-dialog" id="import-dialog">
+    <div class="v-titlebar">
+      <span>📥 Import CSV</span>
+      <button class="v-titlebar-close" onclick="closeImport()">✕</button>
+    </div>
+    <div class="v-body">
+      <div id="import-drop" ondragover="e=>e.preventDefault()" ondrop="handleImportDrop(event)">
+        <div>Drag &amp; drop a CSV file here, or</div>
+        <div style="margin-top:8px;"><button class="vbtn" onclick="document.getElementById('csv-file-input').click()">Browse File…</button></div>
+        <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="handleFileSelect(event)">
+      </div>
+      <div id="import-preview"></div>
+      <div id="import-status"></div>
+      <div style="font-size:10px;color:#778;margin-top:8px;">Expected columns: Date, Time, Developer, Module, Description, Type, Version, Priority, Status, Mode, Notes</div>
+      <div class="v-actions" style="margin-top:12px;">
+        <button class="vbtn" onclick="closeImport()">Cancel</button>
+        <button class="vbtn primary" id="btn-do-import" onclick="doImport()" style="display:none;">Import Rows</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM EXIT -->
+<div class="v-overlay" id="exit-overlay">
+  <div class="v-dialog" id="exit-dialog">
+    <div class="v-titlebar">
+      <img src="https://i.imgur.com/bqOOpyN.png" alt="">
+      <span>Exit AerOS Tracker</span>
+    </div>
+    <div class="v-body">
+      <div class="exit-icon">⚠️</div>
+      <div class="exit-msg">Are you sure you want to exit AerOS Change Tracker?<br><span style="font-size:11px;color:#778;">Any unsaved changes may be lost.</span></div>
+      <div class="v-actions">
+        <button class="vbtn" onclick="closeExit()">Cancel</button>
+        <button class="vbtn danger" onclick="doExit()">Exit Application</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="v-overlay" id="settings-overlay">
+  <div class="v-dialog" id="settings-dialog">
+    <div class="v-titlebar">
+      <span>⚙ Settings — AerOS Tracker</span>
+      <button class="v-titlebar-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div id="settings-body">
+      <div id="settings-nav">
+        <div class="s-nav-item active" onclick="showSettingsPanel('general',this)"><span class="s-nav-icon">⚙</span>General</div>
+        <div class="s-nav-item" onclick="showSettingsPanel('appearance',this)"><span class="s-nav-icon">🎨</span>Appearance</div>
+        <div class="s-nav-item" onclick="showSettingsPanel('data',this)"><span class="s-nav-icon">🗄</span>Data</div>
+        <div class="s-nav-item" onclick="showSettingsPanel('users',this)"><span class="s-nav-icon">👥</span>Users</div>
+        <div class="s-nav-item" onclick="showSettingsPanel('notifications',this)"><span class="s-nav-icon">🔔</span>Notifications</div>
+        <div class="s-nav-item" onclick="showSettingsPanel('advanced',this)"><span class="s-nav-icon">🛠</span>Advanced</div>
+      </div>
+      <div id="settings-panels">
+        <div class="s-panel active" id="sp-general">
+          <div class="s-section">
+            <div class="s-section-title">General</div>
+            <div class="s-row"><label>Auto-refresh interval</label><select id="set-refresh"><option value="0">Off</option><option value="30">30 seconds</option><option value="60">1 minute</option><option value="300">5 minutes</option></select></div>
+            <div class="s-row"><label>Default developer</label><select id="set-defdev"><option value="">None</option><option>Evan Sakers</option><option>Maxwell Mays</option><option>Dominic Costas</option><option>Jaxon Lake</option></select></div>
+            <div class="s-row"><label>Confirm before delete</label><button class="s-toggle on" id="tog-confirm-del" onclick="toggleSetting(this)"></button></div>
+            <div class="s-row"><label>Show row numbers</label><button class="s-toggle on" id="tog-row-nums" onclick="toggleSetting(this)"></button></div>
+          </div>
+        </div>
+        <div class="s-panel" id="sp-appearance">
+          <div class="s-section">
+            <div class="s-section-title">Display</div>
+            <div class="s-row"><label>Row density</label><select id="set-density" onchange="applyDensity(this.value)"><option value="">Normal</option><option value="density-compact">Compact</option><option value="density-comfortable">Comfortable</option></select></div>
+            <div class="s-row"><label>Zoom level</label><select id="set-zoom" onchange="setZoom(this.value)"><option value="80">80%</option><option value="90">90%</option><option value="100" selected>100%</option><option value="110">110%</option><option value="125">125%</option></select></div>
+            <div class="s-row"><label>Highlight search matches</label><button class="s-toggle on" id="tog-highlight" onclick="toggleSetting(this)"></button></div>
+            <div class="s-row"><label>Freeze header rows</label><button class="s-toggle on" id="tog-freeze" onclick="toggleSetting(this)"></button></div>
+          </div>
+        </div>
+        <div class="s-panel" id="sp-data">
+          <div class="s-section">
+            <div class="s-section-title">Data Management</div>
+            <div class="s-row"><label>Export format</label><select id="set-export"><option>CSV</option><option>JSON</option><option>Both</option></select></div>
+            <div class="s-row"><label>Include timestamps in export</label><button class="s-toggle on" id="tog-ts-export" onclick="toggleSetting(this)"></button></div>
+          </div>
+          <div class="s-section">
+            <div class="s-section-title">Import</div>
+            <div class="s-row"><label>Skip duplicate entries</label><button class="s-toggle on" id="tog-skip-dup" onclick="toggleSetting(this)"></button></div>
+          </div>
+        </div>
+        <div class="s-panel" id="sp-users">
+          <div class="s-section">
+            <div class="s-section-title">Developer Accounts</div>
+            <div style="font-size:11px;color:#556;margin-bottom:8px;">User management is handled via Firestore. Sign in to view your account details.</div>
+            <div id="user-info-panel" style="font-size:12px;color:#223;"></div>
+          </div>
+        </div>
+        <div class="s-panel" id="sp-notifications">
+          <div class="s-section">
+            <div class="s-section-title">Toast Notifications</div>
+            <div class="s-row"><label>Show save confirmations</label><button class="s-toggle on" id="tog-toast-save" onclick="toggleSetting(this)"></button></div>
+            <div class="s-row"><label>Show delete confirmations</label><button class="s-toggle on" id="tog-toast-del" onclick="toggleSetting(this)"></button></div>
+            <div class="s-row"><label>Show import results</label><button class="s-toggle on" id="tog-toast-import" onclick="toggleSetting(this)"></button></div>
+          </div>
+        </div>
+        <div class="s-panel" id="sp-advanced">
+          <div class="s-section">
+            <div class="s-section-title">Advanced</div>
+            <div class="s-row"><label>Developer mode</label><button class="s-toggle" id="tog-dev-mode" onclick="toggleSetting(this)"></button></div>
+            <div class="s-row"><label>Log Firestore calls to console</label><button class="s-toggle" id="tog-log-fs" onclick="toggleSetting(this)"></button></div>
+          </div>
+          <div class="s-section">
+            <div class="s-section-title">Reset</div>
+            <div style="margin-bottom:8px;font-size:11px;color:#556;">Clear all local preferences and cached data.</div>
+            <button class="vbtn danger" onclick="resetSettings()" style="font-size:11px;">Reset to Defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:8px 16px;border-top:1px solid #b8c8e0;display:flex;justify-content:flex-end;background:linear-gradient(180deg,#d8e8f8 0%,#c8d8ec 100%);">
+      <button class="vbtn primary" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHORTCUTS -->
+<div class="v-overlay" id="shortcuts-overlay">
+  <div class="v-dialog" id="shortcuts-dialog">
+    <div class="v-titlebar">
+      <span>⌨ Keyboard Shortcuts</span>
+      <button class="v-titlebar-close" onclick="closeShortcuts()">✕</button>
+    </div>
+    <div id="shortcuts-body">
+      <div class="sc-section">
+        <div class="sc-title">General</div>
+        <div class="sc-row"><span>New Entry</span><span class="sc-key">Ctrl+N</span></div>
+        <div class="sc-row"><span>Multi-Row Entry</span><span class="sc-key">Ctrl+M</span></div>
+        <div class="sc-row"><span>Refresh Data</span><span class="sc-key">F5</span></div>
+        <div class="sc-row"><span>Export CSV</span><span class="sc-key">Ctrl+E</span></div>
+        <div class="sc-row"><span>Settings</span><span class="sc-key">Ctrl+,</span></div>
+        <div class="sc-row"><span>Exit</span><span class="sc-key">Alt+F4</span></div>
+      </div>
+      <div class="sc-section">
+        <div class="sc-title">Navigation</div>
+        <div class="sc-row"><span>Search / Find</span><span class="sc-key">Ctrl+F</span></div>
+        <div class="sc-row"><span>Clear Filters</span><span class="sc-key">Ctrl+Shift+F</span></div>
+        <div class="sc-row"><span>Change Log Tab</span><span class="sc-key">Ctrl+1</span></div>
+        <div class="sc-row"><span>Overview Tab</span><span class="sc-key">Ctrl+2</span></div>
+        <div class="sc-row"><span>Timeline Tab</span><span class="sc-key">Ctrl+3</span></div>
+      </div>
+      <div class="sc-section">
+        <div class="sc-title">Row Actions</div>
+        <div class="sc-row"><span>Delete Selected Row</span><span class="sc-key">Del</span></div>
+        <div class="sc-row"><span>Copy Selected Row</span><span class="sc-key">Ctrl+C</span></div>
+        <div class="sc-row"><span>Deselect</span><span class="sc-key">Esc</span></div>
+      </div>
+    </div>
+    <div style="padding:8px 16px;border-top:1px solid #b8c8e0;display:flex;justify-content:flex-end;background:linear-gradient(180deg,#d8e8f8 0%,#c8d8ec 100%);">
+      <button class="vbtn primary" onclick="closeShortcuts()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="v-overlay" id="about-overlay">
+  <div class="v-dialog" id="about-dialog">
+    <div class="v-titlebar">
+      <img src="https://i.imgur.com/bqOOpyN.png" alt="">
+      <span>About AerOS Tracker</span>
+    </div>
+    <div class="v-body">
+      <div style="text-align:center;">
+        <img id="about-logo" src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+        <div id="about-name">AerOS Change Tracker</div>
+        <div id="about-sub">Version 2.0 — Cortlin Development Division</div>
+      </div>
+      <div class="about-credits" style="margin-top:12px;">
+        <b>Developers:</b> Evan Sakers · Maxwell Mays · Dominic Costas · Jaxon Lake<br>
+        <b>Backend:</b> Firebase Firestore<br>
+        <b>Features:</b> Multi-row entry · CSV import/export · JSON export · Column visibility · Sortable columns · Full-text search · Team overview · Version timeline · Keyboard shortcuts<br><br>
+        <span style="font-size:10px;color:#778;">© 2026 Cortlin Development. All rights reserved.</span>
+      </div>
+      <div class="v-actions" style="margin-top:14px;">
+        <button class="vbtn primary" onclick="closeAbout()">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -410,265 +880,741 @@ import { getFirestore, collection, doc, getDocs, addDoc, deleteDoc,
   from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const app = initializeApp({
-  apiKey:            "AIzaSyAfb1PKVSPEuVPzdb3BE9fbMtT8Yade-hY",
-  authDomain:        "cortlin.firebaseapp.com",
-  projectId:         "cortlin",
-  storageBucket:     "cortlin.firebasestorage.app",
-  messagingSenderId: "439783582358",
-  appId:             "1:439783582358:web:ef40a524daaa6d0a77f0b7"
+  apiKey:"AIzaSyAfb1PKVSPEuVPzdb3BE9fbMtT8Yade-hY",
+  authDomain:"cortlin.firebaseapp.com",
+  projectId:"cortlin",
+  storageBucket:"cortlin.firebasestorage.app",
+  messagingSenderId:"439783582358",
+  appId:"1:439783582358:web:ef40a524daaa6d0a77f0b7"
 });
 const db = getFirestore(app);
 
-/* Session — same key your index.html uses */
-let currentUser = JSON.parse(sessionStorage.getItem("cortlin_user") || "null");
+let currentUser = JSON.parse(sessionStorage.getItem("cortlin_user")||"null");
 let allRows = [];
+let sortField = "date", sortDir = 1;
+let searchTerm = "";
+let selectedRow = null;
+let selectedData = null;
+let importRows = [];
+let hiddenCols = new Set();
+let currentTab = "log";
+let autoRefreshTimer = null;
+let settings = JSON.parse(localStorage.getItem("aeros_settings")||"{}");
 
+// ────── SETTINGS ──────
+function getSetting(k, def) { return settings[k] !== undefined ? settings[k] : def; }
+function saveSetting(k, v) { settings[k] = v; localStorage.setItem("aeros_settings", JSON.stringify(settings)); }
+
+window.toggleSetting = (btn) => {
+  btn.classList.toggle("on");
+  saveSetting(btn.id, btn.classList.contains("on"));
+};
+window.applyDensity = (v) => {
+  document.body.className = document.body.className.replace(/density-\w+/g,"").trim();
+  if(v) document.body.classList.add(v);
+  saveSetting("density", v);
+};
+window.resetSettings = () => {
+  if(confirm("Reset all settings to defaults?")) {
+    localStorage.removeItem("aeros_settings");
+    settings = {};
+    showToast("Settings reset to defaults","success");
+    closeSettings();
+  }
+};
+window.showSettingsPanel = (id, el) => {
+  document.querySelectorAll(".s-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".s-nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById("sp-"+id).classList.add("active");
+  el.classList.add("active");
+  if(id==="users") {
+    const p = document.getElementById("user-info-panel");
+    p.innerHTML = currentUser
+      ? `<b>Signed in as:</b> ${currentUser.user}<br><b>Role:</b> ${currentUser.role||"member"}`
+      : "<span style='color:#888'>Not signed in.</span>";
+  }
+};
+
+// ────── TOAST ──────
+window.showToast = (msg, type="info", dur=2800) => {
+  const c = document.getElementById("toast");
+  const el = document.createElement("div");
+  el.className = `toast-msg ${type}`;
+  el.textContent = msg;
+  c.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("show")));
+  setTimeout(()=>{
+    el.classList.remove("show");
+    setTimeout(()=>el.remove(), 300);
+  }, dur);
+};
+
+// ────── MENU ──────
+let menuCloseTimer = null;
+window.openMenu = (el, id) => {
+  clearTimeout(menuCloseTimer);
+  document.querySelectorAll(".menu-dd").forEach(d=>d.classList.remove("open"));
+  document.getElementById(id).classList.add("open");
+  el.addEventListener("mouseleave", ()=>{
+    menuCloseTimer = setTimeout(()=>document.querySelectorAll(".menu-dd").forEach(d=>d.classList.remove("open")),300);
+  },{once:true});
+};
+window.schedClose = () => {
+  menuCloseTimer = setTimeout(()=>document.querySelectorAll(".menu-dd").forEach(d=>d.classList.remove("open")),300);
+};
+document.addEventListener("click", ()=>document.querySelectorAll(".menu-dd").forEach(d=>d.classList.remove("open")));
+
+// ────── TABS ──────
+window.switchTab = (tab) => {
+  currentTab = tab;
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".stab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("panel-"+tab).classList.add("active");
+  document.getElementById("stab-"+tab).classList.add("active");
+  if(tab==="overview") renderOverview();
+  if(tab==="timeline") renderTimeline();
+};
+
+// ────── AUTH ──────
 function refreshAuthUI() {
-  const nameEl = document.getElementById("auth-name");
-  const btnIn  = document.getElementById("btn-login");
-  const btnOut = document.getElementById("btn-logout");
-  const btnNew = document.getElementById("btn-new");
-  const sbUser = document.getElementById("sb-user");
-  if (currentUser) {
-    nameEl.textContent = currentUser.user;
-    nameEl.style.display = "";
-    btnIn.style.display  = "none";
-    btnOut.style.display = "";
-    btnNew.classList.remove("disabled");
-    sbUser.textContent = "Signed in as " + currentUser.user;
+  const nameEl=document.getElementById("auth-name");
+  const btnIn=document.getElementById("btn-login");
+  const btnOut=document.getElementById("btn-logout");
+  const btnNew=document.getElementById("btn-new");
+  const btnMul=document.getElementById("btn-multi");
+  const sbUser=document.getElementById("sb-user");
+  if(currentUser){
+    nameEl.textContent=currentUser.user; nameEl.style.display="";
+    btnIn.style.display="none"; btnOut.style.display="";
+    btnNew.classList.remove("disabled"); btnMul.classList.remove("disabled");
+    sbUser.textContent="Signed in as "+currentUser.user;
   } else {
-    nameEl.style.display = "none";
-    btnIn.style.display  = "";
-    btnOut.style.display = "none";
-    btnNew.classList.add("disabled");
-    sbUser.textContent = "Not signed in — read only";
+    nameEl.style.display="none"; btnIn.style.display=""; btnOut.style.display="none";
+    btnNew.classList.add("disabled"); btnMul.classList.add("disabled");
+    sbUser.textContent="Not signed in — read only";
   }
 }
 
-/* LOGIN — queries Firestore "users" collection same as your index.html pattern */
 window.openLogin = () => {
-  document.getElementById("login-err").style.display = "none";
-  document.getElementById("l-user").value = "";
-  document.getElementById("l-pass").value = "";
+  document.getElementById("login-err").style.display="none";
+  document.getElementById("l-user").value="";
+  document.getElementById("l-pass").value="";
   document.getElementById("login-overlay").classList.add("show");
+  setTimeout(()=>document.getElementById("l-user").focus(),100);
 };
 window.closeLogin = () => document.getElementById("login-overlay").classList.remove("show");
 
 window.doLogin = async () => {
-  const u = document.getElementById("l-user").value.trim();
-  const p = document.getElementById("l-pass").value;
-  if (!u || !p) { showErr("Enter username and password."); return; }
+  const u=document.getElementById("l-user").value.trim();
+  const p=document.getElementById("l-pass").value;
+  if(!u||!p){showErr("Enter username and password.");return;}
   try {
-    const snap = await getDocs(query(
-      collection(db, "users"),
-      where("user", "==", u),
-      where("password", "==", p)
-    ));
-    if (!snap.empty) {
-      const d = snap.docs[0].data();
-      currentUser = { user: d.user, role: d.role || "member" };
-      sessionStorage.setItem("cortlin_user", JSON.stringify(currentUser));
-      closeLogin();
-      refreshAuthUI();
-      renderRows(allRows);
-    } else {
-      showErr("Incorrect username or password.");
-    }
-  } catch(e) {
-    showErr("Error: " + e.message);
-    console.error(e);
-  }
+    const snap=await getDocs(query(collection(db,"users"),where("user","==",u),where("password","==",p)));
+    if(!snap.empty){
+      const d=snap.docs[0].data();
+      currentUser={user:d.user,role:d.role||"member"};
+      sessionStorage.setItem("cortlin_user",JSON.stringify(currentUser));
+      closeLogin(); refreshAuthUI(); renderRows(allRows);
+      showToast(`Welcome, ${currentUser.user}!`,"success");
+    } else { showErr("Incorrect username or password."); }
+  } catch(e) { showErr("Error: "+e.message); }
 };
-function showErr(m) {
-  const el = document.getElementById("login-err");
-  el.textContent = m; el.style.display = "block";
-}
-document.getElementById("l-pass").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
-
-window.doLogout = () => {
-  currentUser = null;
-  sessionStorage.removeItem("cortlin_user");
-  refreshAuthUI();
-  renderRows(allRows);
+function showErr(m){const el=document.getElementById("login-err");el.textContent=m;el.style.display="block";}
+document.getElementById("l-pass").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+window.doLogout=()=>{
+  currentUser=null; sessionStorage.removeItem("cortlin_user");
+  refreshAuthUI(); renderRows(allRows);
+  showToast("Signed out","info");
 };
 
-/* LOAD DATA */
+// ────── DATA ──────
 async function loadData() {
+  document.getElementById("sb-ready").textContent="Loading…";
   try {
-    const snap = await getDocs(query(collection(db, "aeros_changes"), orderBy("created", "asc")));
-    allRows = [];
-    snap.forEach(d => allRows.push({ id: d.id, ...d.data() }));
+    const snap=await getDocs(query(collection(db,"aeros_changes"),orderBy("created","asc")));
+    allRows=[];
+    snap.forEach(d=>allRows.push({id:d.id,...d.data()}));
   } catch(e) {
-    console.error("loadData:", e);
-    allRows = sampleData();
+    console.error("loadData:",e);
+    allRows=sampleData();
   }
   renderRows(allRows);
+  if(currentTab==="overview") renderOverview();
+  if(currentTab==="timeline") renderTimeline();
+  document.getElementById("sb-ready").textContent="Ready";
+  setupAutoRefresh();
 }
-window.reloadData = () => loadData();
+window.reloadData=()=>{loadData();showToast("Data refreshed","info");};
 
-/* RENDER */
-function badge(val, pfx) {
-  if (!val) return "";
-  const cls = pfx + "-" + val.replace(/\s+/g, "\\.");
-  return `<span class="badge ${pfx}-${esc(val).replace(/ /g,".")}">${esc(val)}</span>`;
-}
-
-let selTr = null;
-function selRow(tr, r, n) {
-  if (selTr) selTr.classList.remove("xl-sel");
-  selTr = tr; tr.classList.add("xl-sel");
-  document.getElementById("cell-ref").textContent = "A" + n;
-  document.getElementById("formula-content").textContent = `"${r.dev}" → ${r.desc}`;
+function setupAutoRefresh(){
+  clearInterval(autoRefreshTimer);
+  const iv=parseInt(document.getElementById("set-refresh")?.value||"0");
+  if(iv>0) autoRefreshTimer=setInterval(loadData,iv*1000);
 }
 
+// ────── SORT ──────
+window.sortBy = (field) => {
+  if(sortField===field) sortDir*=-1; else {sortField=field;sortDir=1;}
+  renderRows(allRows);
+};
+
+// ────── SEARCH ──────
+window.onSearch = () => {
+  searchTerm=document.getElementById("search-input").value.trim().toLowerCase();
+  applyFilters();
+};
+window.clearSearch = () => {
+  document.getElementById("search-input").value="";
+  searchTerm="";
+  applyFilters();
+};
+
+// ────── FILTERS ──────
 window.applyFilters = () => renderRows(allRows);
+window.clearFilters = () => {
+  ["f-dev","f-type","f-prio","f-stat","f-mode"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value="";
+  });
+  clearSearch();
+  showToast("Filters cleared","info");
+};
+
+// ────── RENDER ──────
+window.applyFilters = applyFilters;
+function applyFilters() { renderRows(allRows); }
+
+let selTr=null;
+function selRow(tr,r,n){
+  if(selTr) selTr.classList.remove("xl-sel");
+  selTr=tr; tr.classList.add("xl-sel");
+  selectedRow=tr; selectedData=r;
+  document.getElementById("cell-ref").textContent="A"+n;
+  document.getElementById("formula-content").textContent=`"${r.dev}" → ${r.desc}`;
+  document.getElementById("sb-sel").textContent=r.num||n;
+}
+
+function highlight(text, term) {
+  if(!term||!getSetting("tog-highlight",true)) return esc(text);
+  const safe=esc(text);
+  const re=new RegExp("("+term.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")", "gi");
+  return safe.replace(re,"<mark>$1</mark>");
+}
 
 function renderRows(rows) {
-  const tbody = document.getElementById("tbody");
-  tbody.innerHTML = "";
+  const tbody=document.getElementById("tbody");
+  tbody.innerHTML="";
 
-  if (!currentUser) {
-    tbody.innerHTML = `<tr class="dr"><td></td><td colspan="14" style="padding:14px 16px;">
+  if(!currentUser){
+    tbody.innerHTML=`<tr class="dr"><td></td><td colspan="14" style="padding:14px 16px;">
       <span style="color:#555;">🔒 Sign in to view the change log.</span>
       <button class="vbtn primary" onclick="openLogin()" style="margin-left:14px;font-size:11px;padding:3px 14px;">Sign In</button>
     </td></tr>`;
-    document.getElementById("sb-count").textContent = "–";
-    document.getElementById("sb-total").textContent = rows.length;
+    document.getElementById("sb-count").textContent="–";
+    document.getElementById("sb-total").textContent=rows.length;
     return;
   }
 
-  const fDev  = document.getElementById("f-dev").value;
-  const fType = document.getElementById("f-type").value;
-  const fPrio = document.getElementById("f-prio").value;
-  const fStat = document.getElementById("f-stat").value;
-  const fMode = document.getElementById("f-mode").value;
-  const vis   = rows.filter(r =>
-    (!fDev  || r.dev  === fDev)  &&
-    (!fType || r.type === fType) &&
-    (!fPrio || r.prio === fPrio) &&
-    (!fStat || r.stat === fStat) &&
-    (!fMode || r.mode === fMode)
+  const fDev=document.getElementById("f-dev").value;
+  const fType=document.getElementById("f-type").value;
+  const fPrio=document.getElementById("f-prio").value;
+  const fStat=document.getElementById("f-stat").value;
+  const fMode=document.getElementById("f-mode").value;
+
+  let vis=rows.filter(r=>
+    (!fDev||r.dev===fDev)&&
+    (!fType||r.type===fType)&&
+    (!fPrio||r.prio===fPrio)&&
+    (!fStat||r.stat===fStat)&&
+    (!fMode||r.mode===fMode)
   );
 
-  document.getElementById("sb-count").textContent = vis.length;
-  document.getElementById("sb-total").textContent = rows.length;
+  if(searchTerm){
+    vis=vis.filter(r=>[r.dev,r.module,r.desc,r.type,r.ver,r.prio,r.stat,r.mode,r.notes,r.addedBy,r.date]
+      .some(v=>String(v||"").toLowerCase().includes(searchTerm)));
+  }
 
-  if (vis.length === 0) {
-    tbody.innerHTML = `<tr class="dr"><td></td><td colspan="14"><div class="ci" style="color:#888;font-style:italic;padding:8px;">No entries match filters.</div></td></tr>`;
+  // sort
+  vis.sort((a,b)=>{
+    const av=String(a[sortField]||""), bv=String(b[sortField]||"");
+    return av.localeCompare(bv)*sortDir;
+  });
+
+  const statEl=document.getElementById("search-stat");
+  statEl.textContent=searchTerm?`${vis.length} match${vis.length!==1?"es":""}`:"";;
+  document.getElementById("sb-count").textContent=vis.length;
+  document.getElementById("sb-total").textContent=rows.length;
+
+  if(!vis.length){
+    tbody.innerHTML=`<tr class="dr"><td></td><td colspan="14"><div class="ci" style="color:#888;font-style:italic;padding:8px;">No entries match filters.</div></td></tr>`;
     return;
   }
 
-  vis.forEach((r, i) => {
-    const n = i + 4;
-    const canDel = currentUser.user === "Evan" || currentUser.user === r.addedBy;
-    const tr = document.createElement("tr");
-    tr.className = "dr";
-    tr.addEventListener("click", () => selRow(tr, r, n));
-    tr.innerHTML = `
+  const colVisible=(idx)=>!hiddenCols.has(idx);
+  const maybeHide=(idx,html)=>colVisible(idx)?html:`<td style="display:none">${html}</td>`;
+
+  vis.forEach((r,i)=>{
+    const n=i+4;
+    const canDel=currentUser.user==="Evan"||currentUser.user===r.addedBy;
+    const tr=document.createElement("tr");
+    tr.className="dr";
+    tr.addEventListener("click",()=>selRow(tr,r,n));
+    tr.addEventListener("contextmenu",e=>{e.preventDefault();selRow(tr,r,n);showCtx(e);});
+    const ht=highlight;
+    tr.innerHTML=`
       <td>${n}</td>
       <td><div class="ci rgt" style="color:#555;font-size:10px;">${r.num||i+1}</div></td>
-      <td><div class="ci" style="font-size:10px;font-family:Consolas,monospace;">${esc(r.date||"")}</div></td>
+      <td><div class="ci" style="font-size:10px;font-family:Consolas,monospace;">${ht(r.date||"",searchTerm)}</div></td>
       <td><div class="ci" style="font-size:10px;font-family:Consolas,monospace;">${esc(r.time||"")}</div></td>
-      <td><div class="ci" style="font-weight:600;">${esc(r.dev||"")}</div></td>
-      <td><div class="ci" style="color:#003388;font-size:10px;">${esc(r.module||"")}</div></td>
-      <td><div class="ci" title="${esc(r.desc||"")}" style="max-width:320px;">${esc(r.desc||"")}</div></td>
+      <td><div class="ci" style="font-weight:600;">${ht(r.dev||"",searchTerm)}</div></td>
+      <td><div class="ci" style="color:#003388;font-size:10px;">${ht(r.module||"",searchTerm)}</div></td>
+      <td><div class="ci" title="${esc(r.desc||"")}" style="max-width:320px;">${ht(r.desc||"",searchTerm)}</div></td>
       <td><div class="ci"><span class="badge bt-${(r.type||"").replace(/ /g,".")}">${esc(r.type||"")}</span></div></td>
       <td><div class="ci" style="font-family:Consolas,monospace;font-size:10px;color:#004422;">${esc(r.ver||"")}</div></td>
       <td><div class="ci"><span class="badge bp-${(r.prio||"").replace(/ /g,".")}">${esc(r.prio||"")}</span></div></td>
       <td><div class="ci"><span class="badge bs-${(r.stat||"").replace(/ /g,".")}">${esc(r.stat||"")}</span></div></td>
       <td><div class="ci"><span class="badge bt-${(r.mode||"").replace(/ /g,".")}">${esc(r.mode||"")}</span></div></td>
-      <td><div class="ci" style="font-size:10px;color:#555;max-width:180px;">${esc(r.notes||"")}</div></td>
+      <td><div class="ci" style="font-size:10px;color:#555;max-width:180px;">${ht(r.notes||"",searchTerm)}</div></td>
       <td><div class="ci" style="font-size:10px;color:#666;">${esc(r.addedBy||"")}</div></td>
       <td><div class="ci ctr">${canDel?`<button class="act del" onclick="delRow(event,'${r.id}')">✕</button>`:""}</div></td>`;
     tbody.appendChild(tr);
   });
 }
 
-/* DELETE */
-window.delRow = async (e, id) => {
+// ────── DELETE ──────
+window.delRow=async(e,id)=>{
   e.stopPropagation();
-  if (!confirm("Delete this entry?")) return;
-  try { await deleteDoc(doc(db, "aeros_changes", id)); } catch(e) { console.error(e); }
-  allRows = allRows.filter(r => r.id !== id);
+  if(getSetting("tog-confirm-del",true)&&!confirm("Delete this entry?")) return;
+  try{await deleteDoc(doc(db,"aeros_changes",id));}catch(e){console.error(e);}
+  allRows=allRows.filter(r=>r.id!==id);
   renderRows(allRows);
+  showToast("Entry deleted","warn");
+};
+window.deleteSelected=()=>{
+  if(!selectedData){showToast("Select a row first","warn");return;}
+  document.querySelector(`[onclick*="${selectedData.id}"]`)?.click();
 };
 
-/* ADD */
-window.openAdd = () => {
-  if (!currentUser) { openLogin(); return; }
-  const today = new Date().toISOString().slice(0,10);
-  const now   = new Date().toTimeString().slice(0,5);
-  document.getElementById("f-date").value = today;
-  document.getElementById("f-time").value = now;
-  document.getElementById("f-ver").value = document.getElementById("f-module").value = document.getElementById("f-desc").value = document.getElementById("f-notes").value = "";
-  const devMap = {Evan:"Evan Sakers",Maxwell:"Maxwell Mays",Dominic:"Dominic Costas",Jaxon:"Jaxon Lake"};
-  const s = document.getElementById("f-edev");
-  s.value = devMap[currentUser.user] || s.options[0].value;
+// ────── COPY ROW ──────
+window.copySelected=()=>{
+  if(!selectedData){showToast("Select a row first","warn");return;}
+  const txt=[selectedData.date,selectedData.time,selectedData.dev,selectedData.module,selectedData.desc,selectedData.type,selectedData.ver,selectedData.prio,selectedData.stat,selectedData.mode,selectedData.notes].join("\t");
+  navigator.clipboard?.writeText(txt).catch(()=>{});
+  showToast("Row copied to clipboard","success");
+};
+
+// ────── CONTEXT MENU ──────
+function showCtx(e){
+  const m=document.getElementById("ctx-menu");
+  m.classList.add("show");
+  m.style.left=(e.clientX+2)+"px";
+  m.style.top=(e.clientY+2)+"px";
+}
+document.addEventListener("click",()=>document.getElementById("ctx-menu").classList.remove("show"));
+
+window.ctxEdit=()=>{
+  if(!selectedData){return;}
+  openAdd(selectedData);
+};
+window.ctxDuplicate=async()=>{
+  if(!selectedData||!currentUser) return;
+  const dup={...selectedData,id:undefined,num:allRows.length+1,addedBy:currentUser.user,created:serverTimestamp()};
+  try{
+    const ref=await addDoc(collection(db,"aeros_changes"),dup);
+    allRows.push({id:ref.id,...dup});
+  }catch(e){ allRows.push({id:"local_"+Date.now(),...dup}); }
+  renderRows(allRows);
+  showToast("Row duplicated","success");
+};
+
+// ────── ADD / MULTI ENTRY ──────
+const DEVS=["Evan Sakers","Maxwell Mays","Dominic Costas","Jaxon Lake"];
+const TYPES=["Feature","Bug Fix","Refactor","Hotfix","Security","UI Update","Docs","Kernel","Backend","Website","Database","Frontend","Copyright","App Control","Image Design","N/A"];
+const PRIOS=["Critical","High","Medium","Low"];
+const STATS=["Complete","Merged","In Progress","Pending Review","Testing","Deployed","Planned","On Hold","Open","Closed","Cancelled","Reverted"];
+const MODES=["Kernel","UI","Backend","Website","Database","Frontend","Bug Tracker","Bug Patch","Bug Fix","Bug Reported","Copyright","N/A","App Control","Image Design","System","Network","Security","Performance","Testing","Deployment","Documentation","API","CLI","Config","Build","Package","Driver","Firmware","Scheduler","Memory","Storage","Display","Audio","Input","Power","Localization","Accessibility"];
+
+function opts(arr,sel=""){return arr.map(v=>`<option${v===sel?" selected":""}>${v}</option>`).join("");}
+
+let entryBlocks=0;
+function makeBlock(n, prefill={}){
+  const today=new Date().toISOString().slice(0,10);
+  const now=new Date().toTimeString().slice(0,5);
+  const devDef=prefill.dev||(currentUser?(({Evan:"Evan Sakers",Maxwell:"Maxwell Mays",Dominic:"Dominic Costas",Jaxon:"Jaxon Lake"})[currentUser.user]||DEVS[0]):DEVS[0]);
+  return `<div class="entry-row-block" id="block-${n}">
+    <div class="block-num">Entry #${n}</div>
+    ${n>1?`<button class="block-del" onclick="removeBlock(${n})" title="Remove">✕</button>`:""}
+    <div class="entry-grid">
+      <div class="fg"><label>Date</label><input id="eb-date-${n}" type="date" value="${prefill.date||today}"></div>
+      <div class="fg"><label>Time</label><input id="eb-time-${n}" type="time" value="${prefill.time||now}"></div>
+      <div class="fg"><label>Developer</label><select id="eb-dev-${n}">${opts(DEVS,devDef)}</select></div>
+      <div class="fg"><label>Module / Component</label><input id="eb-module-${n}" type="text" placeholder="e.g. Kernel Core" value="${esc(prefill.module||"")}"></div>
+      <div class="fg full"><label>Description</label><input id="eb-desc-${n}" type="text" placeholder="Describe the change…" value="${esc(prefill.desc||"")}"></div>
+      <div class="fg"><label>Change Type</label><select id="eb-type-${n}">${opts(TYPES,prefill.type||"Feature")}</select></div>
+      <div class="fg"><label>Version</label><input id="eb-ver-${n}" type="text" placeholder="e.g. 0.9.5" value="${esc(prefill.ver||"")}"></div>
+      <div class="fg"><label>Priority</label><select id="eb-prio-${n}">${opts(PRIOS,prefill.prio||"Medium")}</select></div>
+      <div class="fg"><label>Status</label><select id="eb-stat-${n}">${opts(STATS,prefill.stat||"In Progress")}</select></div>
+      <div class="fg"><label>Mode</label><select id="eb-mode-${n}">${opts(MODES,prefill.mode||"System")}</select></div>
+      <div class="fg full"><label>Notes</label><input id="eb-notes-${n}" type="text" placeholder="Optional notes…" value="${esc(prefill.notes||"")}"></div>
+    </div>
+  </div>`;
+}
+
+window.openAdd=(prefill={})=>{
+  if(!currentUser){openLogin();return;}
+  entryBlocks=0;
+  document.getElementById("add-title").textContent=prefill.desc?"✏ Edit Entry":"➕ New Change Entry";
+  document.getElementById("btn-add-row").style.display=prefill.desc?"none":"";
+  document.getElementById("add-body").innerHTML="";
+  entryBlocks++; document.getElementById("add-body").innerHTML=makeBlock(1,prefill);
   document.getElementById("add-overlay").classList.add("show");
 };
-window.closeAdd = () => document.getElementById("add-overlay").classList.remove("show");
+window.openMultiAdd=()=>{
+  if(!currentUser){openLogin();return;}
+  entryBlocks=0;
+  document.getElementById("add-title").textContent="📋 Multi-Row Entry";
+  document.getElementById("btn-add-row").style.display="";
+  document.getElementById("add-body").innerHTML="";
+  entryBlocks++; document.getElementById("add-body").innerHTML=makeBlock(1);
+  document.getElementById("add-overlay").classList.add("show");
+};
+window.addEntryBlock=()=>{
+  entryBlocks++;
+  document.getElementById("add-body").insertAdjacentHTML("beforeend",makeBlock(entryBlocks));
+  document.getElementById(`eb-desc-${entryBlocks}`).focus();
+};
+window.removeBlock=(n)=>{
+  document.getElementById("block-"+n)?.remove();
+};
+window.closeAdd=()=>document.getElementById("add-overlay").classList.remove("show");
 
-window.saveEntry = async () => {
-  const desc = document.getElementById("f-desc").value.trim();
-  if (!desc) { alert("Description is required."); return; }
-  const entry = {
-    num: allRows.length + 1,
-    date: document.getElementById("f-date").value,
-    time: document.getElementById("f-time").value,
-    dev:  document.getElementById("f-edev").value,
-    module: document.getElementById("f-module").value.trim(),
-    desc,
-    type: document.getElementById("f-etype").value,
-    ver:  document.getElementById("f-ver").value.trim(),
-    prio: document.getElementById("f-eprio").value,
-    stat: document.getElementById("f-estat").value,
-    mode: document.getElementById("f-emode").value,
-    notes: document.getElementById("f-notes").value.trim(),
-    addedBy: currentUser.user,
-    created: serverTimestamp()
-  };
-  try {
-    const ref = await addDoc(collection(db, "aeros_changes"), entry);
-    allRows.push({ id: ref.id, ...entry });
-  } catch(e) {
-    console.error(e);
-    allRows.push({ id: "local_" + Date.now(), ...entry });
+window.saveEntries=async()=>{
+  const saved=[];
+  for(let i=1;i<=entryBlocks;i++){
+    const block=document.getElementById("block-"+i);
+    if(!block) continue;
+    const desc=document.getElementById(`eb-desc-${i}`)?.value.trim();
+    if(!desc){showToast(`Entry #${i}: Description required`,"error");return;}
+    saved.push({
+      num:allRows.length+saved.length+1,
+      date:document.getElementById(`eb-date-${i}`)?.value,
+      time:document.getElementById(`eb-time-${i}`)?.value,
+      dev:document.getElementById(`eb-dev-${i}`)?.value,
+      module:document.getElementById(`eb-module-${i}`)?.value.trim(),
+      desc,
+      type:document.getElementById(`eb-type-${i}`)?.value,
+      ver:document.getElementById(`eb-ver-${i}`)?.value.trim(),
+      prio:document.getElementById(`eb-prio-${i}`)?.value,
+      stat:document.getElementById(`eb-stat-${i}`)?.value,
+      mode:document.getElementById(`eb-mode-${i}`)?.value,
+      notes:document.getElementById(`eb-notes-${i}`)?.value.trim(),
+      addedBy:currentUser.user,
+      created:serverTimestamp()
+    });
   }
-  closeAdd();
-  renderRows(allRows);
+  let ok=0;
+  for(const entry of saved){
+    try{
+      const ref=await addDoc(collection(db,"aeros_changes"),entry);
+      allRows.push({id:ref.id,...entry});
+      ok++;
+    }catch(e){
+      allRows.push({id:"local_"+Date.now(),...entry});
+      ok++;
+    }
+  }
+  closeAdd(); renderRows(allRows);
+  showToast(`${ok} entr${ok!==1?"ies":"y"} saved`,"success");
 };
 
-/* EXPORT */
-window.exportCSV = () => {
-  if (!currentUser) { openLogin(); return; }
-  const h = ["#","Date","Time","Developer","Module","Description","Type","Version","Priority","Status","Mode","Notes","Added By"];
-  const b = allRows.map(r => [r.num,r.date,r.time,r.dev,r.module,`"${(r.desc||"").replace(/"/g,'""')}"`,r.type,r.ver,r.prio,r.stat,r.mode,r.notes,r.addedBy].join(","));
-  const a = document.createElement("a");
-  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent([h.join(","),...b].join("\n"));
-  a.download = "AerOS_ChangeLog.csv"; a.click();
+// ────── EXPORT ──────
+window.exportCSV=()=>{
+  if(!currentUser){openLogin();return;}
+  const h=["#","Date","Time","Developer","Module","Description","Type","Version","Priority","Status","Mode","Notes","Added By"];
+  const b=allRows.map(r=>[r.num,r.date,r.time,r.dev,r.module,`"${(r.desc||"").replace(/"/g,'""')}"`,r.type,r.ver,r.prio,r.stat,r.mode,r.notes,r.addedBy].join(","));
+  dl([h.join(","),...b].join("\n"),"text/csv","AerOS_ChangeLog.csv");
+  showToast("CSV exported","success");
+};
+window.exportJSON=()=>{
+  if(!currentUser){openLogin();return;}
+  dl(JSON.stringify(allRows,null,2),"application/json","AerOS_ChangeLog.json");
+  showToast("JSON exported","success");
+};
+function dl(content,mime,filename){
+  const a=document.createElement("a");
+  a.href="data:"+mime+";charset=utf-8,"+encodeURIComponent(content);
+  a.download=filename; a.click();
+}
+
+// ────── IMPORT CSV ──────
+let parsedImport=[];
+window.openImport=()=>{
+  parsedImport=[];
+  document.getElementById("import-preview").style.display="none";
+  document.getElementById("import-preview").textContent="";
+  document.getElementById("import-status").textContent="";
+  document.getElementById("btn-do-import").style.display="none";
+  document.getElementById("csv-file-input").value="";
+  document.getElementById("import-overlay").classList.add("show");
+};
+window.closeImport=()=>document.getElementById("import-overlay").classList.remove("show");
+
+window.handleImportDrop=(e)=>{
+  e.preventDefault();
+  document.getElementById("import-drop").classList.remove("drag-over");
+  const file=e.dataTransfer.files[0];
+  if(file) processCSV(file);
+};
+window.handleFileSelect=(e)=>{const file=e.target.files[0]; if(file) processCSV(file);};
+
+const idrop=document.getElementById("import-drop");
+idrop.addEventListener("dragover",e=>{e.preventDefault();idrop.classList.add("drag-over");});
+idrop.addEventListener("dragleave",()=>idrop.classList.remove("drag-over"));
+
+function processCSV(file){
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    const text=e.target.result;
+    const lines=text.split(/\r?\n/).filter(l=>l.trim());
+    const header=lines[0].split(",").map(h=>h.trim().toLowerCase().replace(/[^a-z]/g,""));
+    parsedImport=[];
+    for(let i=1;i<lines.length;i++){
+      const cols=lines[i].split(",");
+      const r={
+        num:allRows.length+parsedImport.length+1,
+        date:cols[0]?.trim()||"",
+        time:cols[1]?.trim()||"",
+        dev:cols[2]?.trim()||"",
+        module:cols[3]?.trim()||"",
+        desc:(cols[4]?.trim()||"").replace(/^"|"$/g,""),
+        type:cols[5]?.trim()||"Feature",
+        ver:cols[6]?.trim()||"",
+        prio:cols[7]?.trim()||"Medium",
+        stat:cols[8]?.trim()||"In Progress",
+        mode:cols[9]?.trim()||"System",
+        notes:cols[10]?.trim()||"",
+        addedBy:currentUser?.user||"Import",
+        created:serverTimestamp()
+      };
+      if(r.desc) parsedImport.push(r);
+    }
+    const prev=document.getElementById("import-preview");
+    prev.style.display="block";
+    prev.textContent=`Found ${parsedImport.length} valid rows.\nFirst row preview:\n${JSON.stringify(parsedImport[0]||{},null,2).slice(0,300)}`;
+    document.getElementById("import-status").textContent=`Ready to import ${parsedImport.length} rows.`;
+    document.getElementById("btn-do-import").style.display=parsedImport.length?"":"none";
+  };
+  reader.readAsText(file);
+}
+
+window.doImport=async()=>{
+  if(!parsedImport.length||!currentUser) return;
+  let ok=0;
+  for(const entry of parsedImport){
+    try{
+      const ref=await addDoc(collection(db,"aeros_changes"),entry);
+      allRows.push({id:ref.id,...entry}); ok++;
+    }catch(e){
+      allRows.push({id:"local_"+Date.now(),...entry}); ok++;
+    }
+  }
+  closeImport(); renderRows(allRows);
+  showToast(`Imported ${ok} rows`,"success");
 };
 
-function esc(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+// ────── COLUMN VISIBILITY ──────
+const COL_DEFS=[
+  {key:"id",label:"# ID",idx:1},{key:"dt",label:"Date",idx:2},{key:"tm",label:"Time",idx:3},
+  {key:"dv",label:"Developer",idx:4},{key:"mo",label:"Module",idx:5},{key:"ds",label:"Description",idx:6},
+  {key:"tp",label:"Type",idx:7},{key:"vr",label:"Version",idx:8},{key:"pr",label:"Priority",idx:9},
+  {key:"st",label:"Status",idx:10},{key:"md",label:"Mode",idx:11},{key:"nt",label:"Notes",idx:12},
+  {key:"by",label:"Added By",idx:13},{key:"dl",label:"Delete",idx:14}
+];
+function buildColPanel(){
+  const c=document.getElementById("col-checks");
+  c.innerHTML=COL_DEFS.map(d=>`<label class="col-check"><input type="checkbox" checked data-col="${d.idx}" onchange="toggleCol(${d.idx},this.checked)"> ${d.label}</label>`).join("");
+}
+window.toggleColPanel=()=>{
+  const p=document.getElementById("col-panel");
+  const btn=document.getElementById("btn-col-vis");
+  if(p.classList.contains("show")){p.classList.remove("show");}
+  else{
+    const r=btn.getBoundingClientRect();
+    p.style.top=(r.bottom+4)+"px";
+    p.style.left=r.left+"px";
+    p.classList.add("show");
+  }
+};
+window.closeColPanel=()=>document.getElementById("col-panel").classList.remove("show");
+window.toggleCol=(idx,visible)=>{
+  const style=visible?"":"none";
+  document.querySelectorAll(`#main-table col:nth-child(${idx+1})`).forEach(c=>c.style.display=style);
+  document.querySelectorAll(`#main-table th:nth-child(${idx+1}), #main-table td:nth-child(${idx+1})`).forEach(c=>c.style.display=style);
+  if(visible) hiddenCols.delete(idx); else hiddenCols.add(idx);
+};
+window.setAllCols=(vis)=>{
+  document.querySelectorAll("#col-checks input").forEach(cb=>{cb.checked=vis;toggleCol(parseInt(cb.dataset.col),vis);});
+};
+
+// ────── OVERVIEW ──────
+function renderOverview(){
+  if(!allRows.length) return;
+  const total=allRows.length;
+  const byDev={}, byType={}, byStat={};
+  allRows.forEach(r=>{
+    byDev[r.dev]=(byDev[r.dev]||0)+1;
+    byType[r.type]=(byType[r.type]||0)+1;
+    byStat[r.stat]=(byStat[r.stat]||0)+1;
+  });
+  const devs=Object.entries(byDev);
+  const maxDev=Math.max(...devs.map(d=>d[1]),1);
+  // stat cards
+  document.getElementById("ov-stats").innerHTML=[
+    {n:total,l:"Total Entries"},{n:devs.length,l:"Developers"},
+    {n:Object.keys(byType).length,l:"Change Types"},
+    {n:allRows.filter(r=>r.prio==="Critical").length,l:"Critical"},
+    {n:allRows.filter(r=>r.stat==="In Progress").length,l:"In Progress"},
+    {n:allRows.filter(r=>r.stat==="Complete"||r.stat==="Merged").length,l:"Completed"}
+  ].map(c=>`<div class="ov-card"><div class="ov-card-n">${c.n}</div><div class="ov-card-l">${c.l}</div></div>`).join("");
+  // dev bars
+  document.getElementById("dev-bars").innerHTML=devs.map(([name,cnt])=>`
+    <div class="dev-bar-wrap">
+      <div class="dev-bar-label"><span>${name}</span><span>${cnt} entries</span></div>
+      <div class="dev-bar-bg"><div class="dev-bar" style="width:${(cnt/maxDev*100).toFixed(1)}%"></div></div>
+    </div>`).join("");
+  // type table
+  document.getElementById("type-tbody").innerHTML=Object.entries(byType).sort((a,b)=>b[1]-a[1])
+    .map(([t,n])=>`<tr><td><span class="badge bt-${t.replace(/ /g,".")}">${t}</span></td><td>${n}</td><td>${(n/total*100).toFixed(1)}%</td></tr>`).join("");
+  // status table
+  document.getElementById("status-tbody").innerHTML=Object.entries(byStat).sort((a,b)=>b[1]-a[1])
+    .map(([s,n])=>`<tr><td><span class="badge bs-${s.replace(/ /g,".")}">${s}</span></td><td>${n}</td><td>${(n/total*100).toFixed(1)}%</td></tr>`).join("");
 }
 
-function sampleData() {
-  return [
-    {id:"s1", num:1,  date:"2026-05-01",time:"09:14",dev:"Evan Sakers",   module:"Boot Loader",    desc:"Rewrote stage-2 boot sequence for faster POST handoff",       type:"Refactor",  ver:"0.9.1",prio:"High",    stat:"Complete",      mode:"Kernel",       notes:"~200ms faster",  addedBy:"Evan"},
-    {id:"s2", num:2,  date:"2026-05-01",time:"11:30",dev:"Maxwell Mays",  module:"Kernel Core",    desc:"Patched null-pointer dereference in memory allocator",        type:"Bug Fix",   ver:"0.9.1",prio:"Critical",stat:"Merged",        mode:"Kernel",       notes:"Kernel panic",   addedBy:"Maxwell"},
-    {id:"s3", num:3,  date:"2026-05-02",time:"08:55",dev:"Dominic Costas",module:"UI Shell",       desc:"Redesigned taskbar with AerOS accent palette",               type:"UI Update", ver:"0.9.2",prio:"Medium",  stat:"Complete",      mode:"UI",           notes:"",               addedBy:"Dominic"},
-    {id:"s4", num:4,  date:"2026-05-02",time:"14:20",dev:"Jaxon Lake",    module:"Networking",     desc:"Added IPv6 support to network stack driver",                  type:"Feature",   ver:"0.9.2",prio:"High",    stat:"In Progress",   mode:"Network",      notes:"Dev only",       addedBy:"Jaxon"},
-    {id:"s5", num:5,  date:"2026-05-03",time:"10:05",dev:"Evan Sakers",   module:"File System",    desc:"Implemented AerFS journaling to prevent corruption on crash", type:"Feature",   ver:"0.9.3",prio:"Critical",stat:"Pending Review",mode:"Storage",      notes:"",               addedBy:"Evan"},
-    {id:"s6", num:6,  date:"2026-05-03",time:"13:45",dev:"Maxwell Mays",  module:"Security",       desc:"Hardened syscall table against privilege escalation vectors",  type:"Security",  ver:"0.9.3",prio:"Critical",stat:"Complete",      mode:"Security",     notes:"CVE-2026-0017",  addedBy:"Maxwell"},
-    {id:"s7", num:7,  date:"2026-05-04",time:"09:00",dev:"Dominic Costas",module:"Docs",           desc:"Updated internal API documentation for module loaders",        type:"Docs",      ver:"0.9.3",prio:"Low",     stat:"Complete",      mode:"Documentation",notes:"",               addedBy:"Dominic"},
-    {id:"s8", num:8,  date:"2026-05-05",time:"15:30",dev:"Jaxon Lake",    module:"Display Driver", desc:"Fixed screen tearing on 144Hz panels in windowed mode",       type:"Bug Fix",   ver:"0.9.4",prio:"High",    stat:"Merged",        mode:"Display",      notes:"",               addedBy:"Jaxon"},
-    {id:"s9", num:9,  date:"2026-05-06",time:"11:10",dev:"Evan Sakers",   module:"Package Mgr",    desc:"Added dependency resolution engine to AerPkg",                type:"Feature",   ver:"0.9.4",prio:"Medium",  stat:"In Progress",   mode:"Package",      notes:"",               addedBy:"Evan"},
-    {id:"s10",num:10, date:"2026-05-07",time:"08:30",dev:"Maxwell Mays",  module:"Kernel Core",    desc:"Optimized scheduler for multi-core task distribution",         type:"Refactor",  ver:"0.9.5",prio:"High",    stat:"Pending Review",mode:"Scheduler",    notes:"~18% gain",      addedBy:"Maxwell"},
-  ];
+// ────── TIMELINE ──────
+function renderTimeline(){
+  const byVer={};
+  allRows.forEach(r=>{const v=r.ver||"Unknown"; (byVer[v]=byVer[v]||[]).push(r);});
+  const sorted=Object.entries(byVer).sort((a,b)=>b[0].localeCompare(a[0]));
+  document.getElementById("timeline-content").innerHTML=sorted.map(([ver,rows])=>`
+    <div class="tl-entry">
+      <div class="tl-dot">${ver.replace(/[^0-9.]/g,"").slice(0,5)||"?"}</div>
+      <div class="tl-content">
+        <div><span class="tl-ver">${ver}</span><span class="tl-date">${rows[0]?.date||""}</span></div>
+        <div style="font-size:11px;color:#556;margin-top:2px;">${rows.length} change${rows.length!==1?"s":""}</div>
+        <div class="tl-changes">${rows.map(r=>`<div class="tl-change-item" title="${esc(r.desc||"")}"><span class="badge bt-${(r.type||"").replace(/ /g,".")}">${esc(r.type||"")}</span> ${esc(r.desc||"").slice(0,50)}${r.desc?.length>50?"…":""}</div>`).join("")}</div>
+      </div>
+    </div>`).join("");
 }
 
+// ────── ZOOM ──────
+window.setZoom=(v)=>{
+  document.getElementById("sheet-area").style.zoom=(v/100);
+  document.getElementById("zoom-val").textContent=v+"%";
+  document.getElementById("zoom-slider").value=v;
+  saveSetting("zoom",v);
+};
+
+// ────── MINIMIZE/MAXIMIZE ──────
+let minimized=false, maximized=false;
+window.minimizeWin=()=>{
+  const w=document.getElementById("app-window");
+  if(minimized){w.style.opacity="1";minimized=false;}
+  else{w.style.opacity="0.1";minimized=true;}
+};
+window.maximizeWin=()=>{
+  const w=document.getElementById("app-window");
+  if(maximized){w.style.inset="6px";maximized=false;}
+  else{w.style.inset="0";w.style.borderRadius="0";maximized=true;}
+};
+
+// ────── EXIT ──────
+window.confirmExit=()=>document.getElementById("exit-overlay").classList.add("show");
+window.closeExit=()=>document.getElementById("exit-overlay").classList.remove("show");
+window.doExit=()=>{
+  document.getElementById("app-window").style.opacity="0";
+  document.getElementById("app-window").style.transform="scale(0.96)";
+  document.getElementById("app-window").style.transition="all .3s";
+  setTimeout(()=>{document.getElementById("app-window").style.display="none";},300);
+};
+window.addEventListener("beforeunload",(e)=>{e.preventDefault();e.returnValue="";});
+
+// ────── SETTINGS MODAL ──────
+window.openSettings=()=>{
+  const iv=getSetting("set-refresh",0);
+  document.getElementById("set-refresh").value=iv;
+  const density=getSetting("density","");
+  document.getElementById("set-density").value=density;
+  const zoom=getSetting("zoom",100);
+  document.getElementById("set-zoom").value=zoom;
+  document.querySelectorAll(".s-toggle").forEach(t=>{
+    const v=getSetting(t.id,t.classList.contains("on"));
+    t.classList.toggle("on",v);
+  });
+  document.getElementById("settings-overlay").classList.add("show");
+};
+window.closeSettings=()=>{
+  const iv=parseInt(document.getElementById("set-refresh").value||"0");
+  saveSetting("set-refresh",iv);
+  setupAutoRefresh();
+  document.getElementById("settings-overlay").classList.remove("show");
+};
+
+// ────── SHORTCUTS & ABOUT ──────
+window.openShortcuts=()=>document.getElementById("shortcuts-overlay").classList.add("show");
+window.closeShortcuts=()=>document.getElementById("shortcuts-overlay").classList.remove("show");
+window.openAbout=()=>document.getElementById("about-overlay").classList.add("show");
+window.closeAbout=()=>document.getElementById("about-overlay").classList.remove("show");
+
+// ────── KEYBOARD SHORTCUTS ──────
+document.addEventListener("keydown",(e)=>{
+  const mod=e.ctrlKey||e.metaKey;
+  if(mod&&e.key==="n"){e.preventDefault();openAdd();}
+  if(mod&&e.key==="m"){e.preventDefault();openMultiAdd();}
+  if(mod&&e.key==="e"){e.preventDefault();exportCSV();}
+  if(mod&&e.key===","){e.preventDefault();openSettings();}
+  if(mod&&e.key==="f"){e.preventDefault();document.getElementById("search-input").focus();}
+  if(mod&&e.shiftKey&&e.key==="F"){e.preventDefault();clearFilters();}
+  if(mod&&e.key==="1"){e.preventDefault();switchTab("log");}
+  if(mod&&e.key==="2"){e.preventDefault();switchTab("overview");}
+  if(mod&&e.key==="3"){e.preventDefault();switchTab("timeline");}
+  if(mod&&e.key==="c"&&selectedData){copySelected();}
+  if(e.key==="Delete"&&selectedData){deleteSelected();}
+  if(e.key==="Escape"){
+    selectedRow?.classList.remove("xl-sel");
+    selectedRow=null;selectedData=null;
+    document.getElementById("sb-sel").textContent="–";
+    document.querySelectorAll(".v-overlay.show").forEach(o=>o.classList.remove("show"));
+    document.getElementById("ctx-menu").classList.remove("show");
+    closeColPanel();
+  }
+  if(e.key==="F5"){e.preventDefault();reloadData();}
+  if(e.altKey&&e.key==="F4"){e.preventDefault();confirmExit();}
+});
+
+// ────── HELPERS ──────
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+function sampleData(){return[
+  {id:"s1",num:1,date:"2026-05-01",time:"09:14",dev:"Evan Sakers",module:"Boot Loader",desc:"Rewrote stage-2 boot sequence for faster POST handoff",type:"Refactor",ver:"0.9.1",prio:"High",stat:"Complete",mode:"Kernel",notes:"~200ms faster",addedBy:"Evan"},
+  {id:"s2",num:2,date:"2026-05-01",time:"11:30",dev:"Maxwell Mays",module:"Kernel Core",desc:"Patched null-pointer dereference in memory allocator",type:"Bug Fix",ver:"0.9.1",prio:"Critical",stat:"Merged",mode:"Kernel",notes:"Kernel panic",addedBy:"Maxwell"},
+  {id:"s3",num:3,date:"2026-05-02",time:"08:55",dev:"Dominic Costas",module:"UI Shell",desc:"Redesigned taskbar with AerOS accent palette",type:"UI Update",ver:"0.9.2",prio:"Medium",stat:"Complete",mode:"UI",notes:"",addedBy:"Dominic"},
+  {id:"s4",num:4,date:"2026-05-02",time:"14:20",dev:"Jaxon Lake",module:"Networking",desc:"Added IPv6 support to network stack driver",type:"Feature",ver:"0.9.2",prio:"High",stat:"In Progress",mode:"Network",notes:"Dev only",addedBy:"Jaxon"},
+  {id:"s5",num:5,date:"2026-05-03",time:"10:05",dev:"Evan Sakers",module:"File System",desc:"Implemented AerFS journaling to prevent corruption on crash",type:"Feature",ver:"0.9.3",prio:"Critical",stat:"Pending Review",mode:"Storage",notes:"",addedBy:"Evan"},
+  {id:"s6",num:6,date:"2026-05-03",time:"13:45",dev:"Maxwell Mays",module:"Security",desc:"Hardened syscall table against privilege escalation vectors",type:"Security",ver:"0.9.3",prio:"Critical",stat:"Complete",mode:"Security",notes:"CVE-2026-0017",addedBy:"Maxwell"},
+  {id:"s7",num:7,date:"2026-05-04",time:"09:00",dev:"Dominic Costas",module:"Docs",desc:"Updated internal API documentation for module loaders",type:"Docs",ver:"0.9.3",prio:"Low",stat:"Complete",mode:"Documentation",notes:"",addedBy:"Dominic"},
+  {id:"s8",num:8,date:"2026-05-05",time:"15:30",dev:"Jaxon Lake",module:"Display Driver",desc:"Fixed screen tearing on 144Hz panels in windowed mode",type:"Bug Fix",ver:"0.9.4",prio:"High",stat:"Merged",mode:"Display",notes:"",addedBy:"Jaxon"},
+  {id:"s9",num:9,date:"2026-05-06",time:"11:10",dev:"Evan Sakers",module:"Package Mgr",desc:"Added dependency resolution engine to AerPkg",type:"Feature",ver:"0.9.4",prio:"Medium",stat:"In Progress",mode:"Package",notes:"",addedBy:"Evan"},
+  {id:"s10",num:10,date:"2026-05-07",time:"08:30",dev:"Maxwell Mays",module:"Kernel Core",desc:"Optimized scheduler for multi-core task distribution",type:"Refactor",ver:"0.9.5",prio:"High",stat:"Pending Review",mode:"Scheduler",notes:"~18% gain",addedBy:"Maxwell"},
+];}
+
+// ────── INIT ──────
+buildColPanel();
 refreshAuthUI();
 loadData();
+const savedZoom=getSetting("zoom",100);
+setZoom(savedZoom);
+const savedDensity=getSetting("density","");
+if(savedDensity) applyDensity(savedDensity);
 </script>
 </body>
 </html>
