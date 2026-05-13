@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AerOS Legal Documents | Cortlin</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --white: #ffffff;
+    --border: #e3e6eb;
+    --border-light: #eef0f4;
+    --text: #1c1e24;
+    --text-mid: #4b5563;
+    --text-soft: #9aa3b0;
+    --accent: #0068d6;
+    --accent-hover: #0052ab;
+    --accent-bg: #eaf2ff;
+    --accent-border: #bdd6f7;
+    --sidebar-active: #e8f1fd;
+    --nav-h: 60px;
+    --sidebar-w: 248px;
+    --body: 'Figtree', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 15px; line-height: 1.75; }
+
+  /* COOKIE BANNER */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: var(--white); border-top: 1px solid var(--border);
+    padding: 14px 28px; display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.07); flex-wrap: wrap;
+  }
+  .cookie-icon { font-size: 24px; flex-shrink: 0; }
+  .cookie-text { flex: 1; font-size: 13px; color: var(--text-mid); min-width: 180px; line-height: 1.6; }
+  .cookie-text strong { color: var(--text); }
+  .cookie-text a { color: var(--accent); text-decoration: underline; cursor: pointer; }
+  .cookie-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-ck-reject {
+    padding: 7px 16px; font-size: 13px; font-weight: 500; font-family: var(--body);
+    border: 1px solid var(--border); border-radius: 6px; background: var(--white);
+    color: var(--text-mid); cursor: pointer; transition: background 0.13s;
+  }
+  .btn-ck-reject:hover { background: var(--bg); }
+  .btn-ck-accept {
+    padding: 7px 16px; font-size: 13px; font-weight: 600; font-family: var(--body);
+    border: none; border-radius: 6px; background: var(--accent); color: #fff;
+    cursor: pointer; transition: background 0.13s;
+  }
+  .btn-ck-accept:hover { background: var(--accent-hover); }
+
+  /* TOP NAV */
+  .topnav {
+    position: sticky; top: 0; z-index: 200; height: var(--nav-h);
+    background: var(--white); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 28px; gap: 0;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
+  .nav-logo img { height: 30px; width: auto; object-fit: contain; }
+  .nav-sep { width: 1px; height: 22px; background: var(--border); margin: 0 20px; flex-shrink: 0; }
+  .nav-section-label { font-size: 13px; font-weight: 600; color: var(--text-mid); margin-right: 20px; white-space: nowrap; }
+  .nav-tabs { display: flex; height: 100%; align-items: stretch; gap: 2px; }
+  .nav-tab {
+    display: flex; align-items: center; padding: 0 15px; font-size: 13.5px;
+    font-weight: 500; color: var(--text-soft); cursor: pointer;
+    border-bottom: 2px solid transparent; position: relative; top: 1px;
+    transition: color 0.13s; white-space: nowrap; user-select: none;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; }
+  .nav-pill {
+    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border);
+    border-radius: 20px; padding: 3px 10px; white-space: nowrap;
+  }
+
+  /* BREADCRUMB */
+  .breadcrumb-bar {
+    background: var(--white); border-bottom: 1px solid var(--border-light);
+    padding: 9px 28px; font-size: 12.5px; color: var(--text-soft);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .breadcrumb-bar a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .breadcrumb-bar a:hover { text-decoration: underline; }
+
+  /* LAYOUT */
+  .layout { display: flex; max-width: 1160px; margin: 0 auto; padding: 0 28px; gap: 40px; align-items: flex-start; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    position: sticky; top: var(--nav-h);
+    max-height: calc(100vh - var(--nav-h));
+    overflow-y: auto; padding: 24px 0 60px;
+  }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .sidebar-heading {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--text-soft); padding: 14px 10px 5px;
+  }
+  .sidebar-item {
+    display: block; padding: 7px 12px; font-size: 13px; font-weight: 400;
+    color: var(--text-mid); text-decoration: none; border-radius: 7px;
+    cursor: pointer; transition: all 0.12s; line-height: 1.4; user-select: none;
+  }
+  .sidebar-item:hover { background: var(--bg); color: var(--text); }
+  .sidebar-item.active { background: var(--sidebar-active); color: var(--accent); font-weight: 600; }
+
+  /* MAIN */
+  .main { flex: 1; min-width: 0; padding: 36px 0 120px; }
+  .tab-page { display: none; }
+  .tab-page.active { display: block; }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom: 28px; padding-bottom: 22px; border-bottom: 1px solid var(--border); }
+  .page-header-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .page-header-logo img.main-logo { height: 38px; width: auto; object-fit: contain; }
+  .page-header-logo img.dev-logo { height: 24px; opacity: 0.55; border-left: 1px solid var(--border); padding-left: 14px; }
+  .page-title { font-size: clamp(22px, 3vw, 29px); font-weight: 700; color: var(--text); letter-spacing: -0.3px; margin-bottom: 6px; line-height: 1.2; }
+  .page-meta { font-size: 13px; color: var(--text-soft); font-style: italic; display: flex; gap: 16px; flex-wrap: wrap; }
+
+  /* BOXES */
+  .notice-box {
+    background: #fff8e1; border: 1px solid #f0c040; border-left: 4px solid #f0c040;
+    border-radius: 8px; padding: 13px 17px; font-size: 13.5px; color: #7a5800;
+    margin-bottom: 26px; line-height: 1.65;
+  }
+  .info-box {
+    background: var(--accent-bg); border: 1px solid var(--accent-border);
+    border-radius: 8px; padding: 13px 17px; font-size: 13.5px; color: #1a4a80;
+    margin-bottom: 26px; line-height: 1.65;
+  }
+
+  /* DOC SECTIONS */
+  .doc-section { margin-bottom: 42px; scroll-margin-top: calc(var(--nav-h) + 18px); }
+  .section-title {
+    font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 14px;
+    line-height: 1.3; padding-bottom: 8px; border-bottom: 1px solid var(--border-light);
+  }
+  .section-num { color: var(--accent); font-family: var(--mono); font-size: 13px; margin-right: 6px; font-weight: 500; }
+  .subsection { margin-bottom: 16px; }
+  .subsection-title { font-size: 12.5px; font-weight: 600; color: var(--text-soft); margin-bottom: 6px; font-family: var(--mono); letter-spacing: 0.3px; text-transform: uppercase; }
+  .doc-p { font-size: 14.5px; color: var(--text-mid); line-height: 1.8; margin-bottom: 8px; }
+  .doc-p:last-child { margin-bottom: 0; }
+
+  .doc-list { list-style: none; margin: 8px 0 8px 0; padding: 0; }
+  .doc-list li { font-size: 14px; color: var(--text-mid); line-height: 1.75; padding: 3px 0 3px 18px; position: relative; }
+  .doc-list li::before { content: '•'; position: absolute; left: 3px; color: var(--accent); }
+
+  .lettered-list { list-style: none; margin: 8px 0; padding: 0; }
+  .lettered-list li { font-size: 14px; color: var(--text-mid); line-height: 1.8; padding: 3px 0 3px 28px; position: relative; }
+  .lettered-list li .ltr { position: absolute; left: 0; font-family: var(--mono); font-size: 11.5px; color: var(--text-soft); top: 5px; }
+
+  .caps-block {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px 18px; font-family: var(--mono); font-size: 11px; color: var(--text-mid);
+    line-height: 1.9; margin: 10px 0; letter-spacing: 0.2px;
+  }
+
+  .contact-block { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-top: 10px; }
+  .contact-block p { font-size: 14px; color: var(--text-mid); margin-bottom: 14px; }
+  .contact-field { font-family: var(--mono); font-size: 12.5px; color: var(--text-mid); line-height: 2.1; }
+  .contact-field .cf-key { color: var(--text-soft); }
+  .contact-field .cf-val { color: var(--accent); }
+
+  /* FOOTER THANKS */
+  .footer-thanks {
+    margin-top: 48px; padding: 28px 32px; background: var(--white);
+    border: 1px solid var(--border); border-radius: 12px; text-align: center;
+  }
+  .footer-thanks img { height: 34px; margin-bottom: 16px; opacity: 0.9; }
+  .footer-thanks p { font-size: 14.5px; color: var(--text-mid); line-height: 1.85; max-width: 540px; margin: 0 auto 8px; }
+  .footer-thanks .sig { font-size: 13px; font-weight: 700; color: var(--accent); margin-top: 14px; }
+  .footer-thanks .copy { font-family: var(--mono); font-size: 10px; color: var(--text-soft); margin-top: 14px; line-height: 2; }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .layout { padding: 0 16px; }
+    .topnav { padding: 0 16px; }
+    .nav-section-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner">
+  <div class="cookie-icon">🍪</div>
+  <div class="cookie-text">
+    <strong>We use cookies on the AerOS website.</strong> This includes cookies from Google AdSense and third-party partners to serve personalized ads and analyze traffic. By clicking "Accept All," you consent to our use of cookies as described in our <a onclick="switchTab('privacy'); dismissBanner();">Privacy Policy</a>.
+  </div>
+  <div class="cookie-actions">
+    <button class="btn-ck-reject" onclick="dismissBanner()">Reject Non-Essential</button>
+    <button class="btn-ck-accept" onclick="dismissBanner()">Accept All</button>
+  </div>
+</div>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a class="nav-logo" href="#">
+    <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+  </a>
+  <div class="nav-sep"></div>
+  <span class="nav-section-label">Legal Documents</span>
+  <div class="nav-tabs">
+    <div class="nav-tab active" id="tab-eula" onclick="switchTab('eula')">End User License Agreement</div>
+    <div class="nav-tab" id="tab-privacy" onclick="switchTab('privacy')">Privacy Policy</div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-pill">May 2026</span>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb-bar">
+  <a href="#">AerOS Support</a>
+  <span>›</span>
+  <a href="#">Legal Documents</a>
+  <span>›</span>
+  <span id="breadcrumb-current">End User License Agreement</span>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+
+    <!-- ══ EULA ══ -->
+    <div class="tab-page active" id="page-eula">
+      <div class="page-header">
+        <div class="page-header-logo">
+          <img class="main-logo" src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+          <img class="dev-logo" src="https://i.imgur.com/6atwQbZ.png" alt="Cortlin Dev">
+        </div>
+        <h1 class="page-title">AerOS End User License Agreement</h1>
+        <div class="page-meta"><span>Effective Date: May 2026</span><span>Last Updated: May 2026</span></div>
+      </div>
+
+      <div class="notice-box"><strong>Please read this agreement carefully.</strong> By installing, copying, or using AerOS, you agree to be bound by the terms of this End User License Agreement. If you do not agree, do not install or use AerOS.</div>
+
+      <div class="doc-section" id="eula-s1">
+        <div class="section-title"><span class="section-num">1.</span>Grant of License</div>
+        <div class="subsection">
+          <div class="subsection-title">1.1 — Open Source License</div>
+          <p class="doc-p">AerOS is distributed as open-source software. Cortlin grants you a worldwide, royalty-free, non-exclusive license to:</p>
+          <ul class="lettered-list">
+            <li><span class="ltr">(a)</span>Use AerOS for personal, educational, commercial, or governmental purposes;</li>
+            <li><span class="ltr">(b)</span>Copy and distribute verbatim copies of the source code, provided you include this License Agreement and all applicable copyright notices;</li>
+            <li><span class="ltr">(c)</span>Modify your copy or copies of AerOS and distribute such modifications, provided you meet all conditions listed in this Agreement;</li>
+            <li><span class="ltr">(d)</span>Sublicense and distribute copies in object code or executable form under the terms of this Agreement.</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">1.2 — Conditions of Distribution</div>
+          <p class="doc-p">If you distribute copies of AerOS, whether in source or object code form, you must:</p>
+          <ul class="lettered-list">
+            <li><span class="ltr">(a)</span>Include this License Agreement with every copy;</li>
+            <li><span class="ltr">(b)</span>Clearly attribute the original work to Cortlin and the AerOS project;</li>
+            <li><span class="ltr">(c)</span>Not misrepresent the origin of the Software or claim that you wrote the original;</li>
+            <li><span class="ltr">(d)</span>Retain all copyright, patent, trademark, and attribution notices from the source form.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="doc-section" id="eula-s2">
+        <div class="section-title"><span class="section-num">2.</span>Federal Copyright Protection</div>
+        <div class="subsection">
+          <div class="subsection-title">2.1 — Copyright Notice</div>
+          <p class="doc-p">AerOS and all associated source code, documentation, graphics, branding, logos, and materials are protected under the United States Copyright Act, Title 17 of the United States Code, and applicable international copyright treaties, including the Berne Convention.</p>
+          <p class="doc-p">Copyright © 2026 Cortlin. All rights reserved.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">2.2 — Restrictions on Unauthorized Use</div>
+          <p class="doc-p">The following acts are expressly prohibited under applicable federal copyright law and this Agreement:</p>
+          <ul class="lettered-list">
+            <li><span class="ltr">(a)</span>Claiming original authorship of AerOS or any substantial portion thereof without proper attribution to Cortlin;</li>
+            <li><span class="ltr">(b)</span>Removing, altering, or destroying any copyright notices, trademark notices, or proprietary legends;</li>
+            <li><span class="ltr">(c)</span>Republishing AerOS under a different name in a manner designed to deceive users, without written permission from Cortlin;</li>
+            <li><span class="ltr">(d)</span>Using the AerOS name, Cortlin name, or associated trademarks to endorse products derived from the Software without specific prior written permission;</li>
+            <li><span class="ltr">(e)</span>Engaging in copyright infringement as defined under 17 U.S.C. § 501 et seq. Violations may result in statutory damages up to $150,000 per work for willful infringement under 17 U.S.C. § 504(c).</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">2.3 — DMCA Compliance</div>
+          <p class="doc-p">Cortlin complies with the Digital Millennium Copyright Act (DMCA), 17 U.S.C. § 512. If you believe content distributed under the AerOS project infringes your copyright, you may submit a notice of claimed infringement to Cortlin's designated DMCA agent.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="eula-s3">
+        <div class="section-title"><span class="section-num">3.</span>Intellectual Property &amp; Trademarks</div>
+        <div class="subsection">
+          <div class="subsection-title">3.1 — Trademark Rights</div>
+          <p class="doc-p">"AerOS," "Aero OS," "Aero Operating System," and the Cortlin name and logo are trademarks or registered trademarks of Cortlin in the United States and/or other countries. This Agreement does not grant you any rights to use Cortlin's trademarks, service marks, trade names, logos, or other brand identifiers.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">3.2 — Derivative Works and Branding</div>
+          <p class="doc-p">If you create and distribute a derivative work based on AerOS, you must:</p>
+          <ul class="lettered-list">
+            <li><span class="ltr">(a)</span>Rename the derivative work and not use the "AerOS" name or any confusingly similar name without express written consent from Cortlin;</li>
+            <li><span class="ltr">(b)</span>Clearly state that your derivative work is based on AerOS by Cortlin, and is not an official Cortlin product;</li>
+            <li><span class="ltr">(c)</span>Include the following notice in all derivative works: <em>"This software is based on AerOS, developed by Cortlin. AerOS is Copyright © 2026 Cortlin. All rights reserved. Used under license. This is not an official Cortlin product."</em></li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">3.3 — Patent Rights</div>
+          <p class="doc-p">Cortlin grants you a non-exclusive, worldwide, royalty-free patent license to make, use, sell, and import the Software. If you institute patent litigation against Cortlin alleging the Software constitutes patent infringement, all patent licenses granted to you shall terminate immediately.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="eula-s4">
+        <div class="section-title"><span class="section-num">4.</span>Permitted and Prohibited Uses</div>
+        <div class="subsection">
+          <div class="subsection-title">4.1 — Permitted Uses</div>
+          <ul class="doc-list">
+            <li>Install and use AerOS on any number of devices for personal, educational, commercial, or governmental purposes;</li>
+            <li>Contribute improvements, patches, bug fixes, and new features in accordance with Cortlin's contribution guidelines;</li>
+            <li>Package and distribute AerOS for use in hardware products, servers, embedded systems, or virtual environments, provided all terms are met;</li>
+            <li>Use AerOS as a foundation for research, academic, and development purposes, including publishing papers and tutorials;</li>
+            <li>Charge a reasonable fee for physical distribution media or support services, provided you make clear the Software itself is open source.</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">4.2 — Prohibited Uses</div>
+          <ul class="lettered-list">
+            <li><span class="ltr">(a)</span>Sublicensing, selling, or transferring the Software in a manner that removes users' rights under this Agreement;</li>
+            <li><span class="ltr">(b)</span>Using AerOS to develop, deploy, or distribute malicious software, spyware, ransomware, rootkits, or any software designed to harm or exploit users;</li>
+            <li><span class="ltr">(c)</span>Incorporating AerOS into proprietary, closed-source products in violation of this open-source license without a separate written commercial agreement with Cortlin;</li>
+            <li><span class="ltr">(d)</span>Using AerOS in connection with any activities that violate applicable United States federal, state, or local law.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="doc-section" id="eula-s5">
+        <div class="section-title"><span class="section-num">5.</span>Contributions</div>
+        <div class="subsection">
+          <div class="subsection-title">5.1 — Contributor License</div>
+          <p class="doc-p">Any contribution intentionally submitted to Cortlin for inclusion in AerOS shall be under the terms of this Agreement, without any additional terms or conditions, unless you explicitly state otherwise.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">5.2 — Contribution Warranties</div>
+          <p class="doc-p">By submitting a contribution, you represent that you are the original author, have the legal right to submit it, and that the contribution does not knowingly infringe any third-party intellectual property rights.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">5.3 — Attribution</div>
+          <p class="doc-p">Cortlin will make reasonable efforts to provide attribution to significant contributors in the AerOS project documentation and release notes.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="eula-s6">
+        <div class="section-title"><span class="section-num">6.</span>Disclaimer of Warranties</div>
+        <div class="caps-block">AEROS IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF AEROS IS WITH YOU. CORTLIN DOES NOT WARRANT THAT AEROS WILL MEET YOUR REQUIREMENTS OR THAT OPERATION WILL BE UNINTERRUPTED OR ERROR-FREE.</div>
+      </div>
+
+      <div class="doc-section" id="eula-s7">
+        <div class="section-title"><span class="section-num">7.</span>Limitation of Liability</div>
+        <div class="caps-block">TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL CORTLIN, ITS DIRECTORS, EMPLOYEES, AGENTS, CONTRIBUTORS, OR LICENSORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE DAMAGES WHATSOEVER ARISING OUT OF OR RELATED TO YOUR USE OF OR INABILITY TO USE AEROS.<br><br>TO THE EXTENT PERMITTED BY APPLICABLE LAW, CORTLIN'S TOTAL LIABILITY FOR ALL CLAIMS ARISING UNDER THIS AGREEMENT SHALL NOT EXCEED FIFTY U.S. DOLLARS ($50.00) IF AEROS WAS PROVIDED TO YOU FREE OF CHARGE.</div>
+      </div>
+
+      <div class="doc-section" id="eula-s8">
+        <div class="section-title"><span class="section-num">8.</span>Termination</div>
+        <div class="subsection">
+          <div class="subsection-title">8.1 — Termination by You</div>
+          <p class="doc-p">You may terminate this Agreement at any time by ceasing all use of AerOS and destroying all copies in your possession or control.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">8.2 — Termination by Cortlin</div>
+          <p class="doc-p">Cortlin may terminate this Agreement immediately and without notice if you breach any term of this Agreement. Upon termination, all rights granted to you immediately cease and you must destroy all copies of AerOS in your possession.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="eula-s9">
+        <div class="section-title"><span class="section-num">9.</span>General Provisions</div>
+        <p class="doc-p">This Agreement shall be governed by the laws of the United States of America. Any disputes shall be subject to the exclusive jurisdiction of the federal and state courts in the United States. This Agreement constitutes the entire agreement between you and Cortlin with respect to AerOS. Cortlin reserves the right to modify this Agreement at any time; continued use constitutes acceptance of any changes.</p>
+      </div>
+
+      <div class="doc-section" id="eula-s10">
+        <div class="section-title"><span class="section-num">10.</span>Contact Information</div>
+        <div class="contact-block">
+          <p>Questions about this License Agreement, DMCA notices, or commercial licensing inquiries:</p>
+          <div class="contact-field">
+            <span class="cf-key">Organization: </span><span class="cf-val">Cortlin — Legal &amp; Licensing</span><br>
+            <span class="cf-key">Country: </span><span class="cf-val">United States of America</span><br>
+            <span class="cf-key">Contact: </span><span class="cf-val">[Official Cortlin contact information]</span><br>
+            <span class="cf-key">Repository: </span><span class="cf-val">[Official AerOS project repository]</span><br>
+            <span class="cf-key">DMCA: </span><span class="cf-val">Mark correspondence "DMCA Notice — AerOS Project"</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-thanks">
+        <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+        <p>Thank you for choosing AerOS. We built this because we believe computing should be open, powerful, and built for real people — not locked down behind paywalls or corporate walls. Whether you're a developer, an enthusiast, or just someone looking for something different — you're why we build this.</p>
+        <p>We hope AerOS serves you well. <strong>Build something great.</strong></p>
+        <div class="sig">— The Cortlin Team</div>
+        <div class="copy">AerOS | Aero OS | Aero Operating System<br>Copyright © 2026 Cortlin. All rights reserved.<br>Protected under the United States Copyright Act, 17 U.S.C. § 101 et seq.<br>Last Updated: May 2026</div>
+      </div>
+    </div>
+
+    <!-- ══ PRIVACY ══ -->
+    <div class="tab-page" id="page-privacy">
+      <div class="page-header">
+        <div class="page-header-logo">
+          <img class="main-logo" src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+        </div>
+        <h1 class="page-title">AerOS Privacy Policy</h1>
+        <div class="page-meta"><span>Effective Date: May 2026</span><span>Last Updated: May 2026</span></div>
+      </div>
+
+      <div class="info-box">Your privacy matters to us. This Privacy Policy explains how Cortlin collects, uses, and protects information when you visit the AerOS website or interact with any Cortlin service. This is part of our commitment to open, honest, and user-respecting computing.</div>
+
+      <div class="doc-section" id="priv-s1">
+        <div class="section-title"><span class="section-num">1.</span>Information We Collect</div>
+        <div class="subsection">
+          <div class="subsection-title">1.1 — Information You Provide Directly</div>
+          <p class="doc-p">When you contact Cortlin, submit a contribution, or register for any Cortlin service, you may provide personal information including your name and email address. We only collect what you voluntarily provide.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">1.2 — Automatically Collected Information</div>
+          <p class="doc-p">When you visit the AerOS website, certain technical information may be collected automatically:</p>
+          <ul class="lettered-list">
+            <li><span class="ltr">(a)</span>Your IP address and approximate geographic location;</li>
+            <li><span class="ltr">(b)</span>Browser type, version, and operating system;</li>
+            <li><span class="ltr">(c)</span>Pages visited, time on page, and referring URLs;</li>
+            <li><span class="ltr">(d)</span>Device identifiers and screen resolution;</li>
+            <li><span class="ltr">(e)</span>Cookies and similar tracking technologies (see Section 4).</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">1.3 — AerOS Software Itself</div>
+          <p class="doc-p">AerOS, when installed on your device, does not collect or transmit your personal data to Cortlin by default. Any telemetry features in future releases will be clearly disclosed and opt-in only.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="priv-s2">
+        <div class="section-title"><span class="section-num">2.</span>How We Use Your Information</div>
+        <div class="subsection">
+          <div class="subsection-title">2.1 — Permitted Uses</div>
+          <ul class="doc-list">
+            <li>Providing, maintaining, and improving the AerOS website and related services;</li>
+            <li>Responding to inquiries, support requests, and contributor communications;</li>
+            <li>Analyzing aggregate, anonymized usage trends to improve user experience;</li>
+            <li>Serving advertisements through Google AdSense and third-party ad networks (see Section 4);</li>
+            <li>Complying with applicable legal obligations.</li>
+          </ul>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">2.2 — We Do Not Sell Your Data</div>
+          <p class="doc-p">Cortlin does not sell, rent, or trade your personal information to third parties for their own marketing purposes. Your data is not a product here.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="priv-s3">
+        <div class="section-title"><span class="section-num">3.</span>Data Sharing &amp; Third Parties</div>
+        <div class="subsection">
+          <div class="subsection-title">3.1 — Service Providers</div>
+          <p class="doc-p">Cortlin may share limited data with trusted third-party service providers who assist in operating our website, including hosting providers, analytics platforms, and content delivery networks. These parties are contractually obligated to handle your data securely and only for specified purposes.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">3.2 — Legal Requirements</div>
+          <p class="doc-p">We may disclose your information if required by law, court order, or governmental authority, or where we believe disclosure is necessary to protect the rights, property, or safety of Cortlin, our users, or the public.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">3.3 — Business Transfers</div>
+          <p class="doc-p">In the event of a merger, acquisition, or sale of Cortlin assets, your information may be transferred as part of that transaction. We will notify users via prominent notice on the AerOS website prior to any such transfer.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="priv-s4">
+        <div class="section-title"><span class="section-num">4.</span>Cookies, Advertising &amp; Google AdSense</div>
+        <div class="subsection">
+          <div class="subsection-title">4.1 — Cookies</div>
+          <p class="doc-p">The AerOS website uses cookies — small text files stored on your device — to improve site functionality, remember preferences, and analyze traffic. You may disable cookies through your browser settings; however, some site features may not function correctly as a result.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">4.2 — Google AdSense</div>
+          <p class="doc-p">The AerOS website uses <strong>Google AdSense</strong> to display advertisements. Google AdSense uses cookies and web beacons to serve ads based on your prior visits to this and other websites. Google's use of advertising cookies enables it and its partners to serve personalized ads based on your browsing history.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">4.3 — Opting Out of Personalized Ads</div>
+          <p class="doc-p">You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank">Google Ads Settings</a> or <a href="https://www.aboutads.info" target="_blank">aboutads.info</a>. You can also opt out through the <a href="https://www.networkadvertising.org/choices/" target="_blank">Network Advertising Initiative</a>. Opting out does not stop ads from appearing — it means they will no longer be personalized to your browsing behavior.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">4.4 — Third-Party Ad Partners</div>
+          <p class="doc-p">Third-party vendors, including Google, use cookies to serve ads based on prior visits to the AerOS website or other websites. These parties have their own independent privacy policies. Cortlin has no access to or control over cookies used by third-party advertisers. We encourage you to review <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a> for more information.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="priv-s5">
+        <div class="section-title"><span class="section-num">5.</span>Data Retention &amp; Security</div>
+        <div class="subsection">
+          <div class="subsection-title">5.1 — Retention</div>
+          <p class="doc-p">We retain personal information only as long as necessary to fulfill the purposes described in this Privacy Policy or as required by law. When data is no longer needed, we securely delete or anonymize it.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">5.2 — Security Measures</div>
+          <p class="doc-p">Cortlin implements reasonable technical and organizational measures to protect your information against unauthorized access, alteration, disclosure, or destruction.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">5.3 — Disclaimer</div>
+          <div class="caps-block">NO METHOD OF TRANSMISSION OVER THE INTERNET OR ELECTRONIC STORAGE IS 100% SECURE. CORTLIN CANNOT GUARANTEE ABSOLUTE SECURITY. IN THE EVENT OF A DATA BREACH AFFECTING YOUR RIGHTS, CORTLIN WILL NOTIFY AFFECTED USERS IN ACCORDANCE WITH APPLICABLE LAW.</div>
+        </div>
+      </div>
+
+      <div class="doc-section" id="priv-s6">
+        <div class="section-title"><span class="section-num">6.</span>Your Rights &amp; Choices</div>
+        <div class="subsection">
+          <div class="subsection-title">6.1 — Access and Correction</div>
+          <p class="doc-p">You have the right to request access to the personal information Cortlin holds about you, and to request correction of any inaccurate data. Contact us using the information in Section 8.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">6.2 — Deletion</div>
+          <p class="doc-p">You may request deletion of your personal data at any time. We will honor such requests to the extent permitted by applicable law and our legitimate business needs.</p>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">6.3 — Do Not Track</div>
+          <p class="doc-p">Some browsers offer a "Do Not Track" (DNT) signal. At this time, the AerOS website does not respond to DNT signals, as no universal standard for DNT compliance has been established.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="priv-s7">
+        <div class="section-title"><span class="section-num">7.</span>Children's Privacy</div>
+        <p class="doc-p">The AerOS website and services are not directed to children under the age of 13. Cortlin does not knowingly collect personal information from children under 13. If you believe a child under 13 has provided us with personal information, please contact us immediately and we will take steps to delete such information.</p>
+      </div>
+
+      <div class="doc-section" id="priv-s8">
+        <div class="section-title"><span class="section-num">8.</span>Contact Information</div>
+        <div class="contact-block">
+          <p>Questions about this Privacy Policy, data rights requests, or privacy concerns related to AerOS:</p>
+          <div class="contact-field">
+            <span class="cf-key">Organization: </span><span class="cf-val">Cortlin — Privacy &amp; Data</span><br>
+            <span class="cf-key">Country: </span><span class="cf-val">United States of America</span><br>
+            <span class="cf-key">Contact: </span><span class="cf-val">[Official Cortlin contact information]</span><br>
+            <span class="cf-key">Repository: </span><span class="cf-val">[Official AerOS project repository]</span><br>
+            <span class="cf-key">Subject Line: </span><span class="cf-val">"Privacy Request — AerOS Project"</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-thanks">
+        <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+        <p>Thank you for choosing AerOS. We built AerOS because we believe computing should be open, honest, and built for real people — not data pipelines. Your trust means everything to us, and we promise to always be straight with you about what we collect, why, and how it's used.</p>
+        <p>Now go build something great.</p>
+        <div class="sig">— The Cortlin Team</div>
+        <div class="copy">AerOS | Aero OS | Aero Operating System<br>Copyright © 2026 Cortlin. All rights reserved.<br>Last Updated: May 2026</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const eulaNav = [
+  { type: 'heading', label: 'Articles in this section' },
+  { label: 'End User License Agreement', tab: 'eula', active: true },
+  { label: 'Privacy Policy', tab: 'privacy' },
+  { type: 'heading', label: 'On This Page' },
+  { label: '1. Grant of License', anchor: 'eula-s1' },
+  { label: '2. Federal Copyright Protection', anchor: 'eula-s2' },
+  { label: '3. Intellectual Property & Trademarks', anchor: 'eula-s3' },
+  { label: '4. Permitted and Prohibited Uses', anchor: 'eula-s4' },
+  { label: '5. Contributions', anchor: 'eula-s5' },
+  { label: '6. Disclaimer of Warranties', anchor: 'eula-s6' },
+  { label: '7. Limitation of Liability', anchor: 'eula-s7' },
+  { label: '8. Termination', anchor: 'eula-s8' },
+  { label: '9. General Provisions', anchor: 'eula-s9' },
+  { label: '10. Contact Information', anchor: 'eula-s10' },
+];
+
+const privacyNav = [
+  { type: 'heading', label: 'Articles in this section' },
+  { label: 'End User License Agreement', tab: 'eula' },
+  { label: 'Privacy Policy', tab: 'privacy', active: true },
+  { type: 'heading', label: 'On This Page' },
+  { label: '1. Information We Collect', anchor: 'priv-s1' },
+  { label: '2. How We Use Your Information', anchor: 'priv-s2' },
+  { label: '3. Data Sharing & Third Parties', anchor: 'priv-s3' },
+  { label: '4. Cookies, Advertising & AdSense', anchor: 'priv-s4' },
+  { label: '5. Data Retention & Security', anchor: 'priv-s5' },
+  { label: '6. Your Rights & Choices', anchor: 'priv-s6' },
+  { label: "7. Children's Privacy", anchor: 'priv-s7' },
+  { label: '8. Contact Information', anchor: 'priv-s8' },
+];
+
+function renderSidebar(tab) {
+  const nav = tab === 'eula' ? eulaNav : privacyNav;
+  const sidebar = document.getElementById('sidebar');
+  sidebar.innerHTML = '';
+  nav.forEach(item => {
+    if (item.type === 'heading') {
+      const h = document.createElement('div');
+      h.className = 'sidebar-heading';
+      h.textContent = item.label;
+      sidebar.appendChild(h);
+    } else if (item.tab && !item.anchor) {
+      const el = document.createElement('div');
+      el.className = 'sidebar-item' + (item.active ? ' active' : '');
+      el.textContent = item.label;
+      el.onclick = () => switchTab(item.tab);
+      sidebar.appendChild(el);
+    } else if (item.anchor) {
+      const el = document.createElement('div');
+      el.className = 'sidebar-item';
+      el.textContent = item.label;
+      el.onclick = () => {
+        const target = document.getElementById(item.anchor);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      sidebar.appendChild(el);
+    }
+  });
+}
+
+function switchTab(tab) {
+  document.getElementById('page-eula').classList.toggle('active', tab === 'eula');
+  document.getElementById('page-privacy').classList.toggle('active', tab === 'privacy');
+  document.getElementById('tab-eula').classList.toggle('active', tab === 'eula');
+  document.getElementById('tab-privacy').classList.toggle('active', tab === 'privacy');
+  document.getElementById('breadcrumb-current').textContent =
+    tab === 'eula' ? 'End User License Agreement' : 'Privacy Policy';
+  renderSidebar(tab);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function dismissBanner() {
+  document.getElementById('cookie-banner').style.display = 'none';
+}
+
+renderSidebar('eula');
+</script>
+</body>
+</html>
