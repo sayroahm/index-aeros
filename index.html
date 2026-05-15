@@ -3,65 +3,549 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Index of / — Cortlin</title>
+<title>Cortlin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #f9f9f9;
+  --surface: #ffffff;
+  --border: #e8e8e8;
+  --text: #111111;
+  --muted: #888888;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --danger: #dc2626;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --radius: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #666666;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: monospace; font-size: 14px; background: #fff; color: #000; padding: 20px 40px; }
-h1 { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-hr { border: none; border-top: 1px solid #000; margin-bottom: 10px; }
-table { width: 100%; border-collapse: collapse; }
-th { text-align: left; padding: 2px 12px 2px 0; font-weight: normal; text-decoration: underline; cursor: pointer; }
-td { padding: 2px 12px 2px 0; white-space: nowrap; vertical-align: top; }
-td.name { min-width: 250px; }
-td.name a { color: #00e; text-decoration: underline; cursor: pointer; }
-td.size { text-align: right; min-width: 60px; }
-#status-bar { position: fixed; top: 0; right: 0; padding: 4px 10px; font-size: 12px; background: #fff; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; }
-#status-bar a { color: #00e; text-decoration: underline; cursor: pointer; }
-#admin-bar { margin-bottom: 12px; display: none; }
-#admin-bar button { font-family: monospace; font-size: 13px; background: none; border: 1px solid #999; padding: 2px 8px; cursor: pointer; margin-right: 6px; }
-#admin-bar button:hover { background: #eee; }
-.locked-icon { font-size: 11px; color: #888; }
-#modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 10; }
-#modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; border: 1px solid #000; padding: 20px; z-index: 11; min-width: 320px; }
-#modal h2 { font-size: 14px; margin-bottom: 12px; font-weight: bold; }
-#modal input, #modal textarea { font-family: monospace; font-size: 13px; width: 100%; border: 1px solid #999; padding: 3px 6px; margin-bottom: 8px; display: block; }
-#modal textarea { height: 80px; resize: vertical; }
-#modal label { font-size: 12px; display: block; margin-bottom: 2px; }
-#modal .row { display: flex; gap: 8px; margin-top: 8px; }
-#modal .row button { flex: 1; }
-#modal button { font-family: monospace; font-size: 13px; background: none; border: 1px solid #999; padding: 4px 10px; cursor: pointer; width: 100%; }
-#modal button:hover { background: #eee; }
-#modal button.primary { border-color: #000; font-weight: bold; }
-#breadcrumb { margin-bottom: 6px; font-size: 13px; }
-#breadcrumb a { color: #00e; text-decoration: underline; cursor: pointer; }
-#footer { margin-top: 12px; font-size: 12px; color: #444; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.2s, color 0.2s; }
+
+#landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+}
+.nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-btn {
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  text-decoration: none;
+}
+.nav-btn:hover { opacity: 0.8; }
+
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 48px;
+  text-align: center;
+  gap: 24px;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+}
+.hero h1 {
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 300;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--text);
+}
+.hero h1 span { font-weight: 600; }
+.hero p {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 480px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-decoration: none;
+}
+.btn-secondary:hover { border-color: var(--text); background: var(--border); }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 0 48px 80px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card img { width: 32px; height: 32px; object-fit: contain; }
+.card h3 { font-size: 14px; font-weight: 500; }
+.card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0;
+}
+
+.contact-section {
+  padding: 80px 48px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+.contact-section h2 {
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.8px;
+  margin-bottom: 8px;
+}
+.contact-section > p { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.contact-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.contact-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+.contact-value { font-size: 14px; color: var(--text); }
+.contact-value a { color: var(--accent); text-decoration: none; }
+.contact-value a:hover { text-decoration: underline; }
+.contact-note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+#fs-page {
+  display: none;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.fs-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.fs-nav-left { display: flex; align-items: center; gap: 16px; }
+.fs-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.fs-logo img { width: 22px; height: 22px; object-fit: contain; }
+.fs-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+.fs-breadcrumb a { color: var(--accent); cursor: pointer; text-decoration: none; }
+.fs-breadcrumb a:hover { text-decoration: underline; }
+
+.fs-auth {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.fs-auth a { color: var(--accent); cursor: pointer; text-decoration: none; }
+.fs-auth a:hover { text-decoration: underline; }
+
+.fs-toolbar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.tool-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tool-btn:hover { border-color: var(--text); background: var(--border); }
+
+.fs-main { flex: 1; padding: 32px; max-width: 1100px; margin: 0 auto; width: 100%; }
+.fs-header { margin-bottom: 20px; }
+.fs-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+.fs-table { width: 100%; border-collapse: collapse; }
+.fs-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+.fs-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.fs-table th:hover { color: var(--text); }
+.fs-table td {
+  padding: 10px 12px;
+  font-size: 13px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+.fs-table tr:last-child td { border-bottom: none; }
+.fs-table tbody tr { transition: background 0.1s; }
+.fs-table tbody tr:hover { background: var(--border); }
+
+.entry-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.entry-icon { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+.entry-name { color: var(--accent); text-decoration: none; cursor: pointer; font-weight: 400; }
+.entry-name:hover { text-decoration: underline; }
+.locked-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  background: var(--border);
+  color: var(--muted);
+  padding: 2px 7px;
+  border-radius: 100px;
+  letter-spacing: 0.03em;
+}
+.time-cell { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.desc-cell { font-size: 12px; color: var(--muted); }
+.admin-actions { display: flex; gap: 10px; }
+.act-btn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+.act-btn:hover { color: var(--text); }
+.act-btn.danger:hover { color: var(--danger); }
+
+.fs-footer { padding: 16px 32px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+
+.empty-state { padding: 48px 12px; text-align: center; color: var(--muted); font-size: 13px; }
+
+#modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 200;
+  backdrop-filter: blur(2px);
+}
+#modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  z-index: 201;
+  min-width: 360px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+#modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+.field-group { margin-bottom: 14px; }
+.field-group label { display: block; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 5px; }
+.field-group input,
+.field-group textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field-group input:focus,
+.field-group textarea:focus { border-color: var(--accent); }
+.field-group textarea { height: 80px; resize: vertical; }
+.field-group.checkbox { display: flex; align-items: center; gap: 8px; flex-direction: row; }
+.field-group.checkbox label { margin-bottom: 0; text-transform: none; font-size: 13px; letter-spacing: 0; color: var(--text); font-weight: 400; }
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+.modal-actions button { flex: 1; }
+
+@media (max-width: 640px) {
+  nav, .fs-nav { padding: 14px 20px; }
+  .hero { padding: 60px 24px; }
+  .cards, .contact-section { padding-left: 20px; padding-right: 20px; }
+  .fs-main { padding: 20px; }
+  .nav-links { display: none; }
+  footer { flex-direction: column; gap: 8px; text-align: center; }
+}
 </style>
 </head>
 <body>
 
-<div id="status-bar"><span id="auth-status"></span></div>
+<div id="landing">
+  <nav>
+    <div class="nav-logo">
+      <img src="https://i.imgur.com/bqOOpyN.png" alt="Cortlin">
+      Cortlin
+    </div>
+    <div class="nav-links">
+      <a href="#contact">Contact</a>
+      <a href="#" onclick="showFS(); return false;">File Index</a>
+    </div>
+    <button class="nav-btn" onclick="showFS()">Open Index</button>
+  </nav>
 
-<div id="breadcrumb"></div>
-<h1 id="page-title">Index of /</h1>
-<hr>
+  <div class="hero">
+    <div class="hero-tag">Software Development</div>
+    <h1>Built for<br><span>the love of it.</span></h1>
+    <p>Cortlin is an informal group of developers building software we actually care about. From operating systems to browser tools, we make things that matter to us.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showFS()">Browse Projects</button>
+      <a class="btn-secondary" href="#contact">Get in touch</a>
+    </div>
+  </div>
 
-<div id="admin-bar">
-  <button onclick="openModal('folder')">+ New Folder</button>
-  <button onclick="openModal('file')">+ New Entry</button>
+  <div class="cards">
+    <div class="card">
+      <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+      <h3>AerOS</h3>
+      <p>A custom x86 operating system with a Frutiger Aero aesthetic. Open source and actively developed.</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn3d.iconscout.com/3d/premium/thumb/file-explorer-3d-icon-png-download-8663168.png" alt="Apps">
+      <h3>Core Apps</h3>
+      <p>Application software built to complement our OS and fill gaps we actually notice.</p>
+    </div>
+    <div class="card">
+      <img src="https://i.imgur.com/6atwQbZ.png" alt="Dev">
+      <h3>Web & Tools</h3>
+      <p>Browser tools, webpages, and dev utilities. Built lean, kept clean.</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/2246/2246713.png" alt="Open Source">
+      <h3>Open Source</h3>
+      <p>Transparency matters. Core projects like AerOS are fully open source.</p>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="contact-section" id="contact">
+    <h2>Get in touch.</h2>
+    <p>We're always down to hear from people. Whether it's a question, a project idea, or you just want to get involved.</p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-label">Email</div>
+        <div class="contact-value"><a href="mailto:cortlin-us@nbep-us.com">cortlin-us@nbep-us.com</a></div>
+        <div class="contact-note">Best way to reach us.</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Website</div>
+        <div class="contact-value"><a href="https://nbep-us.com" target="_blank">nbep-us.com</a></div>
+        <div class="contact-note">Stay up to date on everything.</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Support</div>
+        <div class="contact-value"><a href="https://cortlin.atlassian.net/servicedesk/customer/portal/1/group/1/create/1" target="_blank">Submit a ticket</a></div>
+        <div class="contact-note">Atlassian service desk.</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Phone</div>
+        <div class="contact-value">(856) 441-3036</div>
+        <div class="contact-note">Line's a bit iffy, leave a voicemail.</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Want in?</div>
+        <div class="contact-value"><a href="mailto:cortlin-us@nbep-us.com">Reach out</a></div>
+        <div class="contact-note">We're always open to new people who care about what they build.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Cortlin. All rights reserved.</span>
+    <span><a href="#" onclick="showFS(); return false;">File Index</a></span>
+  </footer>
 </div>
 
-<table>
-  <thead>
-    <tr>
-      <th onclick="sortBy('name')">Name</th>
-      <th onclick="sortBy('modified')">Last Modified</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody id="tree-body"></tbody>
-</table>
+<div id="fs-page">
+  <div class="fs-nav">
+    <div class="fs-nav-left">
+      <div class="fs-logo" onclick="showLanding()">
+        <img src="https://i.imgur.com/bqOOpyN.png" alt="Cortlin">
+        Cortlin
+      </div>
+      <div class="fs-breadcrumb" id="breadcrumb">/</div>
+    </div>
+    <div class="fs-auth" id="auth-status"></div>
+  </div>
 
-<div id="footer"></div>
+  <div class="fs-toolbar" id="admin-bar">
+    <button class="tool-btn" onclick="openModal('folder')">+ New Folder</button>
+    <button class="tool-btn" onclick="openModal('file')">+ New Entry</button>
+  </div>
+
+  <div class="fs-main">
+    <div class="fs-header">
+      <div class="fs-title" id="page-title">Index of /</div>
+    </div>
+    <table class="fs-table">
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">Name</th>
+          <th onclick="sortBy('modified')">Modified</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tree-body"></tbody>
+    </table>
+  </div>
+
+  <div class="fs-footer" id="fs-footer-count"></div>
+</div>
 
 <div id="modal-overlay" onclick="closeModal()"></div>
 <div id="modal">
@@ -93,26 +577,51 @@ let allItems = [];
 let sortKey = "name";
 let sortDir = 1;
 
-const bar = document.getElementById("auth-status");
+window.showFS = () => {
+  document.getElementById("landing").style.display = "none";
+  const fsPage = document.getElementById("fs-page");
+  fsPage.style.display = "flex";
+  fsPage.style.flexDirection = "column";
+  loadTree(null);
+};
+
+window.showLanding = () => {
+  document.getElementById("fs-page").style.display = "none";
+  document.getElementById("landing").style.display = "flex";
+  document.getElementById("landing").style.flexDirection = "column";
+};
+
+const authEl = document.getElementById("auth-status");
 if (currentUser) {
-  bar.innerHTML = `logged in as <strong>${currentUser.user}</strong> — <a onclick="doSignOut()">logout</a>`;
-  document.getElementById("admin-bar").style.display = "block";
+  authEl.innerHTML = `<span>logged in as <strong>${currentUser.user}</strong></span> <a onclick="doSignOut()">logout</a>`;
+  document.getElementById("admin-bar").style.display = "flex";
 } else {
-  bar.innerHTML = `not logged in — <a onclick="window.location='login.html'">login</a>`;
+  authEl.innerHTML = `<a onclick="window.location='login.html'">login</a>`;
 }
 
 window.doSignOut = () => { sessionStorage.removeItem("cortlin_user"); location.reload(); };
 
+function getIcon(item) {
+  const name = (item.name || "").toLowerCase();
+  if (item.type === "folder") {
+    if (name.includes("aeros") || name.includes("cortlin")) return "https://i.imgur.com/bqOOpyN.png";
+    if (name.includes("dev") || name.includes("develop")) return "https://i.imgur.com/6atwQbZ.png";
+    return "https://cdn3d.iconscout.com/3d/premium/thumb/file-explorer-3d-icon-png-download-8663168.png";
+  }
+  if (name.includes("aeros") || name.includes("cortlin")) return "https://i.imgur.com/bqOOpyN.png";
+  if (name.includes("dev") || name.includes("develop")) return "https://i.imgur.com/6atwQbZ.png";
+  return "https://cdn-icons-png.flaticon.com/512/2246/2246713.png";
+}
+
 async function loadTree(parentId) {
-  document.getElementById("tree-body").innerHTML = "<tr><td colspan='3'>loading...</td></tr>";
+  document.getElementById("tree-body").innerHTML = `<tr><td colspan="4" class="empty-state">Loading...</td></tr>`;
   try {
     const snap = await getDocs(query(collection(db, "tree"), where("parentId", "==", parentId ?? null)));
     allItems = [];
     snap.forEach(d => allItems.push({ id: d.id, ...d.data() }));
     renderTree();
   } catch (err) {
-    document.getElementById("tree-body").innerHTML = `<tr><td colspan='3' style='color:red;'>error loading: ${err.message}</td></tr>`;
-    console.error("loadTree error:", err);
+    document.getElementById("tree-body").innerHTML = `<tr><td colspan="4" class="empty-state" style="color:var(--danger)">Error: ${err.message}</td></tr>`;
   }
 }
 
@@ -129,8 +638,8 @@ function renderTree() {
 
   if (currentPathId !== null) {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td class="name">↩ <a class="go-up-link" style="cursor:pointer;">Parent Directory</a></td><td></td><td></td>`;
-    tr.querySelector(".go-up-link").addEventListener("click", goUp);
+    tr.innerHTML = `<td colspan="4"><div class="entry-cell"><span style="color:var(--muted);font-size:13px;cursor:pointer;" class="go-up">.. Parent Directory</span></div></td>`;
+    tr.querySelector(".go-up").addEventListener("click", goUp);
     tbody.appendChild(tr);
   }
 
@@ -138,43 +647,35 @@ function renderTree() {
   for (const item of sorted) {
     if (item.locked && !currentUser) continue;
     visible++;
-    const tr = document.createElement("tr");
-    const badge = item.locked ? ` <span class="locked-icon">[locked]</span>` : "";
-    const mod = item.modified ? new Date(item.modified.seconds * 1000).toISOString().slice(0, 16).replace("T", " ") : "-";
-    const desc = item.description || "";
 
-    // Build admin action cells as text, wired up after appendChild
-    const adminHtml = currentUser
-      ? ` — <a class="del-btn" style="cursor:pointer;">[del]</a> <a class="lock-btn" style="cursor:pointer;">[${item.locked ? "unlock" : "lock"}]</a>`
-      : "";
+    const tr = document.createElement("tr");
+    const mod = item.modified ? new Date(item.modified.seconds * 1000).toISOString().slice(0, 16).replace("T", " ") : "-";
+    const icon = getIcon(item);
+
+    const adminCell = currentUser ? `<div class="admin-actions"><button class="act-btn danger del-btn">del</button><button class="act-btn lock-btn">${item.locked ? "unlock" : "lock"}</button></div>` : "";
 
     if (item.type === "folder") {
       tr.innerHTML = `
-        <td class="name">📁 <a class="folder-link" style="cursor:pointer;">${esc(item.name)}/</a>${badge}</td>
-        <td>${mod}</td>
-        <td>${esc(desc)}${adminHtml}</td>`;
-
-      // ✅ Safe event listener — no inline onclick with dynamic data
+        <td><div class="entry-cell"><img class="entry-icon" src="${icon}" alt=""><a class="entry-name folder-link">${esc(item.name)}/</a>${item.locked ? `<span class="locked-badge">locked</span>` : ""}</div></td>
+        <td class="time-cell">${mod}</td>
+        <td class="desc-cell">${esc(item.description || "")}</td>
+        <td>${adminCell}</td>`;
       tr.querySelector(".folder-link").addEventListener("click", () => navInto(item.id, item.name));
-
     } else if (item.url) {
-      // ✅ FIX: No target="_blank" — same tab navigation is trusted by browser and avoids popup block.
-      // Also force https:// so GitHub Pages doesn't redirect http:// causing a flash.
       const safeUrl = esc(item.url.replace(/^http:\/\//i, "https://"));
       tr.innerHTML = `
-        <td class="name">📄 <a href="${safeUrl}">${esc(item.name)}</a>${badge}</td>
-        <td>${mod}</td>
-        <td>${esc(desc)}${adminHtml}</td>`;
-
+        <td><div class="entry-cell"><img class="entry-icon" src="${icon}" alt=""><a class="entry-name" href="${safeUrl}">${esc(item.name)}</a>${item.locked ? `<span class="locked-badge">locked</span>` : ""}</div></td>
+        <td class="time-cell">${mod}</td>
+        <td class="desc-cell">${esc(item.description || "")}</td>
+        <td>${adminCell}</td>`;
     } else {
-      // ✅ REAL FIX: Plain <a href> — browser trusts native anchor navigation, no popup block
       tr.innerHTML = `
-        <td class="name">📄 <a class="file-link" href="view.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a>${badge}</td>
-        <td>${mod}</td>
-        <td>${esc(desc)}${adminHtml}</td>`;
+        <td><div class="entry-cell"><img class="entry-icon" src="${icon}" alt=""><a class="entry-name" href="view.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a>${item.locked ? `<span class="locked-badge">locked</span>` : ""}</div></td>
+        <td class="time-cell">${mod}</td>
+        <td class="desc-cell">${esc(item.description || "")}</td>
+        <td>${adminCell}</td>`;
     }
 
-    // Wire up admin buttons safely
     if (currentUser) {
       tr.querySelector(".del-btn")?.addEventListener("click", () => deleteItem(item.id, item.name));
       tr.querySelector(".lock-btn")?.addEventListener("click", () => toggleLock(item.id, !!item.locked));
@@ -185,11 +686,11 @@ function renderTree() {
 
   if (visible === 0) {
     const empty = document.createElement("tr");
-    empty.innerHTML = `<td colspan="3" style="color:#888;padding-top:8px;">no items</td>`;
+    empty.innerHTML = `<td colspan="4" class="empty-state">No items here.</td>`;
     tbody.appendChild(empty);
   }
 
-  document.getElementById("footer").textContent = `Cortlin — ${visible} item(s)`;
+  document.getElementById("fs-footer-count").textContent = `Cortlin / ${visible} item(s)`;
 }
 
 function navInto(id, name) {
@@ -211,7 +712,6 @@ async function goUp() {
       const snap = await getDocs(query(collection(db, "tree"), where("name", "==", parts[parts.length - 1]), where("type", "==", "folder")));
       currentPathId = snap.empty ? null : snap.docs[0].id;
     } catch (err) {
-      console.error("goUp error:", err);
       currentPathId = null;
     }
   }
@@ -226,7 +726,6 @@ function updateBreadcrumb() {
   bc.innerHTML = "";
   const rootLink = document.createElement("a");
   rootLink.textContent = "/";
-  rootLink.style.cursor = "pointer";
   rootLink.addEventListener("click", window.goRoot);
   bc.appendChild(rootLink);
   for (const p of parts) {
@@ -235,9 +734,10 @@ function updateBreadcrumb() {
 }
 
 window.goRoot = () => {
-  currentPath = "/"; currentPathId = null;
-  document.getElementById("page-title").textContent = `Index of /`;
-  document.getElementById("breadcrumb").innerHTML = "";
+  currentPath = "/";
+  currentPathId = null;
+  document.getElementById("page-title").textContent = "Index of /";
+  document.getElementById("breadcrumb").innerHTML = "/";
   loadTree(null);
 };
 
@@ -255,19 +755,19 @@ window.openModal = (type) => {
   if (type === "folder") {
     title.textContent = "New Folder";
     body.innerHTML = `
-      <label>Name</label><input id="m-name" type="text">
-      <label>Description</label><input id="m-desc" type="text">
-      <label><input type="checkbox" id="m-lock"> Staff only</label>
-      <div class="row"><button class="primary" onclick="submitFolder()">Create</button><button onclick="closeModal()">Cancel</button></div>`;
+      <div class="field-group"><label>Name</label><input id="m-name" type="text" placeholder="Folder name"></div>
+      <div class="field-group"><label>Description</label><input id="m-desc" type="text" placeholder="Optional"></div>
+      <div class="field-group checkbox"><input type="checkbox" id="m-lock"><label for="m-lock">Staff only</label></div>
+      <div class="modal-actions"><button class="btn-primary" onclick="submitFolder()">Create</button><button class="btn-secondary" onclick="closeModal()">Cancel</button></div>`;
   } else {
     title.textContent = "New Entry";
     body.innerHTML = `
-      <label>Name</label><input id="m-name" type="text">
-      <label>URL (leave blank for text content)</label><input id="m-url" type="text" placeholder="https://...">
-      <label>Description</label><input id="m-desc" type="text">
-      <label>Content (for text entries)</label><textarea id="m-content" placeholder="Enter content here..."></textarea>
-      <label><input type="checkbox" id="m-lock"> Staff only</label>
-      <div class="row"><button class="primary" onclick="submitFile()">Create</button><button onclick="closeModal()">Cancel</button></div>`;
+      <div class="field-group"><label>Name</label><input id="m-name" type="text" placeholder="Entry name"></div>
+      <div class="field-group"><label>URL</label><input id="m-url" type="text" placeholder="https:// (leave blank for text)"></div>
+      <div class="field-group"><label>Description</label><input id="m-desc" type="text" placeholder="Optional"></div>
+      <div class="field-group"><label>Content</label><textarea id="m-content" placeholder="Text content (if no URL)"></textarea></div>
+      <div class="field-group checkbox"><input type="checkbox" id="m-lock"><label for="m-lock">Staff only</label></div>
+      <div class="modal-actions"><button class="btn-primary" onclick="submitFile()">Create</button><button class="btn-secondary" onclick="closeModal()">Cancel</button></div>`;
   }
 };
 
@@ -291,8 +791,7 @@ window.submitFolder = async () => {
     closeModal();
     loadTree(currentPathId);
   } catch (err) {
-    alert("Error creating folder: " + err.message);
-    console.error(err);
+    alert("Error: " + err.message);
   }
 };
 
@@ -300,13 +799,13 @@ window.submitFile = async () => {
   const name = document.getElementById("m-name").value.trim();
   if (!name) return alert("Name is required.");
   const url = document.getElementById("m-url").value.trim() || null;
-  const body = document.getElementById("m-content")?.value.trim() || null;
+  const bodyVal = document.getElementById("m-content")?.value.trim() || null;
   try {
     await addDoc(collection(db, "tree"), {
       name,
       type: "file",
       url,
-      body: url ? null : body,   // only store body if it's a text entry
+      body: url ? null : bodyVal,
       description: document.getElementById("m-desc").value.trim(),
       locked: document.getElementById("m-lock").checked,
       parentId: currentPathId ?? null,
@@ -315,8 +814,7 @@ window.submitFile = async () => {
     closeModal();
     loadTree(currentPathId);
   } catch (err) {
-    alert("Error creating entry: " + err.message);
-    console.error(err);
+    alert("Error: " + err.message);
   }
 };
 
@@ -326,8 +824,7 @@ async function deleteItem(id, name) {
     await deleteDoc(doc(db, "tree", id));
     loadTree(currentPathId);
   } catch (err) {
-    alert("Error deleting: " + err.message);
-    console.error(err);
+    alert("Error: " + err.message);
   }
 }
 
@@ -336,21 +833,18 @@ async function toggleLock(id, locked) {
     await updateDoc(doc(db, "tree", id), { locked: !locked });
     loadTree(currentPathId);
   } catch (err) {
-    alert("Error toggling lock: " + err.message);
-    console.error(err);
+    alert("Error: " + err.message);
   }
 }
 
 function esc(str) {
   return String(str ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
-
-loadTree(null);
 </script>
 </body>
 </html>
