@@ -773,7 +773,9 @@ window.submitAuth = async () => {
       const snap = await getDoc(doc(db, "shop_users", username));
       if (!snap.exists()) { errEl.textContent = "No account found."; return; }
       const data = snap.data();
-      if (String(data.passwordHash) !== String(hash) && String(data.passwordHash) !== password) {
+      const rawMatch = String(data.passwordHash) === String(password);
+      const hashMatch = String(data.passwordHash) === String(hash);
+      if (!rawMatch && !hashMatch) {
         errEl.textContent = "Incorrect password.";
         return;
       }
