@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" href="https://i.imgur.com/6atwQbZ.png" type="image/png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cortlin Forums</title>
@@ -678,14 +679,10 @@ let authMode = "login";
 
 const READ_REQUIRED = 300;
 
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  let num = 0;
-  for (let i = 0; i < 4; i++) num = (num * 256 + hashArray[i]) | 0;
-  return String(num);
+function hashPassword(p) {
+  let h = 0;
+  for (let i = 0; i < p.length; i++) h = Math.imul(31, h) + p.charCodeAt(i) | 0;
+  return h.toString(16);
 }
 
 function esc(str) {
@@ -766,7 +763,7 @@ window.submitAuth = async () => {
   errEl.textContent = "";
   if (!username || !password) { errEl.textContent = "All fields are required."; return; }
 
-  const hash = await hashPassword(password);
+  const hash = hashPassword(password);
 
   if (authMode === "login") {
     try {
