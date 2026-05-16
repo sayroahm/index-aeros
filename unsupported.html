@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unsupported Browser — Cortlin</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --border: #e5e7eb;
+      --danger: #dc2626;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 40px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+    nav img { width: 26px; height: 26px; object-fit: contain; }
+    nav span { font-weight: 600; font-size: 15px; }
+
+    /* ── MAIN ── */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 48px 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 44px;
+      max-width: 860px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fef2f2;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 13px;
+      border-radius: 100px;
+      border: 1px solid #fecaca;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 300;
+      letter-spacing: -1.5px;
+      margin-bottom: 14px;
+      line-height: 1.1;
+    }
+    h1 span { font-weight: 600; }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 540px;
+      margin: 0 auto 36px;
+    }
+
+    /* ── BROWSER GRID ── */
+    .browser-row {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+
+    .browser {
+      width: 110px;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.18s ease;
+    }
+    .browser:hover { transform: translateY(-4px); }
+
+    .browser-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+    }
+
+    .browser img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .browser-name {
+      font-size: 13px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .browser-ver {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* ── INFO BOX ── */
+    .info-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      text-align: left;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .info-box strong { color: var(--text); }
+
+    /* detected browser pill */
+    #detected-pill {
+      display: none;
+      margin: 0 auto 28px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #92400e;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      max-width: 480px;
+      text-align: left;
+    }
+    #detected-pill strong { color: #78350f; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: #fff;
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+    .footer-links { display: flex; gap: 20px; }
+
+    @media (max-width: 600px) {
+      .card { padding: 32px 22px; }
+      nav { padding: 14px 20px; }
+      footer { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <img src="https://i.imgur.com/bqOOpyN.png" alt="Cortlin">
+    <span>Cortlin</span>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+
+      <div class="badge">⚠ Compatibility Issue</div>
+
+      <h1>Uh <span>oh!</span></h1>
+
+      <p class="subtitle">
+        Your browser doesn't meet the minimum requirements to run this page.<br>
+        Please switch to a modern browser to continue.
+      </p>
+
+      <div id="detected-pill"></div>
+
+      <div class="browser-row">
+        <a class="browser" href="https://www.google.com/chrome/" target="_blank" rel="noopener">
+          <div class="browser-icon-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/1280px-Google_Chrome_icon_%28February_2022%29.svg.png" alt="Chrome">
+          </div>
+          <span class="browser-name">Chrome</span>
+          <span class="browser-ver">v100+</span>
+        </a>
+
+        <a class="browser" href="https://www.microsoft.com/edge" target="_blank" rel="noopener">
+          <div class="browser-icon-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Microsoft_Edge_logo_%282019%29.svg/960px-Microsoft_Edge_logo_%282019%29.svg.png" alt="Edge">
+          </div>
+          <span class="browser-name">Edge</span>
+          <span class="browser-ver">v100+</span>
+        </a>
+
+        <a class="browser" href="https://www.mozilla.org/firefox/" target="_blank" rel="noopener">
+          <div class="browser-icon-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefox_logo%2C_2019.svg/1280px-Firefox_logo%2C_2019.svg.png" alt="Firefox">
+          </div>
+          <span class="browser-name">Firefox</span>
+          <span class="browser-ver">v100+</span>
+        </a>
+
+        <a class="browser" href="https://www.opera.com/" target="_blank" rel="noopener">
+          <div class="browser-icon-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Opera_2015_icon.svg/960px-Opera_2015_icon.svg.png" alt="Opera">
+          </div>
+          <span class="browser-name">Opera</span>
+          <span class="browser-ver">v85+</span>
+        </a>
+
+        <a class="browser" href="https://brave.com/" target="_blank" rel="noopener">
+          <div class="browser-icon-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Brave_lion_icon.svg/2048px-Brave_lion_icon.svg.png" alt="Brave">
+          </div>
+          <span class="browser-name">Brave</span>
+          <span class="browser-ver">v1.40+</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Cortlin &copy; 2026&ndash;2027. All rights reserved.</span>
+    <div class="footer-links">
+      <a href="mailto:cortlin-us@nbep-us.com">cortlin-us@nbep-us.com</a>
+      <a href="/en-us/index/support">Privacy Policy</a>
+      <a href="/en-us/index/support">EULA</a>
+      <a href="https://cortlin.atlassian.net/servicedesk/customer/portal/1/group/1/create/1" target="_blank">Submit Ticket</a>
+    </div>
+  </footer>
+
+  <script>
+    // Show which browser was detected (passed via URL param)
+    const params = new URLSearchParams(window.location.search);
+    const reason = params.get("reason");
+    if (reason) {
+      const pill = document.getElementById("detected-pill");
+      pill.style.display = "block";
+      pill.innerHTML = `<strong>Detected:</strong> ${decodeURIComponent(reason)}`;
+    }
+  </script>
+
+</body>
+</html>
