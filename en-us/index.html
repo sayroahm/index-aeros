@@ -11,17 +11,11 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
-  background: #1a1a1a;
-  color: #cccccc;
-  font-size: 14px;
-  line-height: 1.5;
-  min-height: 100vh;
+  background: #1a1a1a; color: #cccccc;
+  font-size: 14px; line-height: 1.5; min-height: 100vh;
 }
-
-/* NAV */
 .top-nav {
-  background: #111;
-  border-bottom: 1px solid #2a2a2a;
+  background: #111; border-bottom: 1px solid #2a2a2a;
   display: flex; align-items: center;
   padding: 0 24px; height: 48px; gap: 16px;
 }
@@ -37,18 +31,14 @@ body {
 .nav-right a:hover { color: #fff; }
 #user-label { color: #4caf50; font-size: 12px; }
 #edit-mode-toggle {
-  display: none;
-  background: #1b5e20; border: 1px solid #2e7d32;
+  display: none; background: #1b5e20; border: 1px solid #2e7d32;
   color: #4caf50; padding: 4px 12px; border-radius: 4px;
   font-size: 12px; cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
-  transition: all 0.12s;
+  font-family: 'Source Sans 3', sans-serif; transition: all 0.12s;
 }
 #edit-mode-toggle:hover { background: #2e7d32; color: #fff; }
 #edit-mode-toggle.visible { display: block; }
 #edit-mode-toggle.active { background: #4caf50; color: #000; border-color: #4caf50; }
-
-/* BREADCRUMB */
 .breadcrumb-bar {
   background: #1a1a1a; border-bottom: 1px solid #2a2a2a;
   padding: 10px 24px; display: flex; align-items: center;
@@ -56,193 +46,109 @@ body {
 }
 .breadcrumb-bar a { color: #4caf50; text-decoration: none; }
 .breadcrumb-bar a:hover { text-decoration: underline; }
-
-/* EDIT MODE BANNER */
 #edit-banner {
-  display: none;
-  background: #1b2e1c; border-bottom: 1px solid #2e7d32;
-  padding: 8px 24px; font-size: 12px; color: #4caf50;
-  text-align: center; letter-spacing: 0.03em;
+  display: none; background: #1b2e1c; border-bottom: 1px solid #2e7d32;
+  padding: 8px 24px; font-size: 12px; color: #4caf50; text-align: center;
 }
 #edit-banner.visible { display: block; }
-
-/* MAIN */
-.page-wrap {
-  max-width: 1000px; margin: 0 auto;
-  padding: 32px 24px 80px;
-}
-
-/* PAGE HEADER */
+.page-wrap { max-width: 1000px; margin: 0 auto; padding: 32px 24px 80px; }
 .page-header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid #2a2a2a; }
 .page-header-inner { display: flex; align-items: flex-start; gap: 16px; }
-.page-header-img-wrap { flex-shrink: 0; position: relative; }
-.page-header-img-wrap img {
+.img-edit-wrap { position: relative; display: inline-block; flex-shrink: 0; }
+.img-edit-wrap img {
   width: 56px; height: 56px; object-fit: contain;
-  border: 1px solid #2a2a2a; border-radius: 6px; background: #1e1e1e;
-  display: block;
+  border: 1px solid #2a2a2a; border-radius: 6px; background: #1e1e1e; display: block;
 }
+.img-edit-btn {
+  display: none; position: absolute; inset: 0;
+  background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+  border-radius: 6px; cursor: pointer; font-size: 11px; color: #4caf50;
+  border: 1px solid #4caf50;
+}
+.edit-mode .img-edit-wrap:hover .img-edit-btn { display: flex; }
 .page-header-text { flex: 1; }
-.page-header h1 {
+.page-header-text h1 {
   font-size: 26px; font-weight: 300; color: #e0e0e0;
   letter-spacing: -0.4px; margin-bottom: 6px;
 }
-.page-header p { font-size: 14px; color: #777; line-height: 1.6; max-width: 600px; }
-
-/* SECTIONS */
+.page-header-text p { font-size: 14px; color: #777; line-height: 1.6; max-width: 600px; }
 .sitemap-section { margin-bottom: 36px; }
 .section-header {
   display: flex; align-items: center; gap: 12px;
-  margin-bottom: 14px; padding-bottom: 10px;
-  border-bottom: 1px solid #252525;
+  margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #252525;
 }
 .section-icon {
   width: 30px; height: 30px; border-radius: 4px;
   background: #1e1e1e; border: 1px solid #2a2a2a;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; position: relative;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.section-icon img { width: 16px; height: 16px; object-fit: contain; }
+.section-icon .img-edit-wrap img { width: 16px; height: 16px; border: none; border-radius: 0; background: none; }
+.section-icon .img-edit-btn { border-radius: 4px; font-size: 9px; }
+.section-title-wrap { flex: 1; }
 .section-title { font-size: 16px; font-weight: 600; color: #e0e0e0; }
-.section-desc { font-size: 13px; color: #666; margin-top: 2px; }
-
-/* LINK GRID */
+.section-desc-text { font-size: 13px; color: #666; margin-top: 2px; }
+.section-controls { display: none; margin-left: auto; gap: 6px; }
+.edit-mode .section-controls { display: flex; }
+.sec-ctrl-btn {
+  background: none; border: 1px solid #2a2a2a; color: #666;
+  font-size: 11px; padding: 3px 8px; border-radius: 3px; cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif; transition: all 0.12s;
+}
+.sec-ctrl-btn:hover { border-color: #aaa; color: #aaa; }
+.sec-ctrl-btn.del:hover { border-color: #f44336; color: #f44336; }
 .link-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 8px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;
 }
 .link-card {
   display: block; padding: 12px 14px;
   background: #1e1e1e; border: 1px solid #252525;
   border-radius: 4px; text-decoration: none;
-  transition: border-color 0.12s, background 0.12s;
-  position: relative;
+  transition: border-color 0.12s, background 0.12s; position: relative;
 }
 .link-card:hover { border-color: #3a3a3a; background: #222; }
 .link-card:hover .link-card-title { color: #4caf50; }
+.edit-mode .link-card:hover { border-color: #4caf50; }
 .link-card-title { font-size: 13px; font-weight: 600; color: #d0d0d0; margin-bottom: 3px; transition: color 0.12s; }
 .link-card-desc { font-size: 12px; color: #666; line-height: 1.4; }
 .link-card-tag {
-  display: inline-block; margin-top: 6px;
-  font-size: 10px; color: #555; background: #252525;
+  display: inline-block; margin-top: 6px; font-size: 10px;
   padding: 1px 6px; border-radius: 2px; letter-spacing: 0.04em;
 }
 .link-card-tag.public { color: #4caf50; background: #1b2e1c; }
 .link-card-tag.staff { color: #f57f17; background: #2a1f0a; }
 .link-card-tag.external { color: #1976d2; background: #0a1929; }
-
-/* EDIT OVERLAYS */
-.editable { position: relative; }
-.edit-mode .editable:hover::before {
-  content: '';
-  position: absolute; inset: -2px;
-  border: 1px dashed #4caf50;
-  border-radius: 3px; pointer-events: none; z-index: 10;
-}
-.edit-mode .editable:hover .edit-chip {
-  display: flex;
-}
-.edit-chip {
-  display: none;
-  position: absolute; top: -22px; right: 0;
-  background: #2e7d32; color: #fff;
-  font-size: 10px; padding: 2px 8px; border-radius: 3px;
-  gap: 6px; align-items: center; z-index: 20;
-  cursor: pointer; white-space: nowrap;
-  font-family: 'Source Sans 3', sans-serif;
-}
-.edit-chip:hover { background: #388e3c; }
-
-/* INLINE TEXT EDITOR */
-.edit-mode [data-editable="text"]:hover {
-  outline: 1px dashed #4caf50;
-  outline-offset: 2px;
-  cursor: text;
-  border-radius: 2px;
-}
-.edit-mode [data-editable="text"]:focus {
-  outline: 2px solid #4caf50;
-  outline-offset: 2px;
-  background: rgba(46,125,50,0.06);
-  border-radius: 2px;
-}
-
-/* CARD EDITOR */
-.edit-mode .link-card {
-  cursor: default;
-}
-.edit-mode .link-card .card-edit-overlay {
-  display: flex;
-}
 .card-edit-overlay {
-  display: none;
-  position: absolute; top: 4px; right: 4px;
-  gap: 4px;
+  display: none; position: absolute; top: 4px; right: 4px; gap: 4px;
 }
+.edit-mode .link-card .card-edit-overlay { display: flex; }
 .card-edit-btn {
-  background: #1e1e1e; border: 1px solid #333;
-  color: #666; font-size: 10px; padding: 2px 6px;
-  border-radius: 2px; cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
-  transition: all 0.1s;
+  background: #1a1a1a; border: 1px solid #333; color: #666;
+  font-size: 10px; padding: 2px 6px; border-radius: 2px; cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif; transition: all 0.1s;
 }
 .card-edit-btn:hover { border-color: #4caf50; color: #4caf50; }
 .card-edit-btn.del:hover { border-color: #f44336; color: #f44336; }
-
-/* ADD CARD BTN */
 .add-card-btn {
-  display: none;
-  padding: 12px 14px; background: transparent;
-  border: 1px dashed #2a2a2a; border-radius: 4px;
-  color: #555; font-size: 12px; cursor: pointer;
-  width: 100%; text-align: left;
-  font-family: 'Source Sans 3', sans-serif;
-  transition: all 0.12s;
+  display: none; padding: 12px 14px; background: transparent;
+  border: 1px dashed #2a2a2a; border-radius: 4px; color: #555;
+  font-size: 12px; cursor: pointer; text-align: left;
+  font-family: 'Source Sans 3', sans-serif; transition: all 0.12s;
 }
 .add-card-btn:hover { border-color: #4caf50; color: #4caf50; }
 .edit-mode .add-card-btn { display: block; }
-
-/* ADD SECTION BTN */
 #add-section-btn {
-  display: none; width: 100%;
-  background: transparent; border: 1px dashed #2a2a2a;
-  color: #555; font-size: 13px; padding: 14px;
-  border-radius: 4px; cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
-  transition: all 0.12s; margin-top: 8px;
+  display: none; width: 100%; background: transparent;
+  border: 1px dashed #2a2a2a; color: #555; font-size: 13px;
+  padding: 14px; border-radius: 4px; cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif; transition: all 0.12s; margin-top: 8px;
 }
 #add-section-btn:hover { border-color: #4caf50; color: #4caf50; }
 .edit-mode #add-section-btn { display: block; }
-
-/* SECTION EDIT CONTROLS */
-.section-controls {
-  display: none; margin-left: auto; gap: 6px;
+.edit-mode [data-editable="text"] {
+  cursor: text; border-radius: 2px; transition: outline 0.1s;
 }
-.edit-mode .section-controls { display: flex; }
-.sec-ctrl-btn {
-  background: none; border: 1px solid #2a2a2a;
-  color: #666; font-size: 11px; padding: 3px 8px;
-  border-radius: 3px; cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
-  transition: all 0.12s;
-}
-.sec-ctrl-btn:hover { border-color: #aaa; color: #aaa; }
-.sec-ctrl-btn.del:hover { border-color: #f44336; color: #f44336; }
-
-/* IMAGE EDIT WRAPPER */
-.img-edit-wrap { position: relative; display: inline-block; }
-.edit-mode .img-edit-wrap:hover .img-edit-btn { display: flex; }
-.img-edit-btn {
-  display: none; position: absolute; inset: 0;
-  background: rgba(0,0,0,0.65);
-  align-items: center; justify-content: center;
-  border-radius: 6px; cursor: pointer;
-  font-size: 11px; color: #4caf50;
-  font-family: 'Source Sans 3', sans-serif;
-  border: 1px solid #4caf50;
-}
-
-/* MODAL */
+.edit-mode [data-editable="text"]:hover { outline: 1px dashed #4caf50; outline-offset: 2px; }
+.edit-mode [data-editable="text"]:focus { outline: 2px solid #4caf50; outline-offset: 2px; background: rgba(46,125,50,0.06); }
 #modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.65); z-index: 500;
@@ -250,17 +156,15 @@ body {
 }
 #modal-overlay.open { display: flex; }
 #modal-box {
-  background: #1e1e1e; border: 1px solid #2e2e2e;
-  border-radius: 6px; padding: 24px; min-width: 340px;
-  max-width: 480px; width: 95%;
+  background: #1e1e1e; border: 1px solid #2e2e2e; border-radius: 6px;
+  padding: 24px; min-width: 340px; max-width: 480px; width: 95%;
   box-shadow: 0 8px 40px rgba(0,0,0,0.5);
 }
 #modal-box h3 { font-size: 15px; font-weight: 600; color: #e0e0e0; margin-bottom: 18px; }
 .modal-field { margin-bottom: 12px; }
 .modal-field label {
-  display: block; font-size: 11px; font-weight: 600;
-  color: #666; text-transform: uppercase;
-  letter-spacing: 0.05em; margin-bottom: 4px;
+  display: block; font-size: 11px; font-weight: 600; color: #666;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
 }
 .modal-field input, .modal-field select, .modal-field textarea {
   width: 100%; background: #141414; border: 1px solid #2a2a2a;
@@ -270,24 +174,19 @@ body {
 }
 .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus { border-color: #2e7d32; }
 .modal-field select option { background: #1e1e1e; }
-.modal-field textarea { resize: vertical; min-height: 60px; }
 .modal-actions { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; }
 .btn-confirm {
-  background: #2e7d32; color: #fff; border: none;
-  padding: 8px 20px; border-radius: 4px; font-size: 13px;
-  font-weight: 600; cursor: pointer;
+  background: #2e7d32; color: #fff; border: none; padding: 8px 20px;
+  border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer;
   font-family: 'Source Sans 3', sans-serif; transition: background 0.12s;
 }
 .btn-confirm:hover { background: #388e3c; }
 .btn-dismiss {
   background: transparent; color: #888; border: 1px solid #333;
-  padding: 8px 16px; border-radius: 4px; font-size: 13px;
-  cursor: pointer; font-family: 'Source Sans 3', sans-serif;
-  transition: all 0.12s;
+  padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif; transition: all 0.12s;
 }
 .btn-dismiss:hover { color: #ccc; border-color: #555; }
-
-/* LOGIN */
 #login-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.7); z-index: 600;
@@ -295,17 +194,15 @@ body {
 }
 #login-overlay.open { display: flex; }
 #login-box {
-  background: #1e1e1e; border: 1px solid #2e2e2e;
-  border-radius: 6px; padding: 28px; width: 320px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  background: #1e1e1e; border: 1px solid #2e2e2e; border-radius: 6px;
+  padding: 28px; width: 320px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
 }
 .login-head { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
 .login-head img { width: 24px; }
 .login-head span { font-size: 15px; font-weight: 600; color: #e0e0e0; }
 .login-lbl {
   font-size: 11px; font-weight: 600; color: #666;
-  text-transform: uppercase; letter-spacing: 0.05em;
-  display: block; margin-bottom: 5px;
+  text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 5px;
 }
 .login-input {
   width: 100%; background: #141414; border: 1px solid #2a2a2a;
@@ -318,14 +215,11 @@ body {
 .btn-login {
   width: 100%; background: #2e7d32; color: #fff; border: none;
   padding: 10px; border-radius: 4px; font-size: 14px; font-weight: 600;
-  cursor: pointer; font-family: 'Source Sans 3', sans-serif;
-  transition: background 0.12s;
+  cursor: pointer; font-family: 'Source Sans 3', sans-serif; transition: background 0.12s;
 }
 .btn-login:hover { background: #388e3c; }
 .login-cancel { text-align: center; margin-top: 12px; font-size: 12px; color: #555; cursor: pointer; }
 .login-cancel:hover { color: #888; }
-
-/* TOAST */
 #toast {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
   background: #1b2e1c; border: 1px solid #2e7d32; color: #4caf50;
@@ -333,11 +227,7 @@ body {
   opacity: 0; transition: opacity 0.25s; pointer-events: none;
 }
 #toast.show { opacity: 1; }
-
-/* SECRET */
 #sec { position: fixed; bottom: 0; right: 0; width: 32px; height: 32px; z-index: 9999; }
-
-/* FOOTER */
 footer {
   border-top: 1px solid #222; padding: 18px 24px;
   display: flex; align-items: center; justify-content: space-between;
@@ -345,7 +235,6 @@ footer {
 }
 footer a { color: #444; text-decoration: none; }
 footer a:hover { color: #888; }
-
 @media (max-width: 600px) {
   .link-grid { grid-template-columns: 1fr; }
   .top-nav { padding: 0 16px; }
@@ -357,53 +246,43 @@ footer a:hover { color: #888; }
 
 <div class="top-nav">
   <a class="nav-logo" href="index.html">
-    <img src="https://i.imgur.com/6atwQbZ.png" alt="Cortlin">
-    Cortlin
+    <img src="https://i.imgur.com/6atwQbZ.png" alt="Cortlin"> Cortlin
   </a>
   <div class="nav-spacer"></div>
   <div class="nav-right">
     <a href="support.html">Support</a>
     <a href="forums.html">Forums</a>
     <span id="user-label"></span>
-    <button id="edit-mode-toggle" onclick="toggleEditMode()">Edit Mode</button>
+    <button id="edit-mode-toggle" onclick="C.toggleEditMode()">Edit Mode</button>
   </div>
 </div>
 
 <div class="breadcrumb-bar">
   <a href="index.html">Cortlin</a>
   <span style="color:#444">&gt;</span>
-  <span style="color:#ccc;">Site Map</span>
+  <span style="color:#ccc">Site Map</span>
 </div>
 
 <div id="edit-banner">
-  Edit Mode is ON — click any text to edit it inline. Hover over cards, images, or sections for more options.
+  Edit Mode ON — click any text to edit inline. Hover cards, images, and sections for options.
 </div>
 
 <div class="page-wrap">
-
-  <!-- PAGE HEADER -->
   <div class="page-header">
     <div class="page-header-inner">
-      <div class="page-header-img-wrap">
-        <div class="img-edit-wrap">
-          <img id="header-img" src="https://i.imgur.com/6atwQbZ.png" alt="Cortlin">
-          <div class="img-edit-btn" onclick="editImage('header-img')">Change</div>
-        </div>
+      <div class="img-edit-wrap">
+        <img id="header-img" src="https://i.imgur.com/6atwQbZ.png" alt="Cortlin">
+        <div class="img-edit-btn" onclick="C.editHeaderImg()">Change</div>
       </div>
       <div class="page-header-text">
-        <div class="page-header">
-          <h1><span data-editable="text" data-key="header-title" contenteditable="false">Cortlin Site Map</span></h1>
-          <p><span data-editable="text" data-key="header-desc" contenteditable="false">A complete index of all Cortlin pages, tools, and resources. Use this page to navigate the full Cortlin platform.</span></p>
-        </div>
+        <h1><span data-editable="text" data-key="header-title" contenteditable="false">Cortlin Site Map</span></h1>
+        <p><span data-editable="text" data-key="header-desc" contenteditable="false">A complete index of all Cortlin pages, tools, and resources. Use this page to navigate the full Cortlin platform.</span></p>
       </div>
     </div>
   </div>
 
-  <!-- SECTIONS CONTAINER -->
   <div id="sections-container"></div>
-
-  <button id="add-section-btn" onclick="openAddSection()">+ Add Section</button>
-
+  <button id="add-section-btn" onclick="C.openAddSection()">+ Add Section</button>
 </div>
 
 <footer>
@@ -415,9 +294,8 @@ footer a:hover { color: #888; }
   </div>
 </footer>
 
-<div id="sec" ondblclick="showLogin()"></div>
+<div id="sec" ondblclick="C.showLogin()"></div>
 
-<!-- LOGIN -->
 <div id="login-overlay">
   <div id="login-box">
     <div class="login-head">
@@ -429,431 +307,363 @@ footer a:hover { color: #888; }
     <label class="login-lbl">Password</label>
     <input class="login-input" type="password" id="l-pass">
     <div class="login-err" id="l-err"></div>
-    <button class="btn-login" onclick="doLogin()">Sign In</button>
-    <div class="login-cancel" onclick="closeLogin()">Cancel</div>
+    <button class="btn-login" onclick="C.doLogin()">Sign In</button>
+    <div class="login-cancel" onclick="C.closeLogin()">Cancel</div>
   </div>
 </div>
 
-<!-- MODAL -->
 <div id="modal-overlay">
   <div id="modal-box">
     <h3 id="modal-title">Edit</h3>
     <div id="modal-body"></div>
     <div class="modal-actions">
-      <button class="btn-dismiss" onclick="closeModal()">Cancel</button>
-      <button class="btn-confirm" id="modal-confirm">Save</button>
+      <button class="btn-dismiss" onclick="C.closeModal()">Cancel</button>
+      <button class="btn-confirm" id="modal-confirm" onclick="C.confirmModal()">Save</button>
     </div>
   </div>
 </div>
 
 <div id="toast"></div>
 
+<!-- non-module script so all C.* calls work from inline onclick -->
+<script>
+window.C = {};
+</script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, setDoc, collection, getDocs, query, where
-} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, getDocs, collection, query, where }
+  from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-const cfg = {
+const app = initializeApp({
   apiKey: "AIzaSyAfb1PKVSPEuVPzdb3BE9fbMtT8Yade-hY",
   authDomain: "cortlin.firebaseapp.com",
   projectId: "cortlin",
   storageBucket: "cortlin.firebasestorage.app",
   messagingSenderId: "439783582358",
   appId: "1:439783582358:web:ef40a524daaa6d0a77f0b7"
-};
-const app = initializeApp(cfg);
+});
 const db = getFirestore(app);
 
-// ===== STATE =====
 let user = JSON.parse(sessionStorage.getItem("cortlin_user") || "null");
 let editMode = false;
 let pageData = null;
-let modalConfirmFn = null;
+let pendingConfirm = null;
 
-// ===== DEFAULT DATA =====
-const defaultData = {
+const DEFAULT = {
   "header-title": "Cortlin Site Map",
   "header-desc": "A complete index of all Cortlin pages, tools, and resources. Use this page to navigate the full Cortlin platform.",
   "header-img": "https://i.imgur.com/6atwQbZ.png",
   sections: [
     {
-      id: "s1",
-      icon: "https://i.imgur.com/6atwQbZ.png",
-      title: "Main",
-      desc: "Core Cortlin pages",
+      id: "s1", icon: "https://i.imgur.com/6atwQbZ.png", title: "Main", desc: "Core Cortlin pages",
       cards: [
-        { id: "c1", title: "Home", desc: "Cortlin main landing page", url: "index.html", tag: "public" },
-        { id: "c2", title: "Site Map", desc: "You are here", url: "sitemap.html", tag: "public" },
-        { id: "c3", title: "Forums", desc: "Community discussion boards", url: "forums.html", tag: "public" }
+        { id:"c1", title:"Home", desc:"Cortlin main landing page", url:"index.html", tag:"public" },
+        { id:"c2", title:"Site Map", desc:"You are here", url:"sitemap.html", tag:"public" },
+        { id:"c3", title:"Forums", desc:"Community discussion boards", url:"forums.html", tag:"public" }
       ]
     },
     {
-      id: "s2",
-      icon: "https://i.imgur.com/bqOOpyN.png",
-      title: "Aero OS",
-      desc: "Everything related to the AerOS project",
+      id: "s2", icon: "https://i.imgur.com/bqOOpyN.png", title: "Aero OS", desc: "Everything related to the AerOS project",
       cards: [
-        { id: "c4", title: "AerOS Overview", desc: "About the Aero Operating System", url: "index.html", tag: "public" },
-        { id: "c5", title: "File Index", desc: "Browse AerOS releases and files", url: "index.html#fs-page", tag: "public" },
-        { id: "c6", title: "License Agreement", desc: "AerOS terms and open source license", url: "support.html", tag: "public" }
+        { id:"c4", title:"AerOS Overview", desc:"About the Aero Operating System", url:"index.html", tag:"public" },
+        { id:"c5", title:"File Index", desc:"Browse AerOS releases and files", url:"index.html#fs-page", tag:"public" },
+        { id:"c6", title:"License Agreement", desc:"AerOS open source license", url:"support.html", tag:"public" }
       ]
     },
     {
-      id: "s3",
-      icon: "https://i.imgur.com/6atwQbZ.png",
-      title: "Support",
-      desc: "Help, documentation, and legal",
+      id: "s3", icon: "https://i.imgur.com/6atwQbZ.png", title: "Support", desc: "Help, documentation, and legal",
       cards: [
-        { id: "c7", title: "Help Center", desc: "Support articles and guides", url: "support.html", tag: "public" },
-        { id: "c8", title: "Submit a Ticket", desc: "Atlassian support portal", url: "https://cortlin.atlassian.net/servicedesk/customer/portal/1/group/1/create/1", tag: "external" },
-        { id: "c9", title: "Terms of Use", desc: "Cortlin platform terms", url: "support.html", tag: "public" },
-        { id: "c10", title: "Community Standards", desc: "Rules for community participation", url: "support.html", tag: "public" }
+        { id:"c7", title:"Help Center", desc:"Support articles and guides", url:"support.html", tag:"public" },
+        { id:"c8", title:"Submit a Ticket", desc:"Atlassian support portal", url:"https://cortlin.atlassian.net/servicedesk/customer/portal/1/group/1/create/1", tag:"external" },
+        { id:"c9", title:"Terms of Use", desc:"Cortlin platform terms", url:"support.html", tag:"public" },
+        { id:"c10", title:"Community Standards", desc:"Rules for community participation", url:"support.html", tag:"public" }
       ]
     },
     {
-      id: "s4",
-      icon: "https://i.imgur.com/6atwQbZ.png",
-      title: "Staff",
-      desc: "Internal tools and staff resources",
+      id: "s4", icon: "https://i.imgur.com/6atwQbZ.png", title: "Staff", desc: "Internal tools and staff resources",
       cards: [
-        { id: "c11", title: "Admin Panel", desc: "Staff-only management tools", url: "#", tag: "staff" },
-        { id: "c12", title: "File Index Admin", desc: "Manage file index entries", url: "index.html#fs-page", tag: "staff" }
+        { id:"c11", title:"Admin Panel", desc:"Staff-only management tools", url:"#", tag:"staff" },
+        { id:"c12", title:"File Index Admin", desc:"Manage file index entries", url:"index.html#fs-page", tag:"staff" }
       ]
     }
   ]
 };
 
-// ===== INIT =====
-window.showLogin = showLogin;
-window.closeLogin = closeLogin;
-window.doLogin = doLogin;
-window.toggleEditMode = toggleEditMode;
-window.closeModal = closeModal;
-window.editImage = editImage;
-window.openAddSection = openAddSection;
-
+// ── init ──
 applyUser();
-loadPage();
+load();
 
-async function loadPage() {
+async function load() {
   try {
     const snap = await getDoc(doc(db, "sitemap", "page"));
-    if (snap.exists()) {
-      pageData = snap.data();
-    } else {
-      pageData = JSON.parse(JSON.stringify(defaultData));
-    }
-  } catch(e) {
-    pageData = JSON.parse(JSON.stringify(defaultData));
-  }
+    pageData = snap.exists() ? snap.data() : JSON.parse(JSON.stringify(DEFAULT));
+  } catch { pageData = JSON.parse(JSON.stringify(DEFAULT)); }
   render();
 }
 
-async function savePage() {
-  try {
-    await setDoc(doc(db, "sitemap", "page"), pageData);
-    toast("Saved.");
-  } catch(e) { toast("Save failed: " + e.message); }
+async function save() {
+  try { await setDoc(doc(db, "sitemap", "page"), pageData); toast("Saved."); }
+  catch(e) { toast("Save failed: " + e.message); }
 }
 
-// ===== RENDER =====
+// ── render ──
 function render() {
-  // header text
   const ht = document.querySelector('[data-key="header-title"]');
   const hd = document.querySelector('[data-key="header-desc"]');
   const hi = document.getElementById("header-img");
-  if (ht) ht.textContent = pageData["header-title"] || defaultData["header-title"];
-  if (hd) hd.textContent = pageData["header-desc"] || defaultData["header-desc"];
-  if (hi) hi.src = pageData["header-img"] || defaultData["header-img"];
+  if (ht) ht.textContent = pageData["header-title"] || DEFAULT["header-title"];
+  if (hd) hd.textContent = pageData["header-desc"] || DEFAULT["header-desc"];
+  if (hi) hi.src = pageData["header-img"] || DEFAULT["header-img"];
 
-  // sections
   const container = document.getElementById("sections-container");
-  container.innerHTML = '';
-  (pageData.sections || []).forEach(sec => {
-    container.appendChild(buildSection(sec));
-  });
-  bindTextEdits();
+  container.innerHTML = "";
+  (pageData.sections || []).forEach(sec => container.appendChild(makeSection(sec)));
+  bindEditable();
 }
 
-function buildSection(sec) {
-  const wrap = document.createElement('div');
-  wrap.className = 'sitemap-section';
-  wrap.dataset.secId = sec.id;
-
-  wrap.innerHTML = `
+function makeSection(sec) {
+  const div = document.createElement("div");
+  div.className = "sitemap-section";
+  div.dataset.secId = sec.id;
+  div.innerHTML = `
     <div class="section-header">
       <div class="section-icon">
         <div class="img-edit-wrap">
-          <img src="${esc(sec.icon || 'https://i.imgur.com/6atwQbZ.png')}" alt="" data-sec-icon="${esc(sec.id)}">
-          <div class="img-edit-btn" onclick="editSecIcon('${esc(sec.id)}')">Change</div>
+          <img src="${x(sec.icon || DEFAULT['header-img'])}" alt="">
+          <div class="img-edit-btn" onclick="C.editSecIcon('${x(sec.id)}')">Change</div>
         </div>
       </div>
-      <div>
+      <div class="section-title-wrap">
         <div class="section-title">
-          <span data-editable="text" data-sec-title="${esc(sec.id)}" contenteditable="false">${esc(sec.title)}</span>
+          <span data-editable="text" data-sec-title="${x(sec.id)}" contenteditable="${editMode}">${x(sec.title)}</span>
         </div>
-        <div class="section-desc">
-          <span data-editable="text" data-sec-desc="${esc(sec.id)}" contenteditable="false">${esc(sec.desc || '')}</span>
+        <div class="section-desc-text">
+          <span data-editable="text" data-sec-desc="${x(sec.id)}" contenteditable="${editMode}">${x(sec.desc||'')}</span>
         </div>
       </div>
       <div class="section-controls">
-        <button class="sec-ctrl-btn del" onclick="deleteSection('${esc(sec.id)}')">Delete Section</button>
+        <button class="sec-ctrl-btn del" onclick="C.deleteSection('${x(sec.id)}')">Delete Section</button>
       </div>
     </div>
-    <div class="link-grid" data-grid="${esc(sec.id)}">
-      ${(sec.cards || []).map(c => buildCardHTML(c, sec.id)).join('')}
-      <button class="add-card-btn" onclick="openAddCard('${esc(sec.id)}')">+ Add Link</button>
-    </div>
-  `;
-
-  window.editSecIcon = editSecIcon;
-  window.deleteSection = deleteSection;
-  window.openAddCard = openAddCard;
-  window.editCard = editCard;
-  window.deleteCard = deleteCard;
-
-  return wrap;
+    <div class="link-grid">
+      ${(sec.cards||[]).map(c => makeCardHTML(c, sec.id)).join('')}
+      <button class="add-card-btn" onclick="C.openAddCard('${x(sec.id)}')">+ Add Link</button>
+    </div>`;
+  return div;
 }
 
-function buildCardHTML(c, secId) {
-  const tagClass = c.tag === 'staff' ? 'staff' : c.tag === 'external' ? 'external' : 'public';
-  const tagLabel = c.tag === 'staff' ? 'Staff Only' : c.tag === 'external' ? 'External' : 'Public';
-  return `<a class="link-card" href="${esc(c.url || '#')}" data-card-id="${esc(c.id)}" data-sec-id="${esc(secId)}" onclick="handleCardClick(event, '${esc(c.id)}', '${esc(secId)}')">
+function makeCardHTML(c, secId) {
+  const cls = c.tag === 'staff' ? 'staff' : c.tag === 'external' ? 'external' : 'public';
+  const lbl = c.tag === 'staff' ? 'Staff Only' : c.tag === 'external' ? 'External' : 'Public';
+  return `<a class="link-card" href="${x(c.url||'#')}"
+      onclick="if(window._editMode){event.preventDefault();event.stopPropagation();}">
     <div class="card-edit-overlay">
-      <button class="card-edit-btn" onclick="event.stopPropagation();event.preventDefault();editCard('${esc(c.id)}','${esc(secId)}')">Edit</button>
-      <button class="card-edit-btn del" onclick="event.stopPropagation();event.preventDefault();deleteCard('${esc(c.id)}','${esc(secId)}')">Del</button>
+      <button class="card-edit-btn" onclick="event.stopPropagation();event.preventDefault();C.editCard('${x(c.id)}','${x(secId)}')">Edit</button>
+      <button class="card-edit-btn del" onclick="event.stopPropagation();event.preventDefault();C.deleteCard('${x(c.id)}','${x(secId)}')">Del</button>
     </div>
-    <div class="link-card-title">${esc(c.title)}</div>
-    <div class="link-card-desc">${esc(c.desc || '')}</div>
-    <span class="link-card-tag ${tagClass}">${tagLabel}</span>
+    <div class="link-card-title">${x(c.title)}</div>
+    <div class="link-card-desc">${x(c.desc||'')}</div>
+    <span class="link-card-tag ${cls}">${lbl}</span>
   </a>`;
 }
 
-// ===== TEXT EDITING =====
-function bindTextEdits() {
+function bindEditable() {
   document.querySelectorAll('[data-editable="text"]').forEach(el => {
-    el.addEventListener('blur', () => {
+    el.contentEditable = editMode ? "true" : "false";
+    el.onblur = () => {
       if (!editMode) return;
-      const key = el.dataset.key;
-      const secTitle = el.dataset.secTitle;
-      const secDesc = el.dataset.secDesc;
-      if (key) {
-        pageData[key] = el.textContent;
-      } else if (secTitle) {
-        const sec = pageData.sections.find(s => s.id === secTitle);
-        if (sec) sec.title = el.textContent;
-      } else if (secDesc) {
-        const sec = pageData.sections.find(s => s.id === secDesc);
-        if (sec) sec.desc = el.textContent;
-      }
-      savePage();
-    });
-    el.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
-    });
+      const k = el.dataset.key;
+      const st = el.dataset.secTitle;
+      const sd = el.dataset.secDesc;
+      if (k) pageData[k] = el.textContent;
+      else if (st) { const s = pageData.sections.find(s=>s.id===st); if(s) s.title = el.textContent; }
+      else if (sd) { const s = pageData.sections.find(s=>s.id===sd); if(s) s.desc = el.textContent; }
+      save();
+    };
+    el.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } };
   });
 }
 
-// ===== EDIT MODE =====
-function toggleEditMode() {
-  if (!user) { showLogin(); return; }
+// ── edit mode ──
+C.toggleEditMode = function() {
+  if (!user) { C.showLogin(); return; }
   editMode = !editMode;
+  window._editMode = editMode;
   document.body.classList.toggle('edit-mode', editMode);
   document.getElementById("edit-banner").classList.toggle('visible', editMode);
   const btn = document.getElementById("edit-mode-toggle");
   btn.classList.toggle('active', editMode);
   btn.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
-
-  // toggle contenteditable on text spans
   document.querySelectorAll('[data-editable="text"]').forEach(el => {
-    el.contentEditable = editMode ? 'true' : 'false';
+    el.contentEditable = editMode ? "true" : "false";
   });
-}
+};
 
-// ===== IMAGE EDITING =====
-function editImage(imgId) {
+// ── image editing ──
+C.editHeaderImg = function() {
   if (!editMode) return;
-  openModal('Change Image', [
-    { label: 'Image URL', id: 'img-url', type: 'input', placeholder: 'https://...', value: document.getElementById(imgId)?.src || '' }
+  openModal('Change Header Image', [
+    { label:'Image URL', id:'img-url', type:'input', value: pageData['header-img']||'' }
   ], () => {
-    const url = document.getElementById('img-url').value.trim();
-    if (!url) return;
-    document.getElementById(imgId).src = url;
-    pageData["header-img"] = url;
-    savePage();
+    const v = document.getElementById('img-url').value.trim();
+    if (!v) return;
+    pageData['header-img'] = v;
+    document.getElementById('header-img').src = v;
+    save();
   });
-}
+};
 
-window.editSecIcon = function(secId) {
+C.editSecIcon = function(secId) {
   if (!editMode) return;
-  const sec = pageData.sections.find(s => s.id === secId);
+  const sec = pageData.sections.find(s=>s.id===secId);
   openModal('Change Section Icon', [
-    { label: 'Icon Image URL', id: 'icon-url', type: 'input', placeholder: 'https://...', value: sec?.icon || '' }
+    { label:'Icon Image URL', id:'icon-url', type:'input', value: sec?.icon||'' }
   ], () => {
-    const url = document.getElementById('icon-url').value.trim();
-    if (!url || !sec) return;
-    sec.icon = url;
-    render(); savePage();
+    const v = document.getElementById('icon-url').value.trim();
+    if (!v || !sec) return;
+    sec.icon = v;
+    render(); save();
   });
 };
 
-// ===== CARD EDITING =====
-window.handleCardClick = function(e, cardId, secId) {
-  if (editMode) { e.preventDefault(); e.stopPropagation(); }
-};
-
-window.editCard = function(cardId, secId) {
-  const sec = pageData.sections.find(s => s.id === secId);
-  const card = sec?.cards.find(c => c.id === cardId);
+// ── card editing ──
+C.editCard = function(cardId, secId) {
+  const sec = pageData.sections.find(s=>s.id===secId);
+  const card = sec?.cards.find(c=>c.id===cardId);
   if (!card) return;
   openModal('Edit Link', [
-    { label: 'Title', id: 'card-title', type: 'input', value: card.title || '' },
-    { label: 'Description', id: 'card-desc', type: 'input', value: card.desc || '' },
-    { label: 'URL', id: 'card-url', type: 'input', value: card.url || '' },
-    { label: 'Tag', id: 'card-tag', type: 'select', value: card.tag || 'public', options: [
-      { value: 'public', label: 'Public' },
-      { value: 'staff', label: 'Staff Only' },
-      { value: 'external', label: 'External' }
-    ]}
+    { label:'Title', id:'f-title', type:'input', value:card.title||'' },
+    { label:'Description', id:'f-desc', type:'input', value:card.desc||'' },
+    { label:'URL', id:'f-url', type:'input', value:card.url||'' },
+    { label:'Tag', id:'f-tag', type:'select', value:card.tag||'public',
+      options:[{value:'public',label:'Public'},{value:'staff',label:'Staff Only'},{value:'external',label:'External'}] }
   ], () => {
-    card.title = document.getElementById('card-title').value.trim();
-    card.desc = document.getElementById('card-desc').value.trim();
-    card.url = document.getElementById('card-url').value.trim();
-    card.tag = document.getElementById('card-tag').value;
-    render(); savePage();
+    card.title = document.getElementById('f-title').value.trim();
+    card.desc  = document.getElementById('f-desc').value.trim();
+    card.url   = document.getElementById('f-url').value.trim();
+    card.tag   = document.getElementById('f-tag').value;
+    render(); save();
   });
 };
 
-window.deleteCard = function(cardId, secId) {
-  const sec = pageData.sections.find(s => s.id === secId);
-  if (!sec) return;
+C.deleteCard = function(cardId, secId) {
   if (!confirm('Delete this link?')) return;
-  sec.cards = sec.cards.filter(c => c.id !== cardId);
-  render(); savePage();
+  const sec = pageData.sections.find(s=>s.id===secId);
+  if (!sec) return;
+  sec.cards = sec.cards.filter(c=>c.id!==cardId);
+  render(); save();
 };
 
-window.openAddCard = function(secId) {
+C.openAddCard = function(secId) {
   openModal('Add Link', [
-    { label: 'Title', id: 'card-title', type: 'input', value: '' },
-    { label: 'Description', id: 'card-desc', type: 'input', value: '' },
-    { label: 'URL', id: 'card-url', type: 'input', value: '' },
-    { label: 'Tag', id: 'card-tag', type: 'select', value: 'public', options: [
-      { value: 'public', label: 'Public' },
-      { value: 'staff', label: 'Staff Only' },
-      { value: 'external', label: 'External' }
-    ]}
+    { label:'Title', id:'f-title', type:'input', value:'' },
+    { label:'Description', id:'f-desc', type:'input', value:'' },
+    { label:'URL', id:'f-url', type:'input', value:'' },
+    { label:'Tag', id:'f-tag', type:'select', value:'public',
+      options:[{value:'public',label:'Public'},{value:'staff',label:'Staff Only'},{value:'external',label:'External'}] }
   ], () => {
-    const sec = pageData.sections.find(s => s.id === secId);
+    const sec = pageData.sections.find(s=>s.id===secId);
     if (!sec) return;
     sec.cards.push({
-      id: 'c' + Date.now(),
-      title: document.getElementById('card-title').value.trim(),
-      desc: document.getElementById('card-desc').value.trim(),
-      url: document.getElementById('card-url').value.trim(),
-      tag: document.getElementById('card-tag').value
+      id: 'c'+Date.now(),
+      title: document.getElementById('f-title').value.trim(),
+      desc:  document.getElementById('f-desc').value.trim(),
+      url:   document.getElementById('f-url').value.trim(),
+      tag:   document.getElementById('f-tag').value
     });
-    render(); savePage();
+    render(); save();
   });
 };
 
-// ===== SECTION EDITING =====
-window.deleteSection = function(secId) {
-  if (!confirm('Delete this entire section?')) return;
-  pageData.sections = pageData.sections.filter(s => s.id !== secId);
-  render(); savePage();
+// ── section editing ──
+C.deleteSection = function(secId) {
+  if (!confirm('Delete this entire section and all its links?')) return;
+  pageData.sections = pageData.sections.filter(s=>s.id!==secId);
+  render(); save();
 };
 
-window.openAddSection = function() {
+C.openAddSection = function() {
   openModal('Add Section', [
-    { label: 'Section Title', id: 'sec-title', type: 'input', value: '' },
-    { label: 'Description', id: 'sec-desc', type: 'input', value: '' },
-    { label: 'Icon URL', id: 'sec-icon', type: 'input', value: 'https://i.imgur.com/6atwQbZ.png' }
+    { label:'Title', id:'f-title', type:'input', value:'' },
+    { label:'Description', id:'f-desc', type:'input', value:'' },
+    { label:'Icon URL', id:'f-icon', type:'input', value:'https://i.imgur.com/6atwQbZ.png' }
   ], () => {
     pageData.sections.push({
-      id: 's' + Date.now(),
-      title: document.getElementById('sec-title').value.trim() || 'New Section',
-      desc: document.getElementById('sec-desc').value.trim(),
-      icon: document.getElementById('sec-icon').value.trim() || 'https://i.imgur.com/6atwQbZ.png',
+      id: 's'+Date.now(),
+      title: document.getElementById('f-title').value.trim() || 'New Section',
+      desc:  document.getElementById('f-desc').value.trim(),
+      icon:  document.getElementById('f-icon').value.trim() || 'https://i.imgur.com/6atwQbZ.png',
       cards: []
     });
-    render(); savePage();
+    render(); save();
   });
 };
 
-// ===== MODAL =====
+// ── modal ──
 function openModal(title, fields, onConfirm) {
   document.getElementById('modal-title').textContent = title;
-  const body = document.getElementById('modal-body');
-  body.innerHTML = fields.map(f => {
+  document.getElementById('modal-body').innerHTML = fields.map(f => {
     if (f.type === 'select') {
-      const opts = f.options.map(o => `<option value="${o.value}"${o.value === f.value ? ' selected' : ''}>${o.label}</option>`).join('');
+      const opts = f.options.map(o=>`<option value="${o.value}"${o.value===f.value?' selected':''}>${o.label}</option>`).join('');
       return `<div class="modal-field"><label>${f.label}</label><select id="${f.id}">${opts}</select></div>`;
     }
-    if (f.type === 'textarea') {
-      return `<div class="modal-field"><label>${f.label}</label><textarea id="${f.id}" placeholder="${f.placeholder || ''}">${esc(f.value || '')}</textarea></div>`;
-    }
-    return `<div class="modal-field"><label>${f.label}</label><input type="text" id="${f.id}" value="${esc(f.value || '')}" placeholder="${f.placeholder || ''}"></div>`;
+    return `<div class="modal-field"><label>${f.label}</label><input type="text" id="${f.id}" value="${x(f.value||'')}"></div>`;
   }).join('');
-  modalConfirmFn = () => { onConfirm(); closeModal(); };
-  document.getElementById('modal-confirm').onclick = modalConfirmFn;
+  pendingConfirm = () => { onConfirm(); C.closeModal(); };
   document.getElementById('modal-overlay').classList.add('open');
-  // focus first input
-  setTimeout(() => body.querySelector('input,select,textarea')?.focus(), 50);
+  setTimeout(() => document.getElementById('modal-body').querySelector('input,select')?.focus(), 50);
 }
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-}
+C.confirmModal = function() { if (pendingConfirm) pendingConfirm(); };
+C.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); pendingConfirm = null; };
 
-// ===== LOGIN =====
-function showLogin() {
+// ── login ──
+C.showLogin = function() {
   document.getElementById('login-overlay').classList.add('open');
-  document.getElementById('l-email').focus();
   document.getElementById('l-err').textContent = '';
-}
-function closeLogin() { document.getElementById('login-overlay').classList.remove('open'); }
+  setTimeout(() => document.getElementById('l-email').focus(), 50);
+};
+C.closeLogin = function() { document.getElementById('login-overlay').classList.remove('open'); };
 
-async function doLogin() {
+C.doLogin = async function() {
   const email = document.getElementById('l-email').value.trim();
-  const pass = document.getElementById('l-pass').value;
-  const err = document.getElementById('l-err');
+  const pass  = document.getElementById('l-pass').value;
+  const err   = document.getElementById('l-err');
   err.textContent = '';
   if (!email || !pass) { err.textContent = 'Fill in all fields.'; return; }
   try {
-    const { getDocs, query, collection, where } = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js");
-    const snap = await getDocs(query(collection(db, 'users'), where('email', '==', email)));
+    const snap = await getDocs(query(collection(db,'users'), where('email','==',email)));
     if (snap.empty) { err.textContent = 'Account not found.'; return; }
     const u = snap.docs[0].data();
     if (u.password !== pass) { err.textContent = 'Incorrect password.'; return; }
-    user = { user: u.user, email: u.email, role: u.role || '' };
+    user = { user: u.user, email: u.email, role: u.role||'' };
     sessionStorage.setItem('cortlin_user', JSON.stringify(user));
-    closeLogin();
+    C.closeLogin();
     applyUser();
     toast('Welcome, ' + user.user);
   } catch(e) { err.textContent = 'Error: ' + e.message; }
-}
+};
 
 function applyUser() {
-  if (user) {
-    document.getElementById('user-label').textContent = user.user;
-    document.getElementById('edit-mode-toggle').classList.add('visible');
-  }
+  if (!user) return;
+  document.getElementById('user-label').textContent = user.user;
+  document.getElementById('edit-mode-toggle').classList.add('visible');
 }
 
-// ===== HELPERS =====
-function esc(s) {
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+// ── helpers ──
+function x(s) {
+  return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2600);
+  setTimeout(()=>t.classList.remove('show'), 2600);
 }
 
-// Ctrl+Shift+L
+// ── secret keyboard: Ctrl+Shift+K ──
 document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.shiftKey && e.key === 'L') showLogin();
+  if (e.ctrlKey && e.shiftKey && e.key === 'K') { e.preventDefault(); C.showLogin(); }
 });
 </script>
 </body>
