@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unsupported Browser</title>
 
@@ -18,43 +19,76 @@
     * {
       margin: 0;
       padding: 0;
+      -webkit-box-sizing: border-box;
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    html {
+      background: #f6f8fc;
+      background: var(--bg);
     }
 
     body {
+      background: #f6f8fc;
       background: var(--bg);
+      color: #1f2937;
       color: var(--text);
       min-height: 100vh;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
       flex-direction: column;
     }
 
     .container {
+      -webkit-box-flex: 1;
+      -ms-flex: 1;
       flex: 1;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
       justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
       align-items: center;
       padding: 40px 20px;
     }
 
+    .container-inner {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
     .card {
+      background: #ffffff;
       background: var(--card);
+      border: 1px solid #e5e7eb;
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 40px;
       max-width: 900px;
       width: 100%;
       text-align: center;
+      -webkit-box-shadow: 0 10px 25px rgba(0,0,0,0.05);
       box-shadow: 0 10px 25px rgba(0,0,0,0.05);
     }
 
     h1 {
       font-size: 42px;
       margin-bottom: 10px;
+      color: #1f2937;
+      color: var(--text);
     }
 
     p {
+      color: #6b7280;
       color: var(--muted);
       font-size: 16px;
       line-height: 1.5;
@@ -72,29 +106,43 @@
       max-width: 480px;
       text-align: left;
     }
-    #detected-pill strong { color: #78350f; }
+
+    #detected-pill strong {
+      color: #78350f;
+    }
 
     .browser-row {
       margin-top: 30px;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
       justify-content: center;
       gap: 30px;
+      -ms-flex-wrap: wrap;
       flex-wrap: wrap;
     }
 
     .browser {
       width: 120px;
       text-align: center;
+      display: inline-block;
     }
 
     .browser img {
       width: 70px;
       height: 70px;
+      -o-object-fit: contain;
       object-fit: contain;
+      -webkit-transition: -webkit-transform 0.2s ease;
+      transition: -webkit-transform 0.2s ease;
       transition: transform 0.2s ease;
+      transition: transform 0.2s ease, -webkit-transform 0.2s ease;
     }
 
     .browser img:hover {
+      -webkit-transform: scale(1.08);
       transform: scale(1.08);
     }
 
@@ -102,30 +150,46 @@
       display: block;
       margin-top: 10px;
       font-size: 13px;
+      color: #6b7280;
       color: var(--muted);
     }
 
     footer {
+      border-top: 1px solid #e5e7eb;
       border-top: 1px solid var(--border);
-      background: #fff;
+      background: #ffffff;
       padding: 30px 20px;
     }
 
     .footer-grid {
       max-width: 1000px;
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
       gap: 20px;
       font-size: 14px;
+    }
+
+    .footer-col {
+      -webkit-box-flex: 1;
+      -ms-flex: 1 1 200px;
+      flex: 1 1 200px;
+      min-width: 140px;
     }
 
     .footer-title {
       font-weight: 600;
       margin-bottom: 10px;
+      color: #1f2937;
+      color: var(--text);
     }
 
-    .footer a, .footer p {
+    .footer a,
+    .footer p {
+      color: #6b7280;
       color: var(--muted);
       text-decoration: none;
       display: block;
@@ -133,12 +197,14 @@
     }
 
     .footer a:hover {
+      color: #2563eb;
       color: var(--accent);
     }
 
     .bottom-note {
       text-align: center;
       margin-top: 20px;
+      color: #6b7280;
       color: var(--muted);
       font-size: 13px;
     }
@@ -149,8 +215,15 @@
       }
 
       .footer-grid {
-        grid-template-columns: 1fr;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
         text-align: center;
+      }
+
+      .browser-row {
+        gap: 16px;
       }
     }
   </style>
@@ -159,35 +232,37 @@
 <body>
 
   <div class="container">
-    <div class="card">
-      <h1>Oops!</h1>
+    <div class="container-inner">
+      <div class="card">
+        <h1>Oops!</h1>
 
-      <p>
-        Well... This is awkward... Your browser appears to be unsupported on this page!<br>
-        Don't worry though! You can download many other browsers that are supported like:
-      </p>
+        <p>
+          Well... This is awkward... Your browser appears to be unsupported on this page!<br>
+          Don't worry though! You can download many other browsers that are supported like:
+        </p>
 
-      <div id="detected-pill"></div>
+        <div id="detected-pill"></div>
 
-      <div class="browser-row">
-        <div class="browser">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Opera_2015_icon.svg/960px-Opera_2015_icon.svg.png" />
-          <span>Opera</span>
-        </div>
+        <div class="browser-row">
+          <div class="browser">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Opera_2015_icon.svg/960px-Opera_2015_icon.svg.png" alt="Opera" />
+            <span>Opera</span>
+          </div>
 
-        <div class="browser">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Microsoft_Edge_logo_%282019%29.svg/960px-Microsoft_Edge_logo_%282019%29.svg.png" />
-          <span>Edge</span>
-        </div>
+          <div class="browser">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Microsoft_Edge_logo_%282019%29.svg/960px-Microsoft_Edge_logo_%282019%29.svg.png" alt="Microsoft Edge" />
+            <span>Edge</span>
+          </div>
 
-        <div class="browser">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/1280px-Google_Chrome_icon_%28February_2022%29.svg.png" />
-          <span>Chrome</span>
-        </div>
+          <div class="browser">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/1280px-Google_Chrome_icon_%28February_2022%29.svg.png" alt="Google Chrome" />
+            <span>Chrome</span>
+          </div>
 
-        <div class="browser">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefox_logo%2C_2019.svg/1280px-Firefox_logo%2C_2019.svg.png" />
-          <span>Mozilla Firefox</span>
+          <div class="browser">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefox_logo%2C_2019.svg/1280px-Firefox_logo%2C_2019.svg.png" alt="Mozilla Firefox" />
+            <span>Mozilla Firefox</span>
+          </div>
         </div>
       </div>
     </div>
@@ -196,19 +271,19 @@
   <footer class="footer">
     <div class="footer-grid">
 
-      <div>
+      <div class="footer-col">
         <div class="footer-title">Support</div>
         <a href="/en-us/index/support">EULA</a>
         <a href="/en-us/index/support">Privacy Policy</a>
       </div>
 
-      <div>
+      <div class="footer-col">
         <div class="footer-title">Contact us</div>
         <p>cortlin-us@nbep-us.com</p>
         <p>(856) 441-3036</p>
       </div>
 
-      <div>
+      <div class="footer-col">
         <div class="footer-title">Tickets</div>
         <a href="https://cortlin.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">
           Submit Ticket
@@ -218,17 +293,28 @@
     </div>
 
     <div class="bottom-note">
-      Cortlin © 2026-2027. All rights reserved.
+      Cortlin &copy; 2026-2027. All rights reserved.
     </div>
   </footer>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const reason = params.get("reason");
+    var params = typeof URLSearchParams !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : null;
+
+    var reason = params ? params.get('reason') : (function () {
+      var match = window.location.search.match(/[?&]reason=([^&]*)/);
+      return match ? match[1] : null;
+    })();
+
     if (reason) {
-      const pill = document.getElementById("detected-pill");
-      pill.style.display = "block";
-      pill.innerHTML = `<strong>Detected:</strong> ${decodeURIComponent(reason)}`;
+      var pill = document.getElementById('detected-pill');
+      pill.style.display = 'block';
+      try {
+        pill.innerHTML = '<strong>Detected:</strong> ' + decodeURIComponent(reason);
+      } catch (e) {
+        pill.innerHTML = '<strong>Detected:</strong> ' + reason;
+      }
     }
   </script>
 
