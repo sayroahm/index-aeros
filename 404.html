@@ -24,17 +24,15 @@
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     }
 
-    html {
-      background: #f6f8fc;
-      background: var(--bg);
-    }
-
-    body {
+    html, body {
+      height: 100%;
       background: #f6f8fc;
       background: var(--bg);
       color: #1f2937;
       color: var(--text);
-      min-height: 100vh;
+    }
+
+    body {
       display: -webkit-box;
       display: -ms-flexbox;
       display: flex;
@@ -42,28 +40,23 @@
       -webkit-box-direction: normal;
       -ms-flex-direction: column;
       flex-direction: column;
+      min-height: 100%;
     }
 
     .container {
       -webkit-box-flex: 1;
-      -ms-flex: 1;
-      flex: 1;
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -webkit-box-pack: center;
-      -ms-flex-pack: center;
-      justify-content: center;
-      -webkit-box-align: center;
-      -ms-flex-align: center;
-      align-items: center;
-      padding: 40px 20px;
+      -ms-flex: 1 0 auto;
+      flex: 1 0 auto;
+      width: 100%;
+      display: table;
+      table-layout: fixed;
     }
 
-    .container-inner {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
+    .container-cell {
+      display: table-cell;
+      vertical-align: middle;
+      padding: 40px 20px;
+      text-align: center;
     }
 
     .card {
@@ -78,6 +71,9 @@
       text-align: center;
       -webkit-box-shadow: 0 10px 25px rgba(0,0,0,0.05);
       box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      margin: 0 auto;
+      display: inline-block;
+      vertical-align: top;
     }
 
     h1 {
@@ -113,37 +109,24 @@
 
     .browser-row {
       margin-top: 30px;
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -webkit-box-pack: center;
-      -ms-flex-pack: center;
-      justify-content: center;
-      gap: 30px;
-      -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
+      text-align: center;
+      font-size: 0;
     }
 
     .browser {
       width: 120px;
       text-align: center;
       display: inline-block;
+      vertical-align: top;
+      margin: 0 15px;
+      font-size: 14px;
     }
 
     .browser img {
       width: 70px;
       height: 70px;
-      -o-object-fit: contain;
-      object-fit: contain;
-      -webkit-transition: -webkit-transform 0.2s ease;
-      transition: -webkit-transform 0.2s ease;
-      transition: transform 0.2s ease;
-      transition: transform 0.2s ease, -webkit-transform 0.2s ease;
-    }
-
-    .browser img:hover {
-      -webkit-transform: scale(1.08);
-      transform: scale(1.08);
+      display: block;
+      margin: 0 auto;
     }
 
     .browser span {
@@ -155,6 +138,8 @@
     }
 
     footer {
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
       border-top: 1px solid #e5e7eb;
       border-top: 1px solid var(--border);
       background: #ffffff;
@@ -164,20 +149,17 @@
     .footer-grid {
       max-width: 1000px;
       margin: 0 auto;
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-      gap: 20px;
       font-size: 14px;
+      text-align: center;
     }
 
     .footer-col {
-      -webkit-box-flex: 1;
-      -ms-flex: 1 1 200px;
-      flex: 1 1 200px;
+      display: inline-block;
+      vertical-align: top;
+      width: 30%;
       min-width: 140px;
+      margin: 0 1%;
+      text-align: left;
     }
 
     .footer-title {
@@ -214,16 +196,15 @@
         font-size: 32px;
       }
 
-      .footer-grid {
-        -webkit-box-orient: vertical;
-        -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-        flex-direction: column;
+      .footer-col {
+        display: block;
+        width: 100%;
         text-align: center;
+        margin: 10px 0;
       }
 
-      .browser-row {
-        gap: 16px;
+      .browser {
+        margin: 0 8px;
       }
     }
   </style>
@@ -232,7 +213,7 @@
 <body>
 
   <div class="container">
-    <div class="container-inner">
+    <div class="container-cell">
       <div class="card">
         <h1>Oops!</h1>
 
@@ -248,17 +229,14 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Opera_2015_icon.svg/960px-Opera_2015_icon.svg.png" alt="Opera" />
             <span>Opera</span>
           </div>
-
           <div class="browser">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Microsoft_Edge_logo_%282019%29.svg/960px-Microsoft_Edge_logo_%282019%29.svg.png" alt="Microsoft Edge" />
             <span>Edge</span>
           </div>
-
           <div class="browser">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/1280px-Google_Chrome_icon_%28February_2022%29.svg.png" alt="Google Chrome" />
             <span>Chrome</span>
           </div>
-
           <div class="browser">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefox_logo%2C_2019.svg/1280px-Firefox_logo%2C_2019.svg.png" alt="Mozilla Firefox" />
             <span>Mozilla Firefox</span>
@@ -270,26 +248,20 @@
 
   <footer class="footer">
     <div class="footer-grid">
-
       <div class="footer-col">
         <div class="footer-title">Support</div>
         <a href="/en-us/index/support">EULA</a>
         <a href="/en-us/index/support">Privacy Policy</a>
       </div>
-
       <div class="footer-col">
         <div class="footer-title">Contact us</div>
         <p>cortlin-us@nbep-us.com</p>
         <p>(856) 441-3036</p>
       </div>
-
       <div class="footer-col">
         <div class="footer-title">Tickets</div>
-        <a href="https://cortlin.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">
-          Submit Ticket
-        </a>
+        <a href="https://cortlin.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">Submit Ticket</a>
       </div>
-
     </div>
 
     <div class="bottom-note">
