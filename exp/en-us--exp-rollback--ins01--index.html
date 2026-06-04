@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6863692354314478"
+     crossorigin="anonymous"></script>
+  <!--
+    ╔══════════════════════════════════════════════════════════╗
+    ║         CORTLIN — BROWSER COMPATIBILITY GUARD            ║
+    ║  Runs synchronously before any render to block old UAs.  ║
+    ╚══════════════════════════════════════════════════════════╝
+  -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ── 1. Generate a random junk path + embed %unsupported% ── */
+      function randToken(len) {
+        var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        var out = '';
+        for (var i = 0; i < len; i++) {
+          out += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return out;
+      }
+
+      function buildUnsupportedURL(reasonLabel) {
+        // e.g.  /unsupported%ke7rn3a2b9x1q8v5c4m0j6w-abcdef12
+        var token = randToken(12) + '-' + randToken(8);
+        var path = '/unsupported%' + token;            // %unsupported% embedded as literal %
+        var reason = encodeURIComponent(reasonLabel);
+        // Resolve relative to current origin so it works on any host
+        return window.location.origin + path + '?reason=' + reason;
+      }
+
+      /* ── 2. Feature-detect modern requirements ── */
+      function lacksModernFeatures() {
+        try {
+          // ES6 arrow + template literal + destructuring
+          eval('let f = ({a}) => `${a}`; f({a:1})');
+        } catch (e) { return true; }
+
+        // CSS custom properties
+        if (!window.CSS || !window.CSS.supports || !window.CSS.supports('color', 'var(--t)')) return true;
+
+        // Fetch API
+        if (typeof fetch === 'undefined') return true;
+
+        // ES Modules (static — can't truly test at runtime without a script tag,
+        // but noModule trick below covers most cases)
+        // Promise
+        if (typeof Promise === 'undefined') return true;
+
+        return false;
+      }
+
+      /* ── 3. UA-based hard block list ── */
+      var ua = navigator.userAgent || '';
+      var uaLower = ua.toLowerCase();
+
+      // Returns { blocked: bool, label: string }
+      function checkUA() {
+        // ── Internet Explorer (any version) ──
+        if (/msie\s|trident\//i.test(ua)) {
+          var ver = ua.match(/(?:msie |rv:)([\d.]+)/i);
+          return { blocked: true, label: 'Internet Explorer ' + (ver ? ver[1] : '') };
+        }
+
+        // ── Legacy Edge (EdgeHTML engine, NOT Chromium) ──
+        // EdgeHTML Edge: "Edge/18.xxxxx" without "Edg/" (Chromium uses "Edg/")
+        if (/\bedge\/([\d.]+)/i.test(ua) && !/\bedg\/([\d]+)/i.test(ua)) {
+          var v = ua.match(/\bedge\/([\d.]+)/i);
+          return { blocked: true, label: 'Microsoft Edge Legacy (EdgeHTML) ' + (v ? v[1] : '') };
+        }
+
+        // ── Chrome below version 100 ──
+        var chromeMatch = ua.match(/\bchrome\/([\d]+)/i);
+        if (chromeMatch && !/chromium/i.test(ua)) {
+          var major = parseInt(chromeMatch[1], 10);
+          if (major < 100) return { blocked: true, label: 'Chrome ' + major + ' (requires 100+)' };
+        }
+
+        // ── Firefox below version 100 ──
+        var ffMatch = ua.match(/\bfirefox\/([\d]+)/i);
+        if (ffMatch) {
+          var ffMajor = parseInt(ffMatch[1], 10);
+          if (ffMajor < 100) return { blocked: true, label: 'Firefox ' + ffMajor + ' (requires 100+)' };
+        }
+
+        // ── Safari below version 15 (desktop) ──
+        // Safari UA: "Version/X.X Safari/..." without "Chrome" or "Chromium"
+        if (/\bsafari\//i.test(ua) && !/chrome|chromium|crios|fxios/i.test(ua)) {
+          var safVer = ua.match(/\bversion\/([\d]+)/i);
+          if (safVer) {
+            var safMajor = parseInt(safVer[1], 10);
+            if (safMajor < 15) return { blocked: true, label: 'Safari ' + safMajor + ' (requires 15+)' };
+          }
+        }
+
+        // ── Opera Mini (very limited rendering engine) ──
+        if (/opera mini/i.test(ua)) {
+          return { blocked: true, label: 'Opera Mini' };
+        }
+
+        // ── Old Opera (Presto engine) — "Opera/9" etc. ──
+        if (/\bopera\/([\d]+)/i.test(ua) && !/\bopr\//i.test(ua)) {
+          return { blocked: true, label: 'Opera (Presto engine — legacy)' };
+        }
+
+        // ── Opera (OPR/) below 85 ──
+        var oprMatch = ua.match(/\bopr\/([\d]+)/i);
+        if (oprMatch && parseInt(oprMatch[1], 10) < 85) {
+          return { blocked: true, label: 'Opera ' + oprMatch[1] + ' (requires 85+)' };
+        }
+
+        // ── UC Browser ──
+        if (/ucbrowser|ucweb/i.test(ua)) {
+          return { blocked: true, label: 'UC Browser' };
+        }
+
+        // ── Samsung Internet below version 16 ──
+        var samsungMatch = ua.match(/samsungbrowser\/([\d]+)/i);
+        if (samsungMatch && parseInt(samsungMatch[1], 10) < 16) {
+          return { blocked: true, label: 'Samsung Internet ' + samsungMatch[1] + ' (requires 16+)' };
+        }
+
+        // ── Android stock browser / WebView old versions ──
+        if (/android/i.test(ua) && /version\//i.test(ua) && !/chrome|firefox|focus|edge|opr|samsungbrowser/i.test(ua)) {
+          return { blocked: true, label: 'Android Stock Browser' };
+        }
+
+        // ── Pale Moon / Waterfox old (Gecko forks, usually far behind) ──
+        if (/palemoon\/([\d]+)/i.test(ua)) {
+          var pmVer = parseInt(ua.match(/palemoon\/([\d]+)/i)[1], 10);
+          if (pmVer < 30) return { blocked: true, label: 'Pale Moon ' + pmVer };
+        }
+
+        // ── SeaMonkey (always very old) ──
+        if (/seamonkey\//i.test(ua)) {
+          return { blocked: true, label: 'SeaMonkey' };
+        }
+
+        // ── Konqueror ──
+        if (/konqueror/i.test(ua)) {
+          return { blocked: true, label: 'Konqueror' };
+        }
+
+        // ── Yandex Browser below 22 ──
+        var yandexMatch = ua.match(/yabrowser\/([\d]+)/i);
+        if (yandexMatch && parseInt(yandexMatch[1], 10) < 22) {
+          return { blocked: true, label: 'Yandex Browser ' + yandexMatch[1] };
+        }
+
+        // ── Baidu Browser ──
+        if (/baidubrowser|bdbrowser/i.test(ua)) {
+          return { blocked: true, label: 'Baidu Browser' };
+        }
+
+        // ── Maxthon old ──
+        if (/maxthon\/([\d]+)/i.test(ua)) {
+          var mxVer = parseInt(ua.match(/maxthon\/([\d]+)/i)[1], 10);
+          if (mxVer < 6) return { blocked: true, label: 'Maxthon ' + mxVer };
+        }
+
+        return { blocked: false, label: '' };
+      }
+
+      var uaResult = checkUA();
+
+      // ── 4. Redirect if UA is blocked OR modern features are missing ──
+      if (uaResult.blocked || lacksModernFeatures()) {
+        var label = uaResult.label || 'Unknown Legacy Browser';
+        window.location.replace(buildUnsupportedURL(label));
+        // Stop all further script execution
+        document.addEventListener('DOMContentLoaded', function () {
+          document.body.innerHTML = '';
+        });
+      }
+
+    })();
+  </script>
+
+  <!--
+    nomodule trick: if browser can't handle ES modules it executes this
+    and immediately redirects. This catches anything the UA check missed.
+  -->
+  <script nomodule>
+    (function () {
+      var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      var token = '';
+      for (var i = 0; i < 20; i++) token += chars.charAt(Math.floor(Math.random() * chars.length));
+      window.location.replace(
+        window.location.origin + '/unsupported%' + token + '?reason=' + encodeURIComponent('No ES Module Support')
+      );
+    })();
+  </script>
+
+  <link rel="icon" href="https://i.imgur.com/6atwQbZ.png" type="image/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cortlin</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f9f9f9;
+      --surface: #ffffff;
+      --border: #e8e8e8;
+      --text: #111111;
+      --muted: #888888;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --danger: #dc2626;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --radius: 8px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f0f0f;
+        --surface: #1a1a1a;
+        --border: #2a2a2a;
+        --text: #f0f0f0;
+        --muted: #666666;
+        --accent: #3b82f6;
+        --accent-hover: #60a5fa;
+        --shadow: 0 1px 3px rgba(0,0,0,0.4);
+      }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.2s, color 0.2s; }
+
+    #landing {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+    .nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-btn {
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      text-decoration: none;
+    }
+    .nav-btn:hover { opacity: 0.8; }
+
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 48px;
+      text-align: center;
+      gap: 24px;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 300;
+      letter-spacing: -2px;
+      line-height: 1;
+      color: var(--text);
+    }
+    .hero h1 span { font-weight: 600; }
+    .hero p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 7px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 12px 24px;
+      border-radius: 7px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      text-decoration: none;
+    }
+    .btn-secondary:hover { border-color: var(--text); background: var(--border); }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      padding: 0 48px 80px;
+      max-width: 960px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card img { width: 32px; height: 32px; object-fit: contain; }
+    .card h3 { font-size: 14px; font-weight: 500; }
+    .card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    .contact-section {
+      padding: 80px 48px;
+      max-width: 960px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .contact-section h2 {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: -0.8px;
+      margin-bottom: 8px;
+    }
+    .contact-section > p { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .contact-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+    .contact-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+    .contact-value { font-size: 14px; color: var(--text); }
+    .contact-value a { color: var(--accent); text-decoration: none; }
+    .contact-value a:hover { text-decoration: underline; }
+    .contact-note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    #fs-page {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    .fs-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .fs-nav-left { display: flex; align-items: center; gap: 16px; }
+    .fs-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .fs-logo img { width: 22px; height: 22px; object-fit: contain; }
+    .fs-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .fs-breadcrumb a { color: var(--accent); cursor: pointer; text-decoration: none; }
+    .fs-breadcrumb a:hover { text-decoration: underline; }
+
+    .fs-auth {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .fs-auth a { color: var(--accent); cursor: pointer; text-decoration: none; }
+    .fs-auth a:hover { text-decoration: underline; }
+
+    .fs-toolbar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .tool-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .tool-btn:hover { border-color: var(--text); background: var(--border); }
+
+    .fs-main { flex: 1; padding: 32px; max-width: 1100px; margin: 0 auto; width: 100%; }
+    .fs-header { margin-bottom: 20px; }
+    .fs-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -0.3px;
+    }
+
+    .fs-table { width: 100%; border-collapse: collapse; }
+    .fs-table thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+    .fs-table th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .fs-table th:hover { color: var(--text); }
+    .fs-table td {
+      padding: 10px 12px;
+      font-size: 13px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border);
+    }
+    .fs-table tr:last-child td { border-bottom: none; }
+    .fs-table tbody tr { transition: background 0.1s; }
+    .fs-table tbody tr:hover { background: var(--border); }
+
+    .entry-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .entry-icon { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+    .entry-name { color: var(--accent); text-decoration: none; cursor: pointer; font-weight: 400; }
+    .entry-name:hover { text-decoration: underline; }
+    .locked-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      background: var(--border);
+      color: var(--muted);
+      padding: 2px 7px;
+      border-radius: 100px;
+      letter-spacing: 0.03em;
+    }
+    .time-cell { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .desc-cell { font-size: 12px; color: var(--muted); }
+    .admin-actions { display: flex; gap: 10px; }
+    .act-btn {
+      background: none;
+      border: none;
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.15s;
+    }
+    .act-btn:hover { color: var(--text); }
+    .act-btn.danger:hover { color: var(--danger); }
+
+    .fs-footer { padding: 16px 32px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+
+    .empty-state { padding: 48px 12px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 200;
+      backdrop-filter: blur(2px);
+    }
+    #modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      z-index: 201;
+      min-width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    #modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+    .field-group { margin-bottom: 14px; }
+    .field-group label { display: block; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 5px; }
+    .field-group input,
+    .field-group textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field-group input:focus,
+    .field-group textarea:focus { border-color: var(--accent); }
+    .field-group textarea { height: 80px; resize: vertical; }
+    .field-group.checkbox { display: flex; align-items: center; gap: 8px; flex-direction: row; }
+    .field-group.checkbox label { margin-bottom: 0; text-transform: none; font-size: 13px; letter-spacing: 0; color: var(--text); font-weight: 400; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+    .modal-actions button { flex: 1; }
+
+    @media (max-width: 640px) {
+      nav, .fs-nav { padding: 14px 20px; }
+      .hero { padding: 60px 24px; }
+      .cards, .contact-section { padding-left: 20px; padding-right: 20px; }
+      .fs-main { padding: 20px; }
+      .nav-links { display: none; }
+      footer { flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="landing">
+  <nav>
+    <div class="nav-logo">
+      <img src="https://i.imgur.com/bqOOpyN.png" alt="Cortlin">
+      Cortlin
+    </div>
+    <div class="nav-links">
+      <a href="#contact">Contact</a>
+      <a href="#" onclick="showFS(); return false;">File Index</a>
+    </div>
+    <button class="nav-btn" onclick="showFS()">Open Index</button>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-tag">Software Development</div>
+    <h1>Built from<br><span>scratch.</span></h1>
+    <p>Cortlin is an unofficial software development group. We started out as a hobby project, attempting to make an OS from scratch, now we are looking for people to volunteer</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showFS()">Browse Projects</button>
+      <a class="btn-secondary" href="#contact">Get in touch</a>
+      <a class="btn-secondary" href="forums.html">Read Forums</a>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <img src="https://i.imgur.com/bqOOpyN.png" alt="AerOS">
+      <h3>Aero OS</h3>
+      <p>A handbuilt operating system (UNDER CONSTRUCTION) made from 3 people</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn3d.iconscout.com/3d/premium/thumb/file-explorer-3d-icon-png-download-8663168.png" alt="Apps">
+      <h3>Core Apps</h3>
+      <p>Application software built to complement our OS and fill gaps</p>
+    </div>
+    <div class="card">
+      <img src="https://i.imgur.com/6atwQbZ.png" alt="Dev">
+      <h3>Web & Tools</h3>
+      <p>Browser tools, webpages, and developer utilities for those who are into developing</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/2246/2246713.png" alt="Open Source">
+      <h3>Open Source</h3>
+      <p>Transparency matters, core projects like AerOS are fully open-sourced</p>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="contact-section" id="contact">
+    <h2>Get in touch.</h2>
+    <p>We're always appreciative to hear from people. Whether it's a question, a project idea, or general question, we'd love to hear from you.</p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-label">Email</div>
+        <div class="contact-value"><a href="mailto:cortlin-us@nbep-us.com">cortlin-us@nbep-us.com</a></div>
+        <div class="contact-note">Best way to reach us</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Website</div>
+        <div class="contact-value"><a href="https://nbep-us.com" target="_blank">nbep-us.com</a></div>
+        <div class="contact-note">Find downloads, shops, and much more</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Support</div>
+        <div class="contact-value"><a href="https://cortlin.atlassian.net/servicedesk/customer/portal/1/group/1/create/1" target="_blank">Submit a ticket</a></div>
+        <div class="contact-note">Atlassian service desk for questions and community questions</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Phone</div>
+        <div class="contact-value">(856) 441-3036</div>
+        <div class="contact-note">Leave a voicemail-line not in operation, or use email instead!</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Want in?</div>
+        <div class="contact-value"><a href="mailto:cortlin-us@nbep-us.com">Reach out</a></div>
+        <div class="contact-note">We're always open to new people who have a hobby for development</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Cortlin. All rights reserved.</span>
+    <span><a href="#" onclick="showFS(); return false;">File Index</a></span>
+    <span><a href="/en-us/index/support.html">Privacy Policy</a></span>
+    <span><a href="/en-us/index/support.html">EULA</a></span>
+    <span><a href="/en-us/index/support.html">Support</a></span>
+  </footer>
+</div>
+
+<div id="fs-page">
+  <div class="fs-nav">
+    <div class="fs-nav-left">
+      <div class="fs-logo" onclick="showLanding()">
+        <img src="https://i.imgur.com/bqOOpyN.png" alt="Cortlin">
+        Cortlin
+      </div>
+      <div class="fs-breadcrumb" id="breadcrumb">/</div>
+    </div>
+    <div class="fs-auth" id="auth-status"></div>
+  </div>
+
+  <div class="fs-toolbar" id="admin-bar">
+    <button class="tool-btn" onclick="openModal('folder')">+ New Folder</button>
+    <button class="tool-btn" onclick="openModal('file')">+ New Entry</button>
+  </div>
+
+  <div class="fs-main">
+    <div class="fs-header">
+      <div class="fs-title" id="page-title">Index of /</div>
+    </div>
+    <table class="fs-table">
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">Name</th>
+          <th onclick="sortBy('modified')">Modified</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tree-body"></tbody>
+    </table>
+  </div>
+
+  <div class="fs-footer" id="fs-footer-count"></div>
+</div>
+
+<div id="modal-overlay" onclick="closeModal()"></div>
+<div id="modal">
+  <h2 id="modal-title"></h2>
+  <div id="modal-body"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAfb1PKVSPEuVPzdb3BE9fbMtT8Yade-hY",
+  authDomain: "cortlin.firebaseapp.com",
+  projectId: "cortlin",
+  storageBucket: "cortlin.firebasestorage.app",
+  messagingSenderId: "439783582358",
+  appId: "1:439783582358:web:ef40a524daaa6d0a77f0b7",
+  measurementId: "G-LC1C1X95G6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const currentUser = JSON.parse(sessionStorage.getItem("cortlin_user") || "null");
+let currentPathId = null;
+let currentPath = "/";
+let allItems = [];
+let sortKey = "name";
+let sortDir = 1;
+
+window.showFS = () => {
+  document.getElementById("landing").style.display = "none";
+  const fsPage = document.getElementById("fs-page");
+  fsPage.style.display = "flex";
+  fsPage.style.flexDirection = "column";
+  loadTree(null);
+};
+
+window.showLanding = () => {
+  document.getElementById("fs-page").style.display = "none";
+  document.getElementById("landing").style.display = "flex";
+  document.getElementById("landing").style.flexDirection = "column";
+};
+
+const authEl = document.getElementById("auth-status");
+if (currentUser) {
+  authEl.innerHTML = `<span>logged in as <strong>${currentUser.user}</strong></span> <a onclick="doSignOut()">logout</a>`;
+  document.getElementById("admin-bar").style.display = "flex";
+} else {
+  authEl.innerHTML = `<a onclick="window.location='login.html'">login</a>`;
+}
+
+window.doSignOut = () => { sessionStorage.removeItem("cortlin_user"); location.reload(); };
+
+function getIcon(item) {
+  const name = (item.name || "").toLowerCase();
+  if (item.type === "folder") {
+    if (name.includes("aeros") || name.includes("cortlin")) return "https://i.imgur.com/bqOOpyN.png";
+    if (name.includes("dev") || name.includes("develop")) return "https://i.imgur.com/6atwQbZ.png";
+    return "https://cdn3d.iconscout.com/3d/premium/thumb/file-explorer-3d-icon-png-download-8663168.png";
+  }
+  if (name.includes("aeros") || name.includes("cortlin")) return "https://i.imgur.com/bqOOpyN.png";
+  if (name.includes("dev") || name.includes("develop")) return "https://i.imgur.com/6atwQbZ.png";
+  return "https://cdn-icons-png.flaticon.com/512/2246/2246713.png";
+}
+
+async function loadTree(parentId) {
+  document.getElementById("tree-body").innerHTML = `<tr><td colspan="4" class="empty-state">Loading...</td></tr>`;
+  try {
+    const snap = await getDocs(query(collection(db, "tree"), where("parentId", "==", parentId ?? null)));
+    allItems = [];
+    snap.forEach(d => allItems.push({ id: d.id, ...d.data() }));
+    renderTree();
+  } catch (err) {
+    document.getElementById("tree-body").innerHTML = `<tr><td colspan="4" class="empty-state" style="color:var(--danger)">Error: ${err.message}</td></tr>`;
+  }
+}
+
+function renderTree() {
+  const tbody = document.getElementById("tree-body");
+  tbody.innerHTML = "";
+
+  const sorted = [...allItems].sort((a, b) => {
+    if (a.type === "folder" && b.type !== "folder") return -1;
+    if (a.type !== "folder" && b.type === "folder") return 1;
+    let av = a[sortKey] ?? "", bv = b[sortKey] ?? "";
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+
+  if (currentPathId !== null) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4"><div class="entry-cell"><span style="color:var(--muted);font-size:13px;cursor:pointer;" class="go-up">.. Parent Directory</span></div></td>`;
+    tr.querySelector(".go-up").addEventListener("click", goUp);
+    tbody.appendChild(tr);
+  }
+
+  let visible = 0;
+  for (const item of sorted) {
+    if (item.locked && !currentUser) continue;
+    visible++;
+
+    const tr = document.createElement("tr");
+    const mod = item.modified ? new Date(item.modified.seconds * 1000).toISOString().slice(0, 16).replace("T", " ") : "-";
+    const icon = getIcon(item);
+
+    const adminCell = currentUser ? `<div class="admin-actions"><button class="act-btn danger del-btn">del</button><button class="act-btn lock-btn">${item.locked ? "unlock" : "lock"}</button></div>` : "";
+
+    if (item.type === "folder") {
+      tr.innerHTML = `
+        <td><div class="entry-cell"><img class="entry-icon" src="${icon}" alt=""><a class="entry-name folder-link">${esc(item.name)}/</a>${item.locked ? `<span class="locked-badge">locked</span>` : ""}</div></td>
+        <td class="time-cell">${mod}</td>
+        <td class="desc-cell">${esc(item.description || "")}</td>
+        <td>${adminCell}</td>`;
+      tr.querySelector(".folder-link").addEventListener("click", () => navInto(item.id, item.name));
+    } else if (item.url) {
+      const safeUrl = esc(item.url.replace(/^http:\/\//i, "https://"));
+      tr.innerHTML = `
+        <td><div class="entry-cell"><img class="entry-icon" src="${icon}" alt=""><a class="entry-name" href="${safeUrl}">${esc(item.name)}</a>${item.locked ? `<span class="locked-badge">locked</span>` : ""}</div></td>
+        <td class="time-cell">${mod}</td>
+        <td class="desc-cell">${esc(item.description || "")}</td>
+        <td>${adminCell}</td>`;
+    } else {
+      tr.innerHTML = `
+        <td><div class="entry-cell"><img class="entry-icon" src="${icon}" alt=""><a class="entry-name" href="view.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a>${item.locked ? `<span class="locked-badge">locked</span>` : ""}</div></td>
+        <td class="time-cell">${mod}</td>
+        <td class="desc-cell">${esc(item.description || "")}</td>
+        <td>${adminCell}</td>`;
+    }
+
+    if (currentUser) {
+      tr.querySelector(".del-btn")?.addEventListener("click", () => deleteItem(item.id, item.name));
+      tr.querySelector(".lock-btn")?.addEventListener("click", () => toggleLock(item.id, !!item.locked));
+    }
+
+    tbody.appendChild(tr);
+  }
+
+  if (visible === 0) {
+    const empty = document.createElement("tr");
+    empty.innerHTML = `<td colspan="4" class="empty-state">No items here.</td>`;
+    tbody.appendChild(empty);
+  }
+
+  document.getElementById("fs-footer-count").textContent = `Cortlin / ${visible} item(s)`;
+}
+
+function navInto(id, name) {
+  currentPathId = id;
+  currentPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
+  document.getElementById("page-title").textContent = `Index of ${currentPath}`;
+  updateBreadcrumb();
+  loadTree(id);
+}
+
+async function goUp() {
+  const parts = currentPath.split("/").filter(Boolean);
+  parts.pop();
+  currentPath = parts.length === 0 ? "/" : "/" + parts.join("/");
+  if (parts.length === 0) {
+    currentPathId = null;
+  } else {
+    try {
+      const snap = await getDocs(query(collection(db, "tree"), where("name", "==", parts[parts.length - 1]), where("type", "==", "folder")));
+      currentPathId = snap.empty ? null : snap.docs[0].id;
+    } catch (err) {
+      currentPathId = null;
+    }
+  }
+  document.getElementById("page-title").textContent = `Index of ${currentPath}`;
+  updateBreadcrumb();
+  loadTree(currentPathId);
+}
+
+function updateBreadcrumb() {
+  const parts = currentPath.split("/").filter(Boolean);
+  const bc = document.getElementById("breadcrumb");
+  bc.innerHTML = "";
+  const rootLink = document.createElement("a");
+  rootLink.textContent = "/";
+  rootLink.addEventListener("click", window.goRoot);
+  bc.appendChild(rootLink);
+  for (const p of parts) {
+    bc.appendChild(document.createTextNode(` / ${p}`));
+  }
+}
+
+window.goRoot = () => {
+  currentPath = "/";
+  currentPathId = null;
+  document.getElementById("page-title").textContent = "Index of /";
+  document.getElementById("breadcrumb").innerHTML = "/";
+  loadTree(null);
+};
+
+window.sortBy = (key) => {
+  sortDir = sortKey === key ? sortDir * -1 : 1;
+  sortKey = key;
+  renderTree();
+};
+
+window.openModal = (type) => {
+  document.getElementById("modal-overlay").style.display = "block";
+  document.getElementById("modal").style.display = "block";
+  const title = document.getElementById("modal-title");
+  const body = document.getElementById("modal-body");
+  if (type === "folder") {
+    title.textContent = "New Folder";
+    body.innerHTML = `
+      <div class="field-group"><label>Name</label><input id="m-name" type="text" placeholder="Folder name"></div>
+      <div class="field-group"><label>Description</label><input id="m-desc" type="text" placeholder="Optional"></div>
+      <div class="field-group checkbox"><input type="checkbox" id="m-lock"><label for="m-lock">Staff only</label></div>
+      <div class="modal-actions"><button class="btn-primary" onclick="submitFolder()">Create</button><button class="btn-secondary" onclick="closeModal()">Cancel</button></div>`;
+  } else {
+    title.textContent = "New Entry";
+    body.innerHTML = `
+      <div class="field-group"><label>Name</label><input id="m-name" type="text" placeholder="Entry name"></div>
+      <div class="field-group"><label>URL</label><input id="m-url" type="text" placeholder="https:// (leave blank for text)"></div>
+      <div class="field-group"><label>Description</label><input id="m-desc" type="text" placeholder="Optional"></div>
+      <div class="field-group"><label>Content</label><textarea id="m-content" placeholder="Text content (if no URL)"></textarea></div>
+      <div class="field-group checkbox"><input type="checkbox" id="m-lock"><label for="m-lock">Staff only</label></div>
+      <div class="modal-actions"><button class="btn-primary" onclick="submitFile()">Create</button><button class="btn-secondary" onclick="closeModal()">Cancel</button></div>`;
+  }
+};
+
+window.closeModal = () => {
+  document.getElementById("modal-overlay").style.display = "none";
+  document.getElementById("modal").style.display = "none";
+};
+
+window.submitFolder = async () => {
+  const name = document.getElementById("m-name").value.trim();
+  if (!name) return alert("Name is required.");
+  try {
+    await addDoc(collection(db, "tree"), {
+      name,
+      type: "folder",
+      description: document.getElementById("m-desc").value.trim(),
+      locked: document.getElementById("m-lock").checked,
+      parentId: currentPathId ?? null,
+      modified: serverTimestamp()
+    });
+    closeModal();
+    loadTree(currentPathId);
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+};
+
+window.submitFile = async () => {
+  const name = document.getElementById("m-name").value.trim();
+  if (!name) return alert("Name is required.");
+  const url = document.getElementById("m-url").value.trim() || null;
+  const bodyVal = document.getElementById("m-content")?.value.trim() || null;
+  try {
+    await addDoc(collection(db, "tree"), {
+      name,
+      type: "file",
+      url,
+      body: url ? null : bodyVal,
+      description: document.getElementById("m-desc").value.trim(),
+      locked: document.getElementById("m-lock").checked,
+      parentId: currentPathId ?? null,
+      modified: serverTimestamp()
+    });
+    closeModal();
+    loadTree(currentPathId);
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+};
+
+async function deleteItem(id, name) {
+  if (!confirm(`Delete "${name}"?`)) return;
+  try {
+    await deleteDoc(doc(db, "tree", id));
+    loadTree(currentPathId);
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+}
+
+async function toggleLock(id, locked) {
+  try {
+    await updateDoc(doc(db, "tree", id), { locked: !locked });
+    loadTree(currentPathId);
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+}
+
+function esc(str) {
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+</script>
+</body>
+</html>
